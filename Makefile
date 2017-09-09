@@ -3,7 +3,7 @@
 # Complier Options
 CC = gcc
 CFLAGS = -Wall -g -O2 -pipe
-CXX = g++
+CXX = g++ -lwiringPi
 CXXFLAGS = -std=c++14 -Wall -g -O2 -pipe -c
 LDFLAGS = -lm
 

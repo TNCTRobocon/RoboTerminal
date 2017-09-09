@@ -9,6 +9,10 @@
 #include <string.h>
 #include <stdint.h>
 
+#include <wiringPi.h>
+#include <wiringPiI2C.h>
+#include <wiringSerial.h>
+
 using namespace std;
 
 GamePad::GamePad(const char* filename){
@@ -83,5 +87,8 @@ void GamePad::Update(){
           default:
 			continue;
         }
+        
+        
+        
     }
 }
