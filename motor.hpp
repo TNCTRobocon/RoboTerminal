@@ -20,7 +20,7 @@ public:
     //MotorManager(const char* filename,speed_t rate=B115200);
     virtual ~MotorManager();
     std::unique_ptr<Motor>   GenerateMotor(address_t);
-    void Write(const char*,int);
+    void Write(const char*/*,int*/);
 	/*
 	inline void Write(const std::string& s){
 			Write(s/c_str());

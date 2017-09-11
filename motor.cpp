@@ -39,7 +39,7 @@ std::unique_ptr<Motor> MotorManager::GenerateMotor(address_t addr){
 return nullptr;//TODO STUB
 }
 
-void MotorManager::Write(const char *send,int youso){
+void MotorManager::Write(const char *send/*,int youso*/){
 	/*
 	int i;
 	for(i = 0;i<youso;i++){
@@ -47,6 +47,7 @@ void MotorManager::Write(const char *send,int youso){
 		send++;
 	}
 	printf("\n");*/
+	printf("%c",*send);
 }
 /*
 void dtm(int id,float dt){
