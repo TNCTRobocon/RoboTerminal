@@ -34,11 +34,11 @@ int main(){
 	//int youso;
     GamePad pad("/dev/input/js0");
     signal(SIGINT,finish);
-    /*char Send[] = "sel 20";
+    char Send[] = "sel 20";
     std::string str(Send,sizeof Send/sizeof Send[0]);
-    std::printf("%s",str.c_str());
-    youso = sizeof Send/sizeof Send[0];*/
-    //MotorManager test("/dev/ttyS0",115200);
+    //std::printf("%s",str.c_str());
+    //youso = sizeof Send/sizeof Send[0];
+    MotorManager test("/dev/ttyAMA0",115200);
     //pad.Status();
     pad.SetButtonChangedEvent(ButtonHandler);
     pad.SetAxisChangedEvent(AxisHandler);
@@ -50,12 +50,20 @@ int main(){
 	for (vector<int>::iterator p=vec.begin();p!=vec.end();p++){
 		cout<<*p;
 	}
+	vecter<int>::iterator it vec.begin();
+		while(it != vec.end()){
+			cout << *it;
+			cout << "-";
+			it++;
+		}
 	*/
+	/*
 	map<int,bool> bump;
 	map<int,float> axmp;
+	*/
     while (1){
-		bump[button_name] = button_value;
-		axmp[axis_name] = axis_value;
+		//bump[button_name] = button_value;
+		//axmp[axis_name] = axis_value;
 		//cout << button_name << "  " << bump[button_name]  <<  endl;
 		//cout << axis_name << "  " << axmp[axis_name]  << endl;
 		/*for(auto x : bump){
@@ -64,10 +72,11 @@ int main(){
 			
 		}*/
 		
-		for(auto  y: axmp){
+		/*for(auto  y: axmp){
 			cout << y.first << "  " << y.second << endl;
-		}
-		//test.Write(str.c_str());
+		}*/
+		//test.Write(Send,youso);
+		test.Write(str.c_str());
 	}
 }
 

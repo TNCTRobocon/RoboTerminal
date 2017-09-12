@@ -40,14 +40,18 @@ return nullptr;//TODO STUB
 }
 
 void MotorManager::Write(const char *send/*,int youso*/){
-	/*
-	int i;
+	//serialPrintf(fd,"sel 20\r");
+	//serialPrintf(fd,"dt 0.5\r");
+	/*int i;
 	for(i = 0;i<youso;i++){
-		printf("%c",*send);
+		serialPrintf(fd,"%c",*send);
 		send++;
-	}
-	printf("\n");*/
-	printf("%c",*send);
+		//printf("%d",youso);
+		
+	}*/
+	//printf("\n");
+	serialPrintf(fd,"%c\r",*send);
+	//serialPrintf("\r");
 }
 /*
 void dtm(int id,float dt){

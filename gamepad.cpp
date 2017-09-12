@@ -32,7 +32,7 @@ GamePad::GamePad(const char* filename){
     //ボタン数に応じて配列を作成
     buttons=new bool[button_num];
     axises=new int[axis_num];
-    printf("name=%s button=%d,axis=%d",name,button_num,axis_num);
+    printf("name=%s button=%d,axis=%d\n",name,button_num,axis_num);
 
     //イベント発生機構
     button_event=nullptr;
