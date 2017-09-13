@@ -15,27 +15,26 @@ using address_t = uint32_t;
 class MotorManager{
 private:
     int fd;//シリアルポートのファイル識別時
-public:
 	MotorManager(const char* filename,int rate);
-    //MotorManager(const char* filename,speed_t rate=B115200);
+public:
+	static inline MotorManager* GenerateMotorManegar(const char *filename,int rate){
+		return new MotorManager(filename,rate);
+	}
+	
     virtual ~MotorManager();
     std::unique_ptr<Motor>   GenerateMotor(address_t);
-    void Write(const char*/*,int*/);
-	/*
-	inline void Write(const std::string& s){
-			Write(s/c_str());
-	}
-	*/
+    void Write(const char* str);
+
 };
 
 
 class Motor{
     friend class MotorManager;
 private:
-    std::shared_ptr<MotorManager> manager;
+    std::shared_ptr<MotorManager> parent;
     address_t address;
 private:
-    Motor(std::shared_ptr<MotorManager> ptr,address_t);
+    Motor(MotorManager* ptr,address_t);
 public:
     void Duty(float value);
 

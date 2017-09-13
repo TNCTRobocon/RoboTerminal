@@ -13,9 +13,9 @@
 
 
 
-MotorManager::MotorManager(const char* filename,int rate/*speed_t rate*/){
+MotorManager::MotorManager(const char* filename,int rate){
    
-   fd=serialOpen("/dev/ttyS0",115200);
+   fd=serialOpen(filename,rate);
 	if(fd<0){
 		printf("can not open serialport\n");
 		exit(1);
@@ -36,41 +36,11 @@ MotorManager::~MotorManager(){
 }
 
 std::unique_ptr<Motor> MotorManager::GenerateMotor(address_t addr){
-return nullptr;//TODO STUB
+return nullptr;
 }
 
-void MotorManager::Write(const char *send/*,int youso*/){
-	//serialPrintf(fd,"sel 20\r");
-	//serialPrintf(fd,"dt 0.5\r");
-	/*int i;
-	for(i = 0;i<youso;i++){
-		serialPrintf(fd,"%c",*send);
-		send++;
-		//printf("%d",youso);
-		
-	}*/
-	//printf("\n");
-	serialPrintf(fd,"%c\r",*send);
-	//serialPrintf("\r");
-}
-/*
-void dtm(int id,float dt){
-	std::string word("sel	%d\r",id);
-	void MotorManager::Write(&word);
-	std::string word("dt	%4.2f\r",dt);
-	void MotorManager::Write(&word);
-	delay(1);
+void MotorManager::Write(const char *str){
+	serialPrintf(fd,str);
 }
 
 
-void mcm(int id,int mc){
-	std::string word("sel	%d\r",id);
-	void MotorManager::Write(&word);
-	std::string word("dt	%4.2f\r",mc);
-	void MotorManager::Write(&word);
-	if(id==tirelb){
-		std::string word("go\r");
-		void MotorManager::Write(&word);
-	}
-}
-*/

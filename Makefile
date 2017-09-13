@@ -1,4 +1,4 @@
-#!/bin/make
+#!/usr/bin/make
 
 # Complier Options
 CC = gcc
