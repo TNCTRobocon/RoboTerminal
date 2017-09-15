@@ -22,9 +22,12 @@ public:
 	}
 	
     virtual ~MotorManager();
-    std::unique_ptr<Motor>   GenerateMotor(address_t);
+   
+    std::unique_ptr<Motor>   GenerateMotor(address_t addr){
+		return new Motor(this addr);
+	}
     void Write(const char* str);
-
+	
 };
 
 
@@ -36,6 +39,8 @@ private:
 private:
     Motor(MotorManager* ptr,address_t);
 public:
-    void Duty(float value);
-
+	void Sel(int id);
+    void Duty(float dt_value);
+	void MotorControl_rady(int mc_value);
+	void MotorControl_go();
 };

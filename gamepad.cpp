@@ -92,3 +92,50 @@ void GamePad::Update(){
         
     }
 }
+
+
+inline int PadButtonHandler(int a,ButtonNames name,void(*Btn[])(int)){
+	switch(a){
+		case A:
+			
+		case B:
+			
+		case X:
+			
+		case Y:
+			
+		case LB:
+			
+		case RB:
+			
+		case BACK:
+			
+		case START:
+			
+		case CROSS:
+			
+		case AXISL:
+			
+		case AXISR:
+			
+}
+
+inline int PadAxisHandler(int b,AxisNames name,void(*Axis)(int)){
+	switch(b){
+		case LSX:
+				
+		case LSY:
+				
+		case RSX:
+				
+		case RSY:
+				
+		case RT:
+				
+		case LT:
+				
+		case DX:
+				
+		case DY:
+				 
+}

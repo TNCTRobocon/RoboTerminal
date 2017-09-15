@@ -84,4 +84,24 @@ public:
     inline int GetAxisNum()const{
         return axis_num;
     }
+
+	//判断
+	inline int ButtonDecision(){
+		if(button_event != nullptr){
+			//PadButtonHandler(button_number,ButtonNames name,);
+		}
+	return 0;
+	}
+	inline int AxisDecision(){
+		if(axis_event != nullptr){
+			//PadAxisHandler(axis_number,ButtonNames name);
+		}
+	return 0;
+	}
+
+
+
+	inline int PadButtonHandler(int a,ButtonNames name,void(*Btn)(int));
+	
+	inline int PadAxisHandler(int b,AxisNames name,void(*Axis)(int));
 };
