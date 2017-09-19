@@ -16,7 +16,6 @@ static inline const char* GetAxisName(AxisNames name){
 	return idx<cnt?names[idx]:"Unknown";
 }
 
-
 enum class ButtonNames{
     A=0,B=1,X=2,Y=3,LB=4,RB=5,BACK=6,START=7,CROSS=8,AXISL=9,AXISR=10
 };
@@ -98,8 +97,6 @@ public:
 		}
 	return 0;
 	}
-
-
 
 	inline int PadButtonHandler(int a,ButtonNames name,void(*Btn)(int));
 	

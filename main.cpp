@@ -13,7 +13,6 @@
 #include <wiringPiI2C.h>
 #include <wiringSerial.h>
 
-
 using namespace std;
 
 int button_number;
@@ -54,8 +53,15 @@ void finish(int){
 int main(){
     GamePad pad("/dev/input/js0");
     signal(SIGINT,finish);
-    MotorManager test();
-    test.*GenerateMotorManegar("/dev/ttyS0",115200);
+    auto mm = MotorManager::GenerateMotorManegar("/dev/tty0",115200);
+    auto legfr =mm->GenerateMotor(10);
+    
+	legfr->Select();
+	legfr->Duty(0.2);
+	
+	mm->Synchronize();
+    
+    //test.*GenerateMotorManegar("/dev/ttyS0",115200);
     //pad.Status();
     pad.SetButtonChangedEvent(ButtonHandler);
     pad.SetAxisChangedEvent(AxisHandler);
@@ -63,10 +69,13 @@ int main(){
     //pad.PadButtonHandler(int,void(int*)())
     //void (*ptr[11])()={Btn_A,Btn_B,Btn_X,Btn_Y,Btn_LB,Btn_RB,Btn_BACK,Btn_START,Btn_CROSS,Btn_AXISL,Btn_AXISR}
     while (1){
-	//pad.ButtonDecision(button_number,(*ptr[11])());
+	//pad.ButtonDecision(button_number,(ptr[11])());
 	//pad.AxisDecision(axis_number);
 	}
 }
+
+
+
 
 
 void AxisHandler(const GamePad*obj,AxisNames axis,float value){

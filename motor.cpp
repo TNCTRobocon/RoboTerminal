@@ -7,8 +7,23 @@
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <wiringSerial.h>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 
+using namespace std;
+//モーターのコマンド
+const static string cmd_newline="\r";
+const static string cmd_space=" ";
 
+const static string cmd_select="sel";
+const static string cmd_duty="dt";
+const static string cmd_motor_control="mc";
+const static string cmd_async_motor_control="rady";
+const static string cmd_sync="go";
+const static string cmd_angle="sc";
+const static string cmd_reset="rst";
+const static string cmd_stop="stop";
 
 MotorManager::MotorManager(const char* filename,int rate){
    
@@ -18,11 +33,8 @@ MotorManager::MotorManager(const char* filename,int rate){
 		exit(1);
 	}else{ 
 	    printf("success open serialport\n");
-	    serialPrintf(srid,"sel 0\r");
-		serialPrintf(srid,"dt 0\r");
-		serialPrintf(srid,"mc 0\r");
+		Command(cmd_reset);
 	}
-	
 }
 
 
@@ -35,26 +47,53 @@ MotorManager::~MotorManager(){
     }
 }
 
-std::unique_ptr<Motor> MotorManager::GenerateMotor(address_t addr){
-	return nullptr;
+void MotorManager::Write(const std::string& text){
+	serialPrintf(fd,text.c_str());
 }
 
-void MotorManager::Write(const char *str){
-	serialPrintf(fd,str);
+unique_ptr<Motor> GenerateMotor(address_t addr){
+	return unique_ptr<Motor>(new Motor(this,addr));
 }
 
-void Motor::Sel(int id){
-	Write("sel %d\r",id)
+
+void MotorManager::Command(const std::string& command){
+	serialPrintf(fd,command.c_str());
+	serialPrintf(fd,cmd_newline);
 }
 
-void Motor::Duty(float dt_value){
-	Write("dt %4.2f\r",dt_value);
+void MotorManager::Synchronize(){
+	Command(cmd_sync);
 }
 
-void Motor::MotorControl_rady(int mc_value){
-	Write("rady %d\r",mc_value);
+void Motor::Select(){
+		stringsteam ss;
+		ss<<cmd_select<<' '<<address;
+		parent->Command(ss.str());
 }
 
-void Motor::MotorControl_go(){
-	Write("go\r");
+void Motor::Duty(float value){
+			Select();
+			stringstream ss;
+			ss<<cmd_duty<<' '<<value;
+			parent->Command(ss.str());
+}
+
+void Motor::AsyncRPM(float value){
+			Select();
+			stringstream ss;
+			ss<<cmd_async_motor_control<<' '<<value;
+			parent->Command(ss.str());
+}
+
+void Motor::RPM(float value){
+			Select();
+			stringstream ss;
+			ss<<cmd_motor_control<<' '<<value;
+			parent->Command(ss.str());
+
+}
+
+void Motor::Stop(){
+		Select();
+		parent->Command(cmd_stop);
 }

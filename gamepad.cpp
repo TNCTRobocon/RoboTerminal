@@ -92,9 +92,10 @@ void GamePad::Update(){
         
     }
 }
-
+#if 0
 
 inline int PadButtonHandler(int a,ButtonNames name,void(*Btn[])(int)){
+	(*Btn[a])();
 	switch(a){
 		case A:
 			
@@ -117,7 +118,7 @@ inline int PadButtonHandler(int a,ButtonNames name,void(*Btn[])(int)){
 		case AXISL:
 			
 		case AXISR:
-			
+	}
 }
 
 inline int PadAxisHandler(int b,AxisNames name,void(*Axis)(int)){
@@ -137,5 +138,8 @@ inline int PadAxisHandler(int b,AxisNames name,void(*Axis)(int)){
 		case DX:
 				
 		case DY:
-				 
+			
+	}
 }
+
+#endif
