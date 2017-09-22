@@ -1,8 +1,24 @@
 #include "main.hpp"
+#include "gamepad.hpp"
+#include "motor.hpp"
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "gamepad.hpp"
+#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+#include <wiringPi.h>
+#include <wiringPiI2C.h>
+#include <wiringSerial.h>
+
+#include <memory>
+
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+
+using namespace std;
 
 int button_name;
 bool button_value;
@@ -21,8 +37,12 @@ void finish(int){
 int main(){
     GamePad pad("/dev/input/js0");
     signal(SIGINT,finish);
-    MotorManager::MotorManager(const char* filename,speed_t rate);
-    std::string word();
+	auto mm = MotorManager::GenerateMotorManeger("/dev/tty0",115200);
+    auto legfr = mm->GenerateMotor(16);
+	legfr->Select();
+	legfr->Duty(0.2);
+	
+	mm->Synchronize();
     pad.Status();
     pad.SetButtonChangedEvent(ButtonHandler);
     pad.SetAxisChangedEvent(AxisHandler);
@@ -31,7 +51,7 @@ int main(){
     while (1){
 		}
     }
-}
+
 
 void AxisHandler(const GamePad*obj,AxisNames axis,float value){
 	//puts("bbbb");
@@ -47,4 +67,3 @@ void ButtonHandler(const GamePad* obj,ButtonNames button,bool value){
 	button_name = (int)button;
 	button_value = value;
 }
-

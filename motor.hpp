@@ -3,34 +3,45 @@
 #include <stdint.h>
 #include <string>
 
+#include <wiringPi.h>
+#include <wiringPiI2C.h>
+#include <wiringSerial.h>
 
 class Motor;
 using address_t = uint32_t;
-void dtm(int,float);
-void mcm(int,int);
+
 
 class MotorManager{
 private:
     int fd;//シリアルポートのファイル識別時
+    MotorManager(const char* filename,int rate);
 public:
-    MotorManager(const char* filename,speed_t rate=B115200);
-    virtual ~MotorManager();
-    std::unique_ptr<Motor>   GenerateMotor(address_t);
-    void Write(const char*);
-	inline void Write(const std::string& s){
-			Write(s/c_str(),);
+    static inline std::unique_ptr<MotorManager> GenerateMotorManeger(const char *filename,int rate){
+			return std::unique_ptr<MotorManager>(new MotorManager (filename,rate));
 	}
+	
+    virtual ~MotorManager();
+   
+    std::unique_ptr<Motor> GenerateMotor(address_t addr);/*{
+		return std::unique_ptr<Motor>(new Motor(this,addr));
+	}*/
+    void Write(const std::string&);
+	void Command(const std::string&);
+	void Synchronize();
+	void Reset();
 };
 
 
 class Motor{
     friend class MotorManager;
 private:
-    std::shared_ptr<MotorManager> manager;
+    MotorManager* parent;
     address_t address;
-private:
-    Motor(std::shared_ptr<MotorManager> ptr,address_t);
 public:
+    Motor( MotorManager* ptr,address_t);
+	void Select();
     void Duty(float value);
-
+	void AsyncRPM(float rpm);
+	void RPM(float rpm);
+	void Stop();
 };

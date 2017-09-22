@@ -7,7 +7,7 @@ CXX = g++
 CXXFLAGS = -std=c++14 -Wall -g -O2 -pipe -c
 LDFLAGS = -lm
 
-SRCS :=	main.cpp	gamepad.cpp motor.cpp
+SRCS :=	main.cpp gamepad.cpp motor.cpp
 OBJS := $(SRCS:.cpp=.o)
 
 TARGET = joyterm
@@ -17,7 +17,7 @@ TARGET = joyterm
 
 all:$(TARGET)
 $(TARGET):$(OBJS)
-	$(CXX) -o $@ $^ -pthread
+	$(CXX) -o $@ $^ -pthread -lwiringPi
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $<
