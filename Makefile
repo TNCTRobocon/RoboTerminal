@@ -28,6 +28,7 @@ motor.o:motor.cpp motor.hpp
 
 
 
+
 run:$(TARGET)
 	@./$(TARGET)
 

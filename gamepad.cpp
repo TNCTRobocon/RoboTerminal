@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdint.h>
 
+
 using namespace std;
 
 GamePad::GamePad(const char* filename){

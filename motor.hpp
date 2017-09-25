@@ -7,6 +7,7 @@
 #include <wiringPiI2C.h>
 #include <wiringSerial.h>
 
+
 class Motor;
 using address_t = uint32_t;
 
