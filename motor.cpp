@@ -13,6 +13,7 @@
 #include <sstream>
 #include <iomanip>
 
+
 using namespace std;
 //モーターのコマンド
 const static string cmd_newline="\r";
