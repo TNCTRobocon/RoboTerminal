@@ -18,7 +18,7 @@ private:
     MotorManager(const char* filename,int rate);
 public:
     static inline std::unique_ptr<MotorManager> GenerateMotorManeger(const char *filename,int rate){
-			return std::unique_ptr<MotorManager>(new MotorManager (filename,rate));
+		return std::unique_ptr<MotorManager>(new MotorManager (filename,rate));
 	}
 	
     virtual ~MotorManager();
@@ -32,17 +32,33 @@ public:
 	void Reset();
 };
 
+class IMotorCommon{
+public:
+	IMotorCommon(){}
+	virtual ~IMotorCommon(){}
+	virtual void Duty(float value)=0;
+	virtual void Stop()=0;
+};
 
-class Motor{
+class IMotorAdvanced{
+public:
+	IMotorAdvanced(){}
+	virtual ~IMotorAdvanced();
+	virtual void RPM(float rpm)=0;
+};
+
+class Motor:public IMotorAdvanced,public IMotorCommon{
     friend class MotorManager;
 private:
     MotorManager* parent;
     address_t address;
 public:
     Motor( MotorManager* ptr,address_t);
+    virtual ~Motor(){}
+    Motor(const Motor&)=delete;
 	void Select();
-    void Duty(float value);
+    virtual void Duty(float value);
 	void AsyncRPM(float rpm);
-	void RPM(float rpm);
-	void Stop();
+	virtual void RPM(float rpm);
+	virtual void  Stop();
 };

@@ -31,7 +31,7 @@ const static string cmd_stop="stop";
 
 
 MotorManager::MotorManager(const char* filename,int rate){
-   fd=serialOpen("/dev/tty0",115200);
+   fd=serialOpen(filename,rate);
 	if(fd<0){
 		printf("can not open serialport\n");
 		exit(1);
