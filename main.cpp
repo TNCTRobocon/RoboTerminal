@@ -8,129 +8,81 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <map>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <wiringSerial.h>
-
-#include <memory>
-
-#include <unistd.h>
-#include <fcntl.h>
+#include "mecanum_ui.hpp"
 #include <string.h>
-
+#include <bits/unique_ptr.h>
 
 using namespace std;
 
-int button_number;
-bool button_value;
-int axis_number;
-float axis_value;
+static motor_sptr motor_front_right{nullptr}, motor_front_left{nullptr}, motor_back_right{nullptr}, motor_back_left{nullptr};
+static motor_manager_sptr motor_manager{nullptr};
+static mecanum_ui_uptr mecanum_ui{nullptr};
 
-static MecanumWheel *wheelrf=nullptr,*wheellf=nullptr,*wheelrb=nullptr,*wheellb=nullptr;
-static unique_ptr<Motor>mtwhrf = nullptr,unique_ptr<Motor>mtwhlf = nullptr,unique_ptr<Motor>mtwhrb = nullptr,unique_ptr<Motor>mtwhlbS = nullptr;
-void ButtonHandler(const GamePad*,ButtonNames,bool);
-void AxisHandler(const GamePad*,AxisNames,float);
-void compute(const GamePad*);
-void shootout(const GamePad*);
-void conf(auto);
-void init();
-void deinit();
-
-void finish(int){
-    puts("finish");
-    exit(0);
-}
-
-
-int main(){
+int main()
+{
     GamePad pad("/dev/input/js0");
-    signal(SIGINT,finish);
-	auto mm = MotorManager::GenerateMotorManeger("/dev/ttyS0",115200);
-    //auto legfr = mm->GenerateMotor(16);
-    //legfr->Select();
-	//legfr->Duty(0.2);
-	
-	conf(mm);
-	init();
-	
-	mm->Synchronize();
-    pad.Status();
-    pad.SetButtonChangedEvent(ButtonHandler);
-    pad.SetAxisChangedEvent(AxisHandler);
-    //pad.SetButtonChangedEvent(const GamePad* obj,ButtonNames button,bool value);
-    
-    while (1){
-		
+    motor_init();
+
+    //Trigger Handle
+    pad.SetButtonChangedEvent(button_handler);
+    pad.SetAxisChangedEvent(axis_handler);
+
+    while (1) {
+
     }
-    deinit();
+
 }
 
-void conf(auto mm){
-	unique_ptr<Motor>mtwhrf = mm->GenerateMotor(16);
-	unique_ptr<Motor>mtwhlf = mm->GenerateMotor(17);
-	unique_ptr<Motor>mtwhrb = mm->GenerateMotor(18);
-	unique_ptr<Motor>mtwhlb = mm->GenerateMotor(19);
+void motor_init()
+{
+    //モーターの初期化
+    motor_manager = move(MotorManager::GenerateMotorManeger("/dev/ttyS0", 115200));
+    //モーターにアドレスを割り当てるTODO正しい値を代入すること
+    auto afr = motor_manager->CreateMotor(1);
+    auto afl = motor_manager->CreateMotor(2);
+    auto abr = motor_manager->CreateMotor(3);
+    auto abl = motor_manager->CreateMotor(4);
+    //各モーターの動作を規定する。TODO 正しい値を代入すること
+    MecanumWheel mfr(M_PI / 4 + M_PI / 2 * 0);
+    MecanumWheel mfl(M_PI / 4 + M_PI / 2 * 1);
+    MecanumWheel mbr(M_PI / 4 + M_PI / 2 * 2);
+    MecanumWheel mbl(M_PI / 4 + M_PI / 2 *3 );
+    //モーター一覧を作成
+    motor_pair_list list;
+    list.push_back(motor_pair(afr, mfr));
+    list.push_back(motor_pair(afl, mfl));
+    list.push_back(motor_pair(abr, mbr));
+    list.push_back(motor_pair(abl, mbl));
+    //uiを作成
+    mecanum_ui.reset(new MecanumUI(list));
 }
 
+void shootout(const GamePad*obj)
+{
+    if (obj -> GetButton(ButtonNames::A)) {
+        printf("konnichiha");
+    }
 
-void init(){
-	wheelrf=new MecanumWheel(2.0,1.0,2.0,1.0);
-	wheellf=new MecanumWheel(2.0,1.0,2.0,1.0);
-	wheelrb=new MecanumWheel(2.0,1.0,2.0,1.0);
-	wheellb=new MecanumWheel(2.0,1.0,2.0,1.0);
 }
 
-void deinit(){
-	delete wheellb;
-	delete wheelrb;
-	delete wheellf;
-	delete wheelrf;
+void axis_handler(const GamePad*obj, AxisNames axis, float value)
+{
+    if (mecanum_ui != nullptr) {
+        if (mecanum_ui->Sense(axis)) {
+            mecanum_ui->Action(obj);
+        }
+    }
+
 }
 
-void shootout(const GamePad*obj){
-	if(obj -> GetButton(ButtonNames::A)==1){
-			printf("konnichiha");
-	}
-	
-}
-
-void compute(const GamePad*obj,auto mm){
-	const double movegain = 1;
-	const double spingain = 1;
-	double x = obj -> GetAxis(AxisNames::LSX)*movegain;
-	double y = obj -> GetAxis(AxisNames::LSY)*movegain;
-	double r = (obj -> GetAxis(AxisNames::LT) - obj -> GetAxis(AxisNames::RT))*spingain;
-	mtwhrf -> AsyncRPM((*wheelrf)(x,y,r)/4);
-	mtwhlf -> AsyncRPM((*wheellf)(x,y,r)/4);
-	mtwhrb -> AsyncRPM((*wheelrb)(x,y,r)/4);
-	mtwhlb -> AsyncRPM((*wheellb)(x,y,r)/4);
-	mm.Synchronize();
-}
-
-void AxisHandler(const GamePad*obj,AxisNames axis,float value,auto mm){
-	printf("%s(%d),%f\n",GetAxisName(axis),(int)axis,value);
-	auto tire_conditions[] ={AxisNames::DX,AxisNames::DY,AxisNames::RT,AxisNames::LT};
-	for(auto it:tire_conditions){
-		if(it == axis){
-			compute(obj,mm);
-			break;
-		}
-	}
-	axis_number = (int)axis;
-	axis_value = value;	
-}
-
-void ButtonHandler(const GamePad* obj,ButtonNames button,bool value){
-	printf("%s,%s\n",GetButtonName(button),value?"true":"false");
-	auto conditions[] = {ButtonNames::X,ButtonNames::Y,ButtonNames::START,ButtonNames::BACK};
-	for(auto it:conditions){
-		if(it == button){
-			shootout(obj);
-			break;
-		}
-	}
-	
-	button_number = (int)button;
-	button_value = value;
+void button_handler(const GamePad* obj, ButtonNames button, bool value)
+{
+    if (mecanum_ui != nullptr) {
+        if (mecanum_ui->Sense(button)) {
+            mecanum_ui->Action(obj);
+        }
+    }
 }

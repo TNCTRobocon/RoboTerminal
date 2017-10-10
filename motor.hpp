@@ -6,26 +6,32 @@
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <wiringSerial.h>
-
+#include <vector>
 
 class Motor;
 using address_t = uint32_t;
-
+using motor_wptr= std::weak_ptr<Motor>;
+using motor_uptr= std::unique_ptr<Motor>;
+using motor_sptr= std::shared_ptr<Motor>;
+class MotorManager;
+using motor_manager_sptr= std::shared_ptr<MotorManager>;
 
 class MotorManager{
 private:
     int fd;//シリアルポートのファイル識別時
     MotorManager(const char* filename,int rate);
+    std::vector<motor_sptr> motors;
 public:
     static inline std::unique_ptr<MotorManager> GenerateMotorManeger(const char *filename,int rate){
 		return std::unique_ptr<MotorManager>(new MotorManager (filename,rate));
-	}
+}
 	
     virtual ~MotorManager();
    
-    std::unique_ptr<Motor> GenerateMotor(address_t addr);/*{
-		return std::unique_ptr<Motor>(new Motor(this,addr));
-	}*/
+    motor_sptr CreateMotor(address_t);//モーターを生成する
+    //void Remove(address_t);//モーターを消去する。
+    //motor_sptr GetMotor(address_t);//生成済みのモーターを取得する
+    
     void Write(const std::string&);
 	void Command(const std::string&);
 	void Synchronize();
@@ -43,7 +49,7 @@ public:
 class IMotorAdvanced{
 public:
 	IMotorAdvanced(){}
-	virtual ~IMotorAdvanced();
+	virtual ~IMotorAdvanced(){}
 	virtual void RPM(float rpm)=0;
 };
 
@@ -56,9 +62,13 @@ public:
     Motor( MotorManager* ptr,address_t);
     virtual ~Motor(){}
     Motor(const Motor&)=delete;
-	void Select();
+    void Select();
     virtual void Duty(float value);
-	void AsyncRPM(float rpm);
-	virtual void RPM(float rpm);
-	virtual void  Stop();
+    void AsyncRPM(float rpm);
+    virtual void RPM(float rpm);
+    virtual void  Stop();
+    bool operator <(const Motor& cmp)const{
+        return address<cmp.address;
+    }
+    address_t GetAddr()const{return address;}
 };

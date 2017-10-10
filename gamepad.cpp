@@ -8,6 +8,7 @@
 #include <linux/joystick.h>
 #include <string.h>
 #include <stdint.h>
+#include <thread>
 
 
 using namespace std;
@@ -36,7 +37,7 @@ GamePad::GamePad(const char* filename){
     axis_event=nullptr;
 
     //非同期取得システム
-    task=make_unique<thread>(&GamePad::Update,this);
+    task.reset(new thread(&GamePad::Update,this));
 }
 
 GamePad::~GamePad(){
