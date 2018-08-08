@@ -8,6 +8,8 @@
 #include <linux/joystick.h>
 #include <string.h>
 #include <stdint.h>
+#include <thread>
+
 
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
@@ -39,7 +41,7 @@ GamePad::GamePad(const char* filename){
     axis_event=nullptr;
 
     //非同期取得システム
-    task=make_unique<thread>(&GamePad::Update,this);
+    task.reset(new thread(&GamePad::Update,this));
 }
 
 GamePad::~GamePad(){

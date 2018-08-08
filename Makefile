@@ -1,31 +1,45 @@
 #!/usr/bin/make
 
 # Complier Options
-CC = gcc
-CFLAGS = -Wall -g -O2 -pipe
-CXX = g++
-CXXFLAGS = -std=c++14 -Wall -g -O2 -pipe -c
-LDFLAGS = -lm
+CC ?= gcc
+CFLAGS ?= -Wall -g -O2 -pipe
+CXX ?= g++
+CXXFLAGS ?= -std=c++11 -Wall -g -O2 -pipe -c -I$(HOME)/lib/wiringPi/wiringPi/ -I.
+LDFLAGS ?= -lm -L. -lwiringPi#-lwiringPi
 
-SRCS :=	main.cpp	gamepad.cpp motor.cpp
-OBJS := $(SRCS:.cpp=.o)
+SRCS :=
+REL := app/
+include $(REL)Makefile
+REL := general/
+include $(REL)Makefile
+#REL := special/
+#include $(REL)Makefile
+
+
+OBJS := main.o gamepad.o motor.o
 
 TARGET = joyterm
 
 #function define
-.PHONY:	run	clean	all
+.PHONY:	run clean all x86
 
 all:$(TARGET)
 $(TARGET):$(OBJS)
+<<<<<<< HEAD
 	$(CXX) -o $@ $^ -pthread -lwiringPi
+=======
+	$(CXX) -o $@ $^ -pthread $(LDFLAGS)
+>>>>>>> 6b7351b979fbd5f3891c93c681cb8e79484678e6
 
-.cpp.o:
+main.o:app/main.cpp app/main.hpp general/gamepad.hpp general/motor.hpp
 	$(CXX) $(CXXFLAGS) $<
-
-main.o:main.cpp	main.hpp gamepad.hpp motor.hpp
-gamepad.o:gamepad.cpp	gamepad.hpp
-motor.o:motor.cpp motor.hpp
-
+app/main.hpp:
+gamepad.o:general/gamepad.cpp general/gamepad.hpp
+	$(CXX) $(CXXFLAGS) $<
+general/gamepad.hpp:
+motor.o:general/motor.cpp general/motor.hpp
+	$(CXX) $(CXXFLAGS) $<
+general/motor.hpp:
 
 
 run:$(TARGET)
@@ -35,4 +49,19 @@ debug:$(TARGET)
 	@gdb $(TARGET)
 
 clean:
-	rm $(OBJS)
+	rm $(OBJS) $(TARGET)
+
+#x86:$(TARGET)
+#    SDKTARGETSYSROOT?=/home/teru/bin/raspi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin
+#    ARCH:=arm
+#    CROSS_COMPILE:=$(SDKTARGETSYSROOT)/arm-linux-gnueabihf-
+#    AS:=$(CROSS_COMPILE)as
+#    LD:=$(CROSS_COMPILE)ld
+#    CC:=$(CROSS_COMPILE)gcc
+#    CXX:=$(CROSS_COMPILE)g++
+#    CPP:=$(CROSS_COMPILE)gcc" -E"
+#    AR:=$(CROSS_COMPILE)ar
+#    NM:=$(CROSS_COMPILE)nm
+#    STRIP:=$(CROSS_COMPILE)strip
+#    OBJCOPY:=$(CROSS_COMPILE)objcopy
+#    OBJDUMP:=$(CROSS_COMPILE)objdump
