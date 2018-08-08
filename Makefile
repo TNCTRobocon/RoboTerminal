@@ -4,11 +4,19 @@
 CC ?= gcc
 CFLAGS ?= -Wall -g -O2 -pipe
 CXX ?= g++
-CXXFLAGS ?= -std=c++11 -Wall -g -O2 -pipe -c -I$(HOME)/lib/wiringPi/wiringPi/
+CXXFLAGS ?= -std=c++11 -Wall -g -O2 -pipe -c -I$(HOME)/lib/wiringPi/wiringPi/ -I.
 LDFLAGS ?= -lm -L. -lwiringPi#-lwiringPi
 
-SRCS :=	main.cpp gamepad.cpp motor.cpp shot_controller.cpp mecanum_control.cpp mecanum_ui.cpp
-OBJS := $(SRCS:.cpp=.o)
+SRCS :=
+REL := app/
+include $(REL)Makefile
+REL := general/
+include $(REL)Makefile
+#REL := special/
+#include $(REL)Makefile
+
+
+OBJS := main.o gamepad.o motor.o
 
 TARGET = joyterm
 
@@ -19,21 +27,15 @@ all:$(TARGET)
 $(TARGET):$(OBJS)
 	$(CXX) -o $@ $^ -pthread $(LDFLAGS)
 
-.cpp.o:
+main.o:app/main.cpp app/main.hpp general/gamepad.hpp general/motor.hpp
 	$(CXX) $(CXXFLAGS) $<
-
-main.o:main.cpp main.hpp gamepad.hpp motor.hpp  mecanum_control.hpp
-main.hpp:
-gamepad.o:gamepad.cpp gamepad.hpp
-gamepad.hpp:
-motor.o:motor.cpp motor.hpp
-motor.hpp:
-shot_controller.o:shot_controller.cpp shot_controller.hpp
-shot_controller.hpp:motor.hpp
-mecanum_control.o:mecanum_control.cpp mecanum_control.hpp
-mecanum_control.hpp:
-mecanum_ui.o:mecanum_ui.cpp mecanum_ui.hpp 
-mecanum_ui.hpp:mecanum_control.hpp motor.hpp
+app/main.hpp:
+gamepad.o:general/gamepad.cpp general/gamepad.hpp
+	$(CXX) $(CXXFLAGS) $<
+general/gamepad.hpp:
+motor.o:general/motor.cpp general/motor.hpp
+	$(CXX) $(CXXFLAGS) $<
+general/motor.hpp:
 
 
 run:$(TARGET)
@@ -43,18 +45,19 @@ debug:$(TARGET)
 	@gdb $(TARGET)
 
 clean:
-	rm $(OBJS)
-x86:$(TARGET)
-    SDKTARGETSYSROOT?=/home/teru/bin/raspi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin
-    ARCH:=arm
-    CROSS_COMPILE:=$(SDKTARGETSYSROOT)/arm-linux-gnueabihf-
-    AS:=$(CROSS_COMPILE)as
-    LD:=$(CROSS_COMPILE)ld
-    CC:=$(CROSS_COMPILE)gcc
-    CXX:=$(CROSS_COMPILE)g++
-    CPP:=$(CROSS_COMPILE)gcc" -E"
-    AR:=$(CROSS_COMPILE)ar
-    NM:=$(CROSS_COMPILE)nm
-    STRIP:=$(CROSS_COMPILE)strip
-    OBJCOPY:=$(CROSS_COMPILE)objcopy
-    OBJDUMP:=$(CROSS_COMPILE)objdump
+	rm $(OBJS) $(TARGET)
+
+#x86:$(TARGET)
+#    SDKTARGETSYSROOT?=/home/teru/bin/raspi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin
+#    ARCH:=arm
+#    CROSS_COMPILE:=$(SDKTARGETSYSROOT)/arm-linux-gnueabihf-
+#    AS:=$(CROSS_COMPILE)as
+#    LD:=$(CROSS_COMPILE)ld
+#    CC:=$(CROSS_COMPILE)gcc
+#    CXX:=$(CROSS_COMPILE)g++
+#    CPP:=$(CROSS_COMPILE)gcc" -E"
+#    AR:=$(CROSS_COMPILE)ar
+#    NM:=$(CROSS_COMPILE)nm
+#    STRIP:=$(CROSS_COMPILE)strip
+#    OBJCOPY:=$(CROSS_COMPILE)objcopy
+#    OBJDUMP:=$(CROSS_COMPILE)objdump
