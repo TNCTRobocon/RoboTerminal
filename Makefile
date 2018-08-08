@@ -12,8 +12,8 @@ REL := app/
 include $(REL)Makefile
 REL := general/
 include $(REL)Makefile
-#REL := special/
-#include $(REL)Makefile
+REL := special/
+include $(REL)Makefile
 
 
 OBJS := main.o gamepad.o motor.o
@@ -25,11 +25,7 @@ TARGET = joyterm
 
 all:$(TARGET)
 $(TARGET):$(OBJS)
-<<<<<<< HEAD
-	$(CXX) -o $@ $^ -pthread -lwiringPi
-=======
 	$(CXX) -o $@ $^ -pthread $(LDFLAGS)
->>>>>>> 6b7351b979fbd5f3891c93c681cb8e79484678e6
 
 main.o:app/main.cpp app/main.hpp general/gamepad.hpp general/motor.hpp
 	$(CXX) $(CXXFLAGS) $<
