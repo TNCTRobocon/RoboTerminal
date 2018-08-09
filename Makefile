@@ -16,7 +16,7 @@ REL := special/
 include $(REL)Makefile
 
 
-OBJS := main.o gamepad.o motor.o
+OBJS := main.o gamepad.o motor.o ultrasonic.o
 
 TARGET = joyterm
 
@@ -27,7 +27,7 @@ all:$(TARGET)
 $(TARGET):$(OBJS)
 	$(CXX) -o $@ $^ -pthread $(LDFLAGS)
 
-main.o:app/main.cpp app/main.hpp general/gamepad.hpp general/motor.hpp
+main.o:app/main.cpp app/main.hpp general/gamepad.hpp general/motor.hpp special/ultrasonic.hpp
 	$(CXX) $(CXXFLAGS) $<
 app/main.hpp:
 gamepad.o:general/gamepad.cpp general/gamepad.hpp
@@ -36,6 +36,9 @@ general/gamepad.hpp:
 motor.o:general/motor.cpp general/motor.hpp
 	$(CXX) $(CXXFLAGS) $<
 general/motor.hpp:
+ultrasonic.o:special/ultrasonic.cpp special/ultrasonic.hpp
+	$(CXX) $(CXXFLAGS) $<
+special/ultrasonic.hpp:
 
 
 run:$(TARGET)
