@@ -4,60 +4,23 @@
 CC ?= gcc
 CFLAGS ?= -Wall -g -O2 -pipe
 CXX ?= g++
-CXXFLAGS ?= -std=c++11 -Wall -g -O2 -pipe -c -I$(HOME)/lib/wiringPi/wiringPi/ -I.
-LDFLAGS ?= -lm -L. -lwiringPi#-lwiringPi
-
-SRCS :=
-REL := app/
-include $(REL)Makefile
-REL := general/
-include $(REL)Makefile
-REL := special/
-include $(REL)Makefile
-
-
-OBJS := main.o gamepad.o motor.o
-
-TARGET = joyterm
-
-#function define
-.PHONY:	run clean all x86
-
+CXXFLAGS ?= -std=c++11 -Wall -g -O2 -pipe -I.
+LDFLAGS ?= -lm -L. -pthread
+RM = rm
+#rootに入るソースコードはここで登録する
+SRCS := app/main.cpp general/motor.cpp general/gamepad.cpp
+OBJS := $(SRCS:%.cpp=%.o)
+DEPS := $(SRCS:%.cpp=%.d)
+TARGET := joyterm
+-include $(DEPS)
+#機能の定義
+.PHONY:all clear
 all:$(TARGET)
 $(TARGET):$(OBJS)
-	$(CXX) -o $@ $^ -pthread $(LDFLAGS)
-
-main.o:app/main.cpp app/main.hpp general/gamepad.hpp general/motor.hpp
-	$(CXX) $(CXXFLAGS) $<
-app/main.hpp:
-gamepad.o:general/gamepad.cpp general/gamepad.hpp
-	$(CXX) $(CXXFLAGS) $<
-general/gamepad.hpp:
-motor.o:general/motor.cpp general/motor.hpp
-	$(CXX) $(CXXFLAGS) $<
-general/motor.hpp:
-
-
-run:$(TARGET)
-	@./$(TARGET)
-
-debug:$(TARGET)
-	@gdb $(TARGET)
-
-clean:
-	rm $(OBJS) $(TARGET)
-
-#x86:$(TARGET)
-#    SDKTARGETSYSROOT?=/home/teru/bin/raspi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin
-#    ARCH:=arm
-#    CROSS_COMPILE:=$(SDKTARGETSYSROOT)/arm-linux-gnueabihf-
-#    AS:=$(CROSS_COMPILE)as
-#    LD:=$(CROSS_COMPILE)ld
-#    CC:=$(CROSS_COMPILE)gcc
-#    CXX:=$(CROSS_COMPILE)g++
-#    CPP:=$(CROSS_COMPILE)gcc" -E"
-#    AR:=$(CROSS_COMPILE)ar
-#    NM:=$(CROSS_COMPILE)nm
-#    STRIP:=$(CROSS_COMPILE)strip
-#    OBJCOPY:=$(CROSS_COMPILE)objcopy
-#    OBJDUMP:=$(CROSS_COMPILE)objdump
+	$(CXX) $(LDFLAGS) $(OBJS) -o $(TARGET)
+%.o: %.c
+	$(CC) $(CFLAGS) -c -MMD -MP $< -o$@
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c -MMD -MP $< -o$@
+clear:
+	$(RM) $(DEPS) $(OBJS) $(TARGET)

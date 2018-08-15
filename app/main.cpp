@@ -7,9 +7,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <wiringPi.h>
-#include <wiringPiI2C.h>
-#include <wiringSerial.h>
 #include <string.h>
 #include <bits/unique_ptr.h>
 
