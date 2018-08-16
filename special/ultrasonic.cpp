@@ -10,8 +10,8 @@
 #include <time.h>
 #include <sys/time.h>
 
-mutex mtxt;
-mutex mtxp;
+std::mutex mtxt;
+std::mutex mtxp;
 
 void Sonic::sonicend(){
 	end_flag = false;
@@ -23,7 +23,8 @@ Sonic::Sonic(int n){
 
 void Sonic::operator()(){
 	struct timeval begin,end;
-	//while(end_flag){
+
+	while(end_flag){
 		pinMode(pin_num,OUTPUT);
 		digitalWrite(pin_num,1);
 		pinMode(pin_num,INPUT);
@@ -34,8 +35,11 @@ void Sonic::operator()(){
 		mtxt.lock();
 		time = (end.tv_sec-begin.tv_sec)+(end.tv_usec-begin.tv_usec)*1.0E-6;
 		mtxt.unlock();
-		mtxp.lock();
-		printf("%lf\n",gettime());
-		mtxp.unlock();
-	//}
+		auto temp = gettime();
+		if(temp){
+			printf("%lf\n",gettime());
+		}else{
+			printf("no\n");
+		}
+	}
 }
