@@ -66,7 +66,8 @@ void MotorManager::Write(const std::string& text) {
 
 void MotorManager::Command(const std::string& command) {
     serialPrintf(fd, command.c_str());
-    //serialPrintf(fd,cmd_newline);
+    cout << command << endl;
+    serialPrintf(fd,cmd_newline.c_str());
 }
 
 void MotorManager::Synchronize() {
@@ -84,6 +85,7 @@ void Motor::Duty(float value) {
     stringstream ss;
     ss << cmd_duty << ' ' << value;
     parent->Command(ss.str());
+    delay(1);
 }
 
 void Motor::AsyncRPM(float value) {
