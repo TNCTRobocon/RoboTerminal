@@ -1,6 +1,7 @@
 #include "main.hpp"
 #include <general/gamepad.hpp>
 #include <general/motor.hpp>
+#include <special/ultrasonic.hpp>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +11,8 @@
 #include <string.h>
 #include <bits/unique_ptr.h>
 
+#include <thread>
+
 using namespace std;
 
 static motor_sptr motor_front_right{nullptr}, motor_front_left{nullptr}, motor_back_right{nullptr}, motor_back_left{nullptr};
@@ -17,9 +20,10 @@ static motor_manager_sptr motor_manager{nullptr};
 
 int main()
 {
-    GamePad pad("/dev/input/js0");
-    motor_init();
 
+    //GamePad pad("/dev/input/js0");
+    motor_init();
+/*
     //Trigger Handle
     pad.SetButtonChangedEvent(button_handler);
     pad.SetAxisChangedEvent(axis_handler);
@@ -27,7 +31,80 @@ int main()
     while (1) {
 
     }
+    */
 
+
+    /*
+    if(wiringPiSetup()!=0){
+      printf("error wiringPi setup\n");
+      return 1;
+    }else{
+      printf("success wiringPi setup\n");
+    }
+
+    //sonic_one();
+    //printf("%lf\n",sonic_one.gettime());
+
+    Sonic sonic_one(4);
+    thread t1(sonic_one);
+    getchar();
+    sonic_one.sonicend();
+    t1.join();
+    return 0;
+*/
+
+/*
+  auto mae = [](){
+    motor_front_right->Duty(0.6);
+    motor_front_left->Duty(0.6);
+    motor_back_right->Duty(0.6);
+    motor_back_left->Duty(0.6);
+  };
+  auto ushiro = [](){
+    motor_front_right->Duty(-0.6);
+    motor_front_left->Duty(-0.6);
+    motor_back_right->Duty(-0.6);
+    motor_back_left->Duty(-0.6);
+  };
+  auto hidari = [](){
+    motor_front_right->Duty(-0.6);
+    motor_front_left->Duty(0.6);
+    motor_back_right->Duty(0.6);
+    motor_back_left->Duty(-0.6);
+  };
+  auto migi = [](){
+    motor_front_right->Duty(0.6);
+    motor_front_left->Duty(-0.6);
+    motor_back_right->Duty(-0.6);
+    motor_back_left->Duty(0.6);
+  };
+  auto stop = [](){
+    motor_front_right->Duty(0);
+    motor_front_left->Duty(0);
+    motor_back_right->Duty(0);
+    motor_back_left->Duty(0);
+  };
+  */
+  while(1){
+    /*
+      mae();
+      delay(1000);
+      stop();
+      delay(1000);
+      ushiro();
+      delay(1000);
+      stop();
+      delay(1000);
+      hidari();
+      delay(1000);
+      stop();
+      delay(1000);
+      migi();
+      delay(1000);
+      stop();
+      delay(1000);
+      */
+  }
 }
 
 void motor_init()
@@ -35,10 +112,10 @@ void motor_init()
     //モーターの初期化
     motor_manager = move(MotorManager::GenerateMotorManeger("/dev/ttyS0", 115200));
     //モーターにアドレスを割り当てるTODO正しい値を代入すること
-    auto afr = motor_manager->CreateMotor(1);
-    auto afl = motor_manager->CreateMotor(2);
-    auto abr = motor_manager->CreateMotor(3);
-    auto abl = motor_manager->CreateMotor(4);
+    motor_front_right = motor_manager->CreateMotor(16);
+    motor_front_left = motor_manager->CreateMotor(17);
+    motor_back_right = motor_manager->CreateMotor(18);
+    motor_back_left = motor_manager->CreateMotor(19);
 }
 
 
@@ -49,5 +126,5 @@ void axis_handler(const GamePad*obj, AxisNames axis, float value)
 
 void button_handler(const GamePad* obj, ButtonNames button, bool value)
 {
-  
+
 }

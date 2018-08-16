@@ -6,9 +6,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-//#include <wiringPi.h>
-//#include <wiringPiI2C.h>
-//#include <wiringSerial.h>
+#include <wiringPi.h>
+#include <wiringPiI2C.h>
+#include <wiringSerial.h>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -29,7 +29,7 @@ const static string cmd_reset = "rst";
 const static string cmd_stop = "stop";
 
 MotorManager::MotorManager(const char* filename, int rate) {
-   // fd = serialOpen(filename, rate);
+    fd = serialOpen(filename, rate);
     if (fd < 0) {
         printf("can not open serialport\n");
         exit(1);
@@ -42,7 +42,7 @@ MotorManager::MotorManager(const char* filename, int rate) {
 MotorManager::~MotorManager() {
     if (fd >= 0) {
         //swap config
-      //  serialClose(fd);
+        serialClose(fd);
         printf("serial port closed");
     }
 }
@@ -61,12 +61,13 @@ motor_sptr MotorManager::CreateMotor(address_t addr){
 }
 
 void MotorManager::Write(const std::string& text) {
-   // serialPrintf(fd, text.c_str());
+    serialPrintf(fd, text.c_str());
 }
 
 void MotorManager::Command(const std::string& command) {
-  //  serialPrintf(fd, command.c_str());
-    //serialPrintf(fd,cmd_newline);
+    serialPrintf(fd, command.c_str());
+    cout << command << endl;
+    serialPrintf(fd,cmd_newline.c_str());
 }
 
 void MotorManager::Synchronize() {
@@ -84,6 +85,7 @@ void Motor::Duty(float value) {
     stringstream ss;
     ss << cmd_duty << ' ' << value;
     parent->Command(ss.str());
+    delay(1);
 }
 
 void Motor::AsyncRPM(float value) {
