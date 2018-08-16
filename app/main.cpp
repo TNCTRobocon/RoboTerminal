@@ -15,7 +15,7 @@
 #include <bits/unique_ptr.h>
 
 #include <thread>
-
+#include <memory>
 using namespace std;
 
 static motor_sptr motor_front_right{nullptr}, motor_front_left{nullptr}, motor_back_right{nullptr}, motor_back_left{nullptr};
@@ -26,15 +26,11 @@ int main()
 
     //GamePad pad("/dev/input/js0");
     motor_init();
-/*
+
     //Trigger Handle
-    pad.SetButtonChangedEvent(button_handler);
-    pad.SetAxisChangedEvent(axis_handler);
+    //pad.SetButtonChangedEvent(button_handler);
+    //pad.SetAxisChangedEvent(axis_handler);
 
-    while (1) {
-
-    }
-    */
 
 
     /*
@@ -56,57 +52,10 @@ int main()
     return 0;
 */
 
-/*
-  auto mae = [](){
-    motor_front_right->Duty(0.6);
-    motor_front_left->Duty(0.6);
-    motor_back_right->Duty(0.6);
-    motor_back_left->Duty(0.6);
-  };
-  auto ushiro = [](){
-    motor_front_right->Duty(-0.6);
-    motor_front_left->Duty(-0.6);
-    motor_back_right->Duty(-0.6);
-    motor_back_left->Duty(-0.6);
-  };
-  auto hidari = [](){
-    motor_front_right->Duty(-0.6);
-    motor_front_left->Duty(0.6);
-    motor_back_right->Duty(0.6);
-    motor_back_left->Duty(-0.6);
-  };
-  auto migi = [](){
-    motor_front_right->Duty(0.6);
-    motor_front_left->Duty(-0.6);
-    motor_back_right->Duty(-0.6);
-    motor_back_left->Duty(0.6);
-  };
-  auto stop = [](){
-    motor_front_right->Duty(0);
-    motor_front_left->Duty(0);
-    motor_back_right->Duty(0);
-    motor_back_left->Duty(0);
-  };
-  */
   while(1){
-    /*
-      mae();
-      delay(1000);
-      stop();
-      delay(1000);
-      ushiro();
-      delay(1000);
-      stop();
-      delay(1000);
-      hidari();
-      delay(1000);
-      stop();
-      delay(1000);
-      migi();
-      delay(1000);
-      stop();
-      delay(1000);
-      */
+    for (auto it=make_unique<move_stop>();it!=null;it=(*it)()->next()){
+      //状態の強制移行処理
+    }
   }
 }
 
