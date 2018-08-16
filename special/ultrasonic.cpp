@@ -1,6 +1,7 @@
 /*
 	module : 28015 REV B
 */
+#if 0
 #include "ultrasonic.hpp"
 #include <stdio.h>
 #include <wiringPi.h>
@@ -43,3 +44,4 @@ void Sonic::operator()(){
 		}
 	}
 }
+#endif

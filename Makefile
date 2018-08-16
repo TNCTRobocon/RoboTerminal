@@ -9,12 +9,15 @@ CXXFLAGS ?= -std=c++17 -Wall -g -O2 -pipe $(INC)
 LDFLAGS ?= -lm -L. -pthread
 RM = rm
 #rootに入るソースコードはここで登録する
-SUBDIR :=app general special #ここでソースコードが入るディレクトリを指定せよ
-SRCS := $(foreach it,$(SUBDIR),$(wildcard $(it)/*.cpp))
-OBJS := $(SRCS:%.cpp=%.o)
+SRC_ROOT :=.
+SRC_DIRS :=app general special #ここでソースコードが入るディレクトリを指定せよ
+OBJ_ROOT :=obj
+SRCS := $(foreach it,$(SRC_DIRS),$(wildcard $(it)/*.cpp))
+OBJS := $(addprefix $(OBJ_ROOT)/, $(SRCS:.cpp=.o)) 
+OBJ_DIRS:= $(addprefix $(OBJ_ROOT)/, $(SRC_DIRS)) 
 DEPS := $(SRCS:%.cpp=%.d)
 TARGET := joyterm
--include $(DEPS)
+
 #機能の定義
 .PHONY:all clear run
 all:$(TARGET)
@@ -24,9 +27,11 @@ $(TARGET):$(OBJS)
 	$(CXX) $(LDFLAGS) $(OBJS) -o $(TARGET)
 %.o: %.c
 	$(CC) $(CFLAGS) -c -MMD -MP $< -o$@
-%.o: %.cpp
+$(OBJ_ROOT)/%.o:$(SRC_ROOT)/%.cpp
+	@if [ ! -e `dirname $@` ]; then mkdir -p `dirname $@`; fi
 	$(CXX) $(CXXFLAGS) -c -MMD -MP $< -o$@
 clear:
-	@$(RM) $(DEPS) 
-	@$(RM) $(OBJS) 
-	@$(RM) $(TARGET)
+	-@$(RM) $(DEPS) 
+	-@$(RM) $(OBJS) 
+	-@$(RM) $(TARGET)
+-include $(DEPS)
