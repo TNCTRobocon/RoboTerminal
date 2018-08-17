@@ -2,6 +2,7 @@
 #include <general/gamepad.hpp>
 #include <general/motor.hpp>
 #include <special/ultrasonic.hpp>
+#include <app/interface.hpp>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,14 +25,14 @@ static motor_manager_sptr motor_manager{nullptr};
 int main()
 {
 
-    //GamePad pad("/dev/input/js0");
+    GamePad pad("/dev/input/js0");
     motor_init();
 
     //Trigger Handle
-    //pad.SetButtonChangedEvent(button_handler);
-    //pad.SetAxisChangedEvent(axis_handler);
+    pad.SetButtonChangedEvent(button_handler);
+    pad.SetAxisChangedEvent(axis_handler);
 
-
+    pad.Status();
 
     /*
     if(wiringPiSetup()!=0){
@@ -53,7 +54,11 @@ int main()
 */
 
   while(1){
-    for (auto it=make_unique<move_stop>();it!=null;it=(*it)()->next()){
+    if(pad.GetButton(ButtonNames::A)){
+      printf("konnichiha\n");
+    }
+
+    for (auto it=make_unique<move_stop>();it!=nullptr;it=(*it)()->next()){
       //状態の強制移行処理
     }
   }
