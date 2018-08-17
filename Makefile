@@ -4,8 +4,9 @@
 CC ?= gcc
 CFLAGS ?= -Wall -g -O2 -pipe
 CXX ?= g++
-CXXFLAGS ?= -std=c++11 -Wall -g -O2 -pipe -c -I$(HOME)/lib/wiringPi/wiringPi/ -I.
-LDFLAGS ?= -lm -L. -lwiringPi#-lwiringPi
+CXXFLAGS ?= -std=c++11 -Wall -g -O2 -pipe -c
+#-I$(HOME)/lib/wiringPi/wiringPi/ -I. is removed from CXXFLAGS
+LDFLAGS ?= -lm -lboost_system#-L. -lwiringPi#-lwiringPi
 
 SRCS :=
 REL := app/

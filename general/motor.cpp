@@ -6,9 +6,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <wiringPi.h>
-#include <wiringPiI2C.h>
-#include <wiringSerial.h>
+///RasPi Only
+//#include <wiringPi.h>
+//#include <wiringPiI2C.h>
+//#include <wiringSerial.h>
+
+#include <boost/asio.hpp>
+
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -28,7 +32,15 @@ const static string cmd_angle = "sc";
 const static string cmd_reset = "rst";
 const static string cmd_stop = "stop";
 
-MotorManager::MotorManager(const char* filename, int rate) {
+MotorManager::MotorManager(const char* filename, int rate) : serial(io, filename){
+  //boost::asio::io_service io;
+  //boost::asio::serial_port serial(io, filename); // TODO シリアルポートを開くためのファイル名を正しく設定
+  serial.set_option(boost::asio::serial_port_base::baud_rate(rate));
+  printf("serialport opened successfully\n");
+  Command(cmd_reset);
+
+
+  /* RasPi Only Version
     fd = serialOpen(filename, rate);
     if (fd < 0) {
         printf("can not open serialport\n");
@@ -37,14 +49,19 @@ MotorManager::MotorManager(const char* filename, int rate) {
         printf("success open serialport\n");
         Command(cmd_reset);
     }
+  */
 }
 
 MotorManager::~MotorManager() {
+  serial.close();
+  printf("serialport closed");
+  /*
     if (fd >= 0) {
         //swap config
         serialClose(fd);
         printf("serial port closed");
     }
+  */
 }
 
 motor_sptr MotorManager::CreateMotor(address_t addr){
@@ -61,12 +78,17 @@ motor_sptr MotorManager::CreateMotor(address_t addr){
 }
 
 void MotorManager::Write(const std::string& text) {
-    serialPrintf(fd, text.c_str());
+    boost::asio::write(serial, boost::asio::buffer(text));
+    //serialPrintf(fd, text.c_str());
 }
 
 void MotorManager::Command(const std::string& command) {
+  boost::asio::write(serial, boost::asio::buffer(command));
+
+  /* RasPi Only
     serialPrintf(fd, command.c_str());
     //serialPrintf(fd,cmd_newline);
+  */
 }
 
 void MotorManager::Synchronize() {

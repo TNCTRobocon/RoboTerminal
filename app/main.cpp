@@ -7,9 +7,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <wiringPi.h>
-#include <wiringPiI2C.h>
-#include <wiringSerial.h>
+//#include <wiringPi.h>
+//#include <wiringPiI2C.h>
+//#include <wiringSerial.h>
 #include <string.h>
 #include <bits/unique_ptr.h>
 
@@ -52,5 +52,5 @@ void axis_handler(const GamePad*obj, AxisNames axis, float value)
 
 void button_handler(const GamePad* obj, ButtonNames button, bool value)
 {
-  
+
 }
