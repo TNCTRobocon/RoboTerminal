@@ -4,7 +4,7 @@
 CC ?= gcc
 CFLAGS ?= -Wall -g -O2 -pipe
 CXX ?= g++
-CXXFLAGS ?= -std=c++11 -Wall -g -O2 -pipe -c -I$(HOME)/lib/wiringPi/wiringPi/ -I.
+CXXFLAGS ?= -std=c++17 -Wall -g -O2 -pipe -c -I$(HOME)/lib/wiringPi/wiringPi/ -I.
 LDFLAGS ?= -lm -L. -lwiringPi#-lwiringPi
 
 SRCS :=
@@ -16,7 +16,7 @@ REL := special/
 include $(REL)Makefile
 
 
-OBJS := main.o gamepad.o motor.o ultrasonic.o
+OBJS := main.o gamepad.o motor.o ultrasonic.o interface.o
 
 TARGET = joyterm
 
@@ -27,7 +27,7 @@ all:$(TARGET)
 $(TARGET):$(OBJS)
 	$(CXX) -o $@ $^ -pthread $(LDFLAGS)
 
-main.o:app/main.cpp app/main.hpp general/gamepad.hpp general/motor.hpp special/ultrasonic.hpp
+main.o:app/main.cpp app/main.hpp general/gamepad.hpp general/motor.hpp special/ultrasonic.hpp app/interface.hpp
 	$(CXX) $(CXXFLAGS) $<
 app/main.hpp:
 gamepad.o:general/gamepad.cpp general/gamepad.hpp
@@ -39,7 +39,9 @@ general/motor.hpp:
 ultrasonic.o:special/ultrasonic.cpp special/ultrasonic.hpp
 	$(CXX) $(CXXFLAGS) $<
 special/ultrasonic.hpp:
-
+interface.o:app/interface.cpp app/interface.hpp
+	$(CXX) $(CXXFLAGS) $<
+app/interface.hpp:
 
 run:$(TARGET)
 	@./$(TARGET)
