@@ -6,11 +6,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-///RasPi Only
-//#include <wiringPi.h>
-//#include <wiringPiI2C.h>
-//#include <wiringSerial.h>
-
 #include <boost/asio.hpp>
 
 #include <iostream>

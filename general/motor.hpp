@@ -3,10 +3,6 @@
 #include <stdint.h>
 #include <string>
 
-//#include <wiringPi.h>
-//#include <wiringPiI2C.h>
-//#include <wiringSerial.h>
-
 #include <boost/asio.hpp>
 
 #include <vector>
