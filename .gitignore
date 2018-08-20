@@ -1,0 +1,7 @@
+/trash
+*.o
+*.d
+/joyterm
+/obj
+nbproject/
+/.vscode/

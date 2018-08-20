@@ -2,67 +2,36 @@
 
 # Complier Options
 CC ?= gcc
-CFLAGS ?= -Wall -g -O2 -pipe
+CFLAGS ?= -Wall -std=c99 -g -O2 -pipe
 CXX ?= g++
-CXXFLAGS ?= -std=c++17 -Wall -g -O2 -pipe -c -I$(HOME)/lib/wiringPi/wiringPi/ -I.
-LDFLAGS ?= -lm -L. -lwiringPi#-lwiringPi
+INC ?= -I.
+CXXFLAGS ?= -std=c++17 -Wall -g -O2 -pipe $(INC)
+LDFLAGS ?= -lm -L. -pthread
+RM = rm
+#rootに入るソースコードはここで登録する
+SRC_ROOT :=.
+SRC_DIRS :=app general special #ここでソースコードが入るディレクトリを指定せよ
+OBJ_ROOT :=obj
+SRCS := $(foreach it,$(SRC_DIRS),$(wildcard $(it)/*.cpp))
+OBJS := $(addprefix $(OBJ_ROOT)/, $(SRCS:.cpp=.o)) 
+OBJ_DIRS:= $(addprefix $(OBJ_ROOT)/, $(SRC_DIRS)) 
+DEPS := $(SRCS:%.cpp=%.d)
+TARGET := joyterm
 
-SRCS :=
-REL := app/
-include $(REL)Makefile
-REL := general/
-include $(REL)Makefile
-REL := special/
-include $(REL)Makefile
-
-
-OBJS := main.o gamepad.o motor.o ultrasonic.o interface.o
-
-TARGET = joyterm
-
-#function define
-.PHONY:	run clean all x86
-
+#機能の定義
+.PHONY:all clear run
 all:$(TARGET)
+run:all
+	./$(TARGET)
 $(TARGET):$(OBJS)
-	$(CXX) -o $@ $^ -pthread $(LDFLAGS)
-
-main.o:app/main.cpp app/main.hpp general/gamepad.hpp general/motor.hpp special/ultrasonic.hpp app/interface.hpp
-	$(CXX) $(CXXFLAGS) $<
-app/main.hpp:
-gamepad.o:general/gamepad.cpp general/gamepad.hpp
-	$(CXX) $(CXXFLAGS) $<
-general/gamepad.hpp:
-motor.o:general/motor.cpp general/motor.hpp
-	$(CXX) $(CXXFLAGS) $<
-general/motor.hpp:
-ultrasonic.o:special/ultrasonic.cpp special/ultrasonic.hpp
-	$(CXX) $(CXXFLAGS) $<
-special/ultrasonic.hpp:
-interface.o:app/interface.cpp app/interface.hpp
-	$(CXX) $(CXXFLAGS) $<
-app/interface.hpp:
-
-run:$(TARGET)
-	@./$(TARGET)
-
-debug:$(TARGET)
-	@gdb $(TARGET)
-
-clean:
-	rm $(OBJS) $(TARGET)
-
-#x86:$(TARGET)
-#    SDKTARGETSYSROOT?=/home/teru/bin/raspi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin
-#    ARCH:=arm
-#    CROSS_COMPILE:=$(SDKTARGETSYSROOT)/arm-linux-gnueabihf-
-#    AS:=$(CROSS_COMPILE)as
-#    LD:=$(CROSS_COMPILE)ld
-#    CC:=$(CROSS_COMPILE)gcc
-#    CXX:=$(CROSS_COMPILE)g++
-#    CPP:=$(CROSS_COMPILE)gcc" -E"
-#    AR:=$(CROSS_COMPILE)ar
-#    NM:=$(CROSS_COMPILE)nm
-#    STRIP:=$(CROSS_COMPILE)strip
-#    OBJCOPY:=$(CROSS_COMPILE)objcopy
-#    OBJDUMP:=$(CROSS_COMPILE)objdump
+	$(CXX) $(LDFLAGS) $(OBJS) -o $(TARGET)
+%.o: %.c
+	$(CC) $(CFLAGS) -c -MMD -MP $< -o$@
+$(OBJ_ROOT)/%.o:$(SRC_ROOT)/%.cpp
+	@if [ ! -e `dirname $@` ]; then mkdir -p `dirname $@`; fi
+	$(CXX) $(CXXFLAGS) -c -MMD -MP $< -o$@
+clear:
+	-@$(RM) $(DEPS) 
+	-@$(RM) $(OBJS) 
+	-@$(RM) $(TARGET)
+-include $(DEPS)

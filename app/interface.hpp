@@ -6,6 +6,9 @@ class move_stop;
 
 class manual{
 public:
+  manual()=default;
+  manual(const manual&)=default;
+  virtual ~manual()=default;
   virtual void operator()()=0;
   virtual manual* next()=0;
 };

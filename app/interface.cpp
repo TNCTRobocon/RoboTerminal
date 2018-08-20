@@ -59,26 +59,26 @@ void move_delay::operator()(){
 }
 
 
-virtual manual* move_front::next(){
+manual* move_front::next(){
   return new move_stop;
 };
 
-virtual manual* move_back::next(){
+manual* move_back::next(){
   return new move_stop;
 };
 
-virtual manual* move_right::next(){
+manual* move_right::next(){
   return new move_stop;
 };
 
-virtual manual* move_left::next(){
+manual* move_left::next(){
   return new move_stop;
 };
 
-virtual manual* move_stop::next(){
+manual* move_stop::next(){
   return nullptr;
 };
 
-virtual manual* move_delay::next(){
+manual* move_delay::next(){
   return new move_stop;
 };
