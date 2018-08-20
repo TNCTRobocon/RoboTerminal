@@ -25,7 +25,7 @@ static inline const char* GetButtonName(ButtonNames name){
 	const char* names[]= {"A","B","X","Y","LB","RB","BACK","START","CROSS","AXISL","AXISR"};
 	int idx=(int)name;
 	const int cnt=sizeof(names)/sizeof(names[0]);
-	return idx<cnt?names[idx]:"Unkwnown";
+	return idx<cnt?names[idx]:"Unknown";
 }
 
 class GamePad{
@@ -56,6 +56,7 @@ public:
 
     //状態確認
     inline bool GetButton(int id)const{
+      //printf("%d%d\n",id,buttons[id]);
         return id<button_num?buttons[id]:false;
     }
     inline bool GetButton(ButtonNames name)const{
@@ -100,6 +101,6 @@ public:
 	}
 
 	inline int PadButtonHandler(int a,ButtonNames name,void(*Btn)(int));
-	
+
 	inline int PadAxisHandler(int b,AxisNames name,void(*Axis)(int));
 };

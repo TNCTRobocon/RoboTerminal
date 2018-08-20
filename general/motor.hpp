@@ -3,9 +3,8 @@
 #include <stdint.h>
 #include <string>
 
-//#include <wiringPi.h>
-//#include <wiringPiI2C.h>
-//#include <wiringSerial.h>
+#include <boost/asio.hpp>
+
 #include <vector>
 
 class Motor;
@@ -18,20 +17,21 @@ using motor_manager_sptr= std::shared_ptr<MotorManager>;
 
 class MotorManager{
 private:
-    int fd;//シリアルポートのファイル識別時
+    boost::asio::io_service io;//int fd;//シリアルポートのファイル識別時
+    boost::asio::serial_port serial;
     MotorManager(const char* filename,int rate);
     std::vector<motor_sptr> motors;
 public:
     static inline std::unique_ptr<MotorManager> GenerateMotorManeger(const char *filename,int rate){
 		return std::unique_ptr<MotorManager>(new MotorManager (filename,rate));
 }
-	
+
     virtual ~MotorManager();
-   
+
     motor_sptr CreateMotor(address_t);//モーターを生成する
     //void Remove(address_t);//モーターを消去する。
     //motor_sptr GetMotor(address_t);//生成済みのモーターを取得する
-    
+
     void Write(const std::string&);
 	void Command(const std::string&);
 	void Synchronize();
