@@ -53,15 +53,17 @@ int main()
     return 0;
 */
 
-  while(1){
+  //while(1){
     if(pad.GetButton(ButtonNames::A)){
       printf("konnichiha\n");
     }
+    auto it=make_unique<manual>();
+      while(it!=nullptr){
+        (*it)();
+        it = move(it->next());
+      }
 
-    for (auto it=make_unique<move_stop>();it!=nullptr;it=(*it)()->next()){
-      //状態の強制移行処理
-    }
-  }
+  //}
 }
 
 void motor_init()

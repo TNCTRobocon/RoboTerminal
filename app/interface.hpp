@@ -6,14 +6,14 @@ class move_stop;
 
 class manual{
 public:
-  virtual void operator()=0;
-  virtual std::unique_ptr<move_stop> next();
+  virtual void operator()()=0;
+  virtual std::unique_ptr<manual> next()=0;
 };
 
 class move_front:public manual{
 public:
   virtual void operator()();
-  virtual std::unique_ptr<move_stop> next(){
+  virtual std::unique_ptr<manual> next(){
     return std::make_unique<move_stop>();
   };
 };
@@ -21,7 +21,7 @@ public:
 class move_back:public manual{
 public:
   virtual void operator()();
-  virtual std::unique_ptr<move_stop> next(){
+  virtual std::unique_ptr<manual> next(){
     return std::make_unique<move_stop>();
   };
 };
@@ -29,7 +29,7 @@ public:
 class move_left:public manual{
 public:
   virtual void operator()();
-  virtual std::unique_ptr<move_stop> next(){
+  virtual std::unique_ptr<manual> next(){
     return std::make_unique<move_stop>();
   };
 };
@@ -37,7 +37,7 @@ public:
 class move_right:public manual{
 public:
   virtual void operator()();
-  virtual std::unique_ptr<move_stop> next(){
+  virtual std::unique_ptr<manual> next(){
     return std::make_unique<move_stop>();
   };
 };
@@ -45,15 +45,15 @@ public:
 class move_stop:public manual{
 public:
   virtual void operator()();
-  virtual std::unique_ptr<move_stop> next(){
-    return std::make_unique<move_stop>();
+  virtual std::unique_ptr<manual> next(){
+    return nullptr;
   };
 };
 
 class move_delay:public manual{
 public:
   virtual void operator()();
-  virtual std::unique_ptr<move_stop> next(){
+  virtual std::unique_ptr<manual> next(){
     return std::make_unique<move_stop>();
   };
 };
