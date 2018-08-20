@@ -2,15 +2,16 @@
 
 # Complier Options
 CC ?= gcc
-CFLAGS ?= -Wall -std=c99 -g -O2 -pipe
+CFLAGS ?= -Wall -std=c11 -g -O2 -pipe
 CXX ?= g++
 INC ?= -I.
+LDFLAGS ?= -lm -L. -pthread -lboost_system
 CXXFLAGS ?= -std=c++17 -Wall -g -O2 -pipe $(INC)
-LDFLAGS ?= -lm -L. -pthread
+
 RM = rm
 #rootに入るソースコードはここで登録する
 SRC_ROOT :=.
-SRC_DIRS :=app general special #ここでソースコードが入るディレクトリを指定せよ
+SRC_DIRS :=app general #special #ここでソースコードが入るディレクトリを指定せよ
 OBJ_ROOT :=obj
 SRCS := $(foreach it,$(SRC_DIRS),$(wildcard $(it)/*.cpp))
 OBJS := $(addprefix $(OBJ_ROOT)/, $(SRCS:.cpp=.o)) 
@@ -24,7 +25,7 @@ all:$(TARGET)
 run:all
 	./$(TARGET)
 $(TARGET):$(OBJS)
-	$(CXX) $(LDFLAGS) $(OBJS) -o $(TARGET)
+	$(CXX) $(OBJS) -o $(TARGET) $(LDFLAGS)
 %.o: %.c
 	$(CC) $(CFLAGS) -c -MMD -MP $< -o$@
 $(OBJ_ROOT)/%.o:$(SRC_ROOT)/%.cpp

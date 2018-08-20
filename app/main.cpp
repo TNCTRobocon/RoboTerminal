@@ -9,9 +9,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <wiringPi.h>
-#include <wiringPiI2C.h>
-#include <wiringSerial.h>
+
 #include <string.h>
 #include <bits/unique_ptr.h>
 
@@ -52,7 +50,7 @@ int main()
     t1.join();
     return 0;
 */
-
+    
   //while(1){
     if(pad.GetButton(ButtonNames::A)){
       printf("konnichiha\n");
@@ -62,6 +60,7 @@ int main()
         (*it)();
         it = move(it->next());
       }*/
+      
       for(manual* it=new move_stop();it!=nullptr;){
         manual* next=it->next();
         if(next!=it){
@@ -69,14 +68,15 @@ int main()
           it = next;
         }
       }
-
+printf("test");
   //}
 }
 
 void motor_init()
 {
     //モーターの初期化
-    motor_manager = move(MotorManager::GenerateMotorManeger("/dev/ttyS0", 115200));
+    //motor_manager = move(MotorManager::GenerateMotorManeger("/dev/ttyS0", 115200));
+    motor_manager = move(MotorManager::GenerateMotorManeger("/dev/ttyUSB0", 115200));//パソコンでの実行環境
     //モーターにアドレスを割り当てるTODO正しい値を代入すること
     motor_front_right = motor_manager->CreateMotor(16);
     motor_front_left = motor_manager->CreateMotor(17);

@@ -6,9 +6,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <wiringPi.h>
-#include <wiringPiI2C.h>
-#include <wiringSerial.h>
+#include <boost/asio.hpp>
+
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -28,23 +27,15 @@ const static string cmd_angle = "sc";
 const static string cmd_reset = "rst";
 const static string cmd_stop = "stop";
 
-MotorManager::MotorManager(const char* filename, int rate) {
-    fd = serialOpen(filename, rate);
-    if (fd < 0) {
-        printf("can not open serialport\n");
-        exit(1);
-    } else {
-        printf("success open serialport\n");
-        Command(cmd_reset);
-    }
+MotorManager::MotorManager(const char* filename, int rate) : serial(io, filename){
+  serial.set_option(boost::asio::serial_port_base::baud_rate(rate));
+  printf("serialport opened successfully\n");
+  Command(cmd_reset);
 }
 
 MotorManager::~MotorManager() {
-    if (fd >= 0) {
-        //swap config
-        serialClose(fd);
-        printf("serial port closed");
-    }
+  serial.close();
+  printf("serialport closed");
 }
 
 motor_sptr MotorManager::CreateMotor(address_t addr){
@@ -61,13 +52,11 @@ motor_sptr MotorManager::CreateMotor(address_t addr){
 }
 
 void MotorManager::Write(const std::string& text) {
-    serialPrintf(fd, text.c_str());
+    boost::asio::write(serial, boost::asio::buffer(text));
 }
 
 void MotorManager::Command(const std::string& command) {
-    serialPrintf(fd, command.c_str());
-    cout << command << endl;
-    serialPrintf(fd,cmd_newline.c_str());
+  boost::asio::write(serial, boost::asio::buffer(command));
 }
 
 void MotorManager::Synchronize() {
@@ -85,7 +74,6 @@ void Motor::Duty(float value) {
     stringstream ss;
     ss << cmd_duty << ' ' << value;
     parent->Command(ss.str());
-    delay(1);
 }
 
 void Motor::AsyncRPM(float value) {

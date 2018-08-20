@@ -10,11 +10,6 @@
 #include <stdint.h>
 #include <thread>
 
-
-#include <wiringPi.h>
-#include <wiringPiI2C.h>
-#include <wiringSerial.h>
-
 using namespace std;
 
 GamePad::GamePad(const char* filename){
