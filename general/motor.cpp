@@ -26,6 +26,7 @@ const static string cmd_sync = "go";
 const static string cmd_angle = "sc";
 const static string cmd_reset = "rst";
 const static string cmd_stop = "stop";
+const static string cmd_feature = "ft";
 
 MotorManager::MotorManager(const char* filename, int rate) : serial(io, filename){
   serial.set_option(boost::asio::serial_port_base::baud_rate(rate));
@@ -51,11 +52,11 @@ motor_sptr MotorManager::CreateMotor(address_t addr){
     return sptr;
 }
 
-void MotorManager::Write(const std::string& text) {
+void MotorManager::Write(const std::string& text) { //渡された文字をそのまま送信
     boost::asio::write(serial, boost::asio::buffer(text));
 }
 
-void MotorManager::Command(const std::string& command) {
+void MotorManager::Command(const std::string& command) { //各種コマンドから呼ばれる。指定したconst文字列+delimiterを送信
   boost::asio::write(serial, boost::asio::buffer(command));
 }
 
@@ -94,6 +95,11 @@ void Motor::RPM(float value) {
 void Motor::Stop() {
     Select();
     parent->Command(cmd_stop);
+}
+
+void Motor::Feature() {
+    Select();
+    parent->Command(cmd_feature);
 }
 
 Motor::Motor(MotorManager* p, address_t adr) {

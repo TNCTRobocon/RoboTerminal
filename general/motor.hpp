@@ -67,6 +67,7 @@ public:
     void AsyncRPM(float rpm);
     virtual void RPM(float rpm);
     virtual void  Stop();
+    virtual void Feature();
     bool operator <(const Motor& cmp)const{
         return address<cmp.address;
     }
