@@ -57,10 +57,17 @@ int main()
     if(pad.GetButton(ButtonNames::A)){
       printf("konnichiha\n");
     }
-    auto it=make_unique<manual>();
+    /*auto it=make_unique<manual>();
       while(it!=nullptr){
         (*it)();
         it = move(it->next());
+      }*/
+      for(manual* it=new move_stop();it!=nullptr;){
+        manual* next=it->next();
+        if(next!=it){
+          delete it;
+          it = next;
+        }
       }
 
   //}
