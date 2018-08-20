@@ -6,7 +6,7 @@ CFLAGS ?= -Wall -std=c11 -g -O2 -pipe
 CXX ?= g++
 INC ?= -I.
 LDFLAGS ?= -lm -L. -pthread -lboost_system
-CXXFLAGS ?= -std=c++17 -Wall -g -O2 -pipe $(INC)
+CXXFLAGS ?= -std=c++14 -Wall -g -O2 -pipe $(INC)
 
 RM = rm
 #rootに入るソースコードはここで登録する

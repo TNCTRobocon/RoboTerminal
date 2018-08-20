@@ -68,7 +68,7 @@ int main()
           it = next;
         }
       }
-printf("test");
+
   //}
 }
 
