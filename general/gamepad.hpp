@@ -56,6 +56,7 @@ public:
 
     //状態確認
     inline bool GetButton(int id)const{
+      //printf("%d%d\n",id,buttons[id]);
         return id<button_num?buttons[id]:false;
     }
     inline bool GetButton(ButtonNames name)const{
