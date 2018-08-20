@@ -1,9 +1,9 @@
 #!/usr/bin/make
 
 # Complier Options
-CC ?= gcc
+CC ?= clang
 CFLAGS ?= -Wall -std=c11 -g -O2 -pipe
-CXX ?= g++
+CXX ?= clang++
 INC ?= -I.
 LDFLAGS ?= -lm -L. -pthread -lboost_system
 CXXFLAGS ?= -std=c++17 -Wall -g -O2 -pipe $(INC)
