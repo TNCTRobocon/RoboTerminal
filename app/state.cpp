@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "interface.hpp"
+#include "state.hpp"
 
 //DutyからAsyncRPMに変える。
 

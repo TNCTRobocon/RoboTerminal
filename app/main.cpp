@@ -1,4 +1,3 @@
-#include "main.hpp"
 #include <general/gamepad.hpp>
 #include <general/motor.hpp>
 #include <signal.h>
@@ -14,7 +13,9 @@ using namespace std;
 
 static motor_sptr motor_front_right{nullptr}, motor_front_left{nullptr}, motor_back_right{nullptr}, motor_back_left{nullptr};
 static motor_manager_sptr motor_manager{nullptr};
-
+void motor_init();
+void axis_handler(const GamePad*obj, AxisNames axis, float value);
+void button_handler(const GamePad* obj, ButtonNames button, bool value);
 int main()
 {
     GamePad pad("/dev/input/js0");
@@ -33,7 +34,7 @@ int main()
 void motor_init()
 {
     //モーターの初期化
-    motor_manager = move(MotorManager::GenerateMotorManeger("/dev/ttyS0", 115200));
+    motor_manager = move(MotorManager::GenerateMotorManeger("/dev/ttyUSB0", 115200));
     //モーターにアドレスを割り当てるTODO正しい値を代入すること
     auto afr = motor_manager->CreateMotor(1);
     auto afl = motor_manager->CreateMotor(2);
