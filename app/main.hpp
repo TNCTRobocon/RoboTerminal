@@ -3,5 +3,5 @@
 #include <unordered_map>
 
 struct Argument {
-  Argument(int argc, char** argv);
+    Argument(int argc, char** argv);
 };
