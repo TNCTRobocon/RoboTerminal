@@ -53,10 +53,8 @@ void Settings::Update() {
     for (const auto& record : table) {
         auto comp = table_old.find(record.first);
         if (comp == table_old.end()) {
-            cout << "x" << endl;
             diff[record.first] = record.second;
         } else if (record.second != comp->second) {
-            cout << "y" << endl;
             diff[record.first] = record.second;
         }
     }

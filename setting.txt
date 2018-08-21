@@ -1,0 +1,4 @@
+# SerialPortの設定
+serial = /dev/ttyUSB0
+# GamePadの設定
+game = /dev/input/js0

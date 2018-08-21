@@ -12,9 +12,8 @@ static unique_ptr<Settings> setting{nullptr};
 int main(int argc, char** argv) {
     argument.reset(new Argument(argc,argv));    
     setting.reset(new Settings("setting.txt"));
-    cout <<setting->Read("a").value_or("c")<<endl;
-    setting->Write("a","b");
-    cout <<setting->Read("a").value_or("c")<<endl;
+    cout <<setting->Read("game").value_or("c")<<endl;
+    cout <<setting->Read("serial").value_or("c")<<endl;
     setting->Update();
     
     return 0;
