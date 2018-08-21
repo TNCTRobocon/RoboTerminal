@@ -30,11 +30,11 @@ void Report::Write(ReportType type,
     cout << "\e[" << (int)type<<"m"<<type_text<<"@"<<group<<":"<<message<<"\e[m"<<endl;
 
     //ファイルに記録する
-    ofstream log(filename);
+    ofstream log(filename,ios::app);
     if (log.fail()){
         return ;
     }
-    log <<type_text<<","<<group<<","<<message;
+    log <<type_text<<","<<group<<","<<message<<endl;
 
 }
 
