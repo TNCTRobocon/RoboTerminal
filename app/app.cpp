@@ -1,8 +1,8 @@
 #include "app.hpp"
 #include <signal.h>
-#include <general/gamepad.hpp>
 #include <iostream>
 using namespace std;
+using namespace Util;
 //開放を自動化するためにスマートポインタで実装する。
 shared_ptr<Argument> argument{nullptr};
 shared_ptr<Settings> setting{nullptr};
@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
     report->Info(ReportGroup::System, "Wake Up");
     setting.reset(new Settings("setting.config"));
     //ゲームパッドを初期化する
-     cout<<"t"<<endl;
+    cout << "t" << endl;
     auto gamepad_location = setting->Read("gamepad");
     if (gamepad_location) {
         gamepad.reset(new GamePad(*gamepad_location));
@@ -31,13 +31,13 @@ int main(int argc, char** argv) {
     }
 
     // MessageLoop
-   
+
     signal(SIGINT, singal_receiver);
-    
+
     for (is_continue = true; is_continue;) {
-        if (gamepad){
+        if (gamepad) {
             gamepad->Update();
-            cout<<gamepad->Status();
+            cout << gamepad->Status();
         }
     }
 

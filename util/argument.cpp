@@ -1,10 +1,10 @@
 #include "argument.hpp"
-#include <algorithm>
 #include <string.h>
-#include <sstream>
+#include <algorithm>
 #include <iostream>
+#include <sstream>
 using namespace std;
-
+namespace Util {
 Argument::Argument(int argc, char** argv) {
     //デコード開始
     location = argv[0];
@@ -54,3 +54,5 @@ optional<string> Argument::GetValue(const std::string& key) const {
         return std::nullopt;
     }
 }
+
+}  // namespace Util

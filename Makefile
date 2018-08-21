@@ -12,7 +12,7 @@ FORMATER ?= clang-format
 RM = rm
 #rootに入るソースコードはここで登録する
 SRC_ROOT :=.
-SRC_DIRS :=app general #special #ここでソースコードが入るディレクトリを指定せよ
+SRC_DIRS :=app general util#special #ここでソースコードが入るディレクトリを指定せよ
 OBJ_ROOT :=obj
 SRCS := $(foreach it,$(SRC_DIRS),$(wildcard $(it)/*.cpp))
 INCS := $(foreach it,$(SRC_DIRS),$(wildcard $(it)/*.hpp))

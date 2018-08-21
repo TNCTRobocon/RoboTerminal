@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+namespace Util {
+
 enum class ReportType : int {
     Info = 34,  // Blue
     Warn = 32,  // Yellow
@@ -59,3 +61,4 @@ public:
         Write(ReportType::Error, group, message);
     }
 };
+}  // namespace Util

@@ -4,6 +4,8 @@
 #include <sstream>
 
 using namespace std;
+
+namespace Util {
 constexpr char Settings::split;
 
 static inline void DeleteSpace(string& buf) {
@@ -68,3 +70,5 @@ void Settings::Update() {
     }
     stream.flush();
 }
+
+}  // namespace Util

@@ -12,12 +12,12 @@
 #include <iostream>
 #include <sstream>
 using namespace std;
-
+using namespace Util;
 constexpr size_t GamePad::button_size;
 constexpr size_t GamePad::axis_size;
 
-
-GamePad::GamePad(const string& filename) :buttons(button_size),axises(axis_size){
+GamePad::GamePad(const string& filename)
+    : buttons(button_size), axises(axis_size) {
     fd = open(filename.c_str(), O_RDONLY);
     if (fd < 0) {
         string message = "Cannot Open GamePad" + filename;
@@ -31,7 +31,7 @@ GamePad::GamePad(const string& filename) :buttons(button_size),axises(axis_size)
         fcntl(fd, F_SETFL, O_NONBLOCK);  // using non-blocking mode
         //表示
         stringstream ss;
-        ss << "Open GamePad:" << filename ;
+        ss << "Open GamePad:" << filename;
         if (report) {
             report->Info(ReportGroup::GamePad, ss.str());
         } else {
@@ -78,7 +78,7 @@ std::string GamePad::Status() const {
     //ボタン情報
     {
         auto it = buttons.begin();
-        ss << "button["<<buttons.size()<<"]:" << *it;
+        ss << "button[" << buttons.size() << "]:" << *it;
         for (; it != buttons.end(); it++) {
             ss << "," << *it;
         }
@@ -87,7 +87,7 @@ std::string GamePad::Status() const {
     {
         //スティック情報
         auto it = axises.begin();
-        ss << "axis["<<axises.size()<<"]:" << *it;
+        ss << "axis[" << axises.size() << "]:" << *it;
         for (; it != axises.end(); it++) {
             ss << "," << *it;
         }
