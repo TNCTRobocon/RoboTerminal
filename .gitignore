@@ -2,7 +2,6 @@
 *.o
 *.d
 *.log
-*.config
 /joyterm
 /obj
 nbproject/

@@ -18,10 +18,7 @@ string ToString(ReportType type) {
     }
 }
 
-string ToString(ReportGroup group) {
-    const static string table[] = {"Unknown", "None","System"};
-    return table[(int)group];
-}
+
 
 Report::Report(const std::string& _filename) : filename(_filename) {}
 

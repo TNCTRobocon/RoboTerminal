@@ -4,7 +4,7 @@
 #include <functional>
 #include <memory>
 #include <thread>
-
+#include <string>
 enum class AxisNames {
     LSX = 0,
     LSY = 1,
@@ -60,7 +60,7 @@ private:
 
     void Update();  //ここで非同期で値を取得する。
 public:
-    GamePad(const char* filename);
+    GamePad(const std::string& filename);
     virtual ~GamePad();
     void Status() const;  //標準入出力へ状態を表示
     //イベント関数設定

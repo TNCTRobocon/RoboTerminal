@@ -11,8 +11,8 @@
 #include <thread>
 using namespace std;
 
-GamePad::GamePad(const char* filename) {
-    fd = open(filename, O_RDONLY);
+GamePad::GamePad(const string& filename) {
+    fd = open(filename.c_str(), O_RDONLY);
     if (fd < 0) {
         perror("GamePad Cannot open\n");
         exit(1);

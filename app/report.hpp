@@ -11,9 +11,14 @@ enum class ReportGroup : int {
     Unknown,
     None,
     System,
+    GamePad,
     //随時追加していってください()
 };
-std::string ToString(ReportGroup);
+static inline const std::string& ToString(ReportGroup group) {
+    //随時追加していってください()
+    const static std::string table[] = {"Unknown", "None", "System", "GamePad"};
+    return table[(int)group];
+}
 
 class Report {
     const std::string filename;
