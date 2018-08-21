@@ -16,4 +16,5 @@ public:
     bool HasOption(char c) const { return options.find(c) != options.end(); }
     std::optional<std::string> GetValue(const std::string&) const;
     std::string ToString() const;
+    std::string GetLocation()const {return location;}
 };
