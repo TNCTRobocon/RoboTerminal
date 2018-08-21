@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <functional>
 #include <memory>
-#include <thread>
 #include <string>
 enum class AxisNames {
     LSX = 0,
@@ -48,7 +47,6 @@ static inline const char* GetButtonName(ButtonNames name) {
 class GamePad {
 private:
     int fd;  //ゲームパッドのファイル識別子
-    std::unique_ptr<std::thread> task{nullptr};
     int button_num{0}, axis_num{0};
     bool* buttons{nullptr};
     int* axises{nullptr};
@@ -58,10 +56,11 @@ private:
     button_event_t button_event{nullptr};
     axis_event_t axis_event{nullptr};
 
-    void Update();  //ここで非同期で値を取得する。
+    
 public:
     GamePad(const std::string& filename);
     virtual ~GamePad();
+    void Update();  //ここで値を取得する
     void Status() const;  //標準入出力へ状態を表示
     //イベント関数設定
     inline void SetButtonChangedEvent(const button_event_t& event = nullptr) {

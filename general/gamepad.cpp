@@ -8,7 +8,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <thread>
+#include <app/app.hpp>
+
 using namespace std;
 
 GamePad::GamePad(const string& filename) {
@@ -29,13 +30,7 @@ GamePad::GamePad(const string& filename) {
     buttons = new bool[button_num];
     axises = new int[axis_num];
     printf("name=%s button=%d,axis=%d\n", name, button_num, axis_num);
-
-    //イベント発生機構
-    button_event = nullptr;
-    axis_event = nullptr;
-
-    //非同期取得システム
-    task.reset(new thread(&GamePad::Update, this));
+    fcntl(fd, F_SETFL, O_NONBLOCK);   // using non-blocking mode
 }
 
 GamePad::~GamePad() {
@@ -45,6 +40,31 @@ GamePad::~GamePad() {
     }
     delete[] buttons;
     delete[] axises;
+}
+
+void GamePad::Update() {
+    struct js_event event;
+    //データがあるなら読み込む
+    if (read(fd, &event, sizeof(event)) == sizeof(event)) {
+        switch (event.type & ~JS_EVENT_INIT) {
+            case JS_EVENT_BUTTON:
+                buttons[event.number] = event.value;
+                if (button_event != nullptr) {
+                    button_event(this, (ButtonNames)event.number,
+                                 (bool)event.value);
+                }
+                break;
+            case JS_EVENT_AXIS:
+                axises[event.number] = event.value;
+                if (axis_event != nullptr) {
+                    axis_event(this, (AxisNames)event.number,
+                               (float)event.value / (float)INT16_MAX);
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 void GamePad::Status() const {
@@ -62,79 +82,3 @@ void GamePad::Status() const {
     printf("\n");
     fflush(stdout);
 }
-
-void GamePad::Update() {
-    struct js_event event;
-    //データがある限り読み込む
-    while (read(fd, &event, sizeof(event)) == sizeof(event)) {
-        switch (event.type & ~JS_EVENT_INIT) {
-            case JS_EVENT_BUTTON:
-                buttons[event.number] = event.value;
-                if (button_event != nullptr) {
-                    button_event(this, (ButtonNames)event.number,
-                                 (bool)event.value);
-                }
-                continue;
-            case JS_EVENT_AXIS:
-                axises[event.number] = event.value;
-                if (axis_event != nullptr) {
-                    axis_event(this, (AxisNames)event.number,
-                               (float)event.value / (float)INT16_MAX);
-                }
-                continue;
-            default:
-                continue;
-        }
-    }
-}
-#if 0
-
-inline int PadButtonHandler(int a,ButtonNames name,void(*Btn[])(int)){
-	(*Btn[a])();
-	switch(a){
-		case A:
-
-		case B:
-
-		case X:
-
-		case Y:
-
-		case LB:
-
-		case RB:
-
-		case BACK:
-
-		case START:
-
-		case CROSS:
-
-		case AXISL:
-
-		case AXISR:
-	}
-}
-
-inline int PadAxisHandler(int b,AxisNames name,void(*Axis)(int)){
-	switch(b){
-		case LSX:
-
-		case LSY:
-
-		case RSX:
-
-		case RSY:
-
-		case RT:
-
-		case LT:
-
-		case DX:
-
-		case DY:
-
-	}
-}
-
-#endif

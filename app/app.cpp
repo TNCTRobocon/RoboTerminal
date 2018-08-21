@@ -33,6 +33,7 @@ int main(int argc, char** argv) {
     signal(SIGINT, singal_receiver);
     for (is_continue = true; is_continue;) {
         if (gamepad){
+            gamepad->Update();
             gamepad->Status();
         }
     }
