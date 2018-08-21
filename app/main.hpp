@@ -9,7 +9,7 @@ class Argument {
     std::unordered_map<std::string, std::string> parameters;
     std::string location;
 
-   public:
+public:
     Argument(int argc, char** argv);
     Argument(const Argument&) = default;
     virtual ~Argument() = default;

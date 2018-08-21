@@ -16,13 +16,13 @@ class MotorManager;
 using motor_manager_sptr = std::shared_ptr<MotorManager>;
 
 class MotorManager {
-   private:
+private:
     boost::asio::io_service io;  // int fd;//シリアルポートのファイル識別時
     boost::asio::serial_port serial;
     MotorManager(const char* filename, int rate);
     std::vector<motor_sptr> motors;
 
-   public:
+public:
     static inline std::unique_ptr<MotorManager> GenerateMotorManeger(
         const char* filename,
         int rate) {
@@ -42,7 +42,7 @@ class MotorManager {
 };
 
 class IMotorCommon {
-   public:
+public:
     IMotorCommon() {}
     virtual ~IMotorCommon() {}
     virtual void Duty(float value) = 0;
@@ -50,7 +50,7 @@ class IMotorCommon {
 };
 
 class IMotorAdvanced {
-   public:
+public:
     IMotorAdvanced() {}
     virtual ~IMotorAdvanced() {}
     virtual void RPM(float rpm) = 0;
@@ -59,11 +59,11 @@ class IMotorAdvanced {
 class Motor : public IMotorAdvanced, public IMotorCommon {
     friend class MotorManager;
 
-   private:
+private:
     MotorManager* parent;
     address_t address;
 
-   public:
+public:
     Motor(MotorManager* ptr, address_t);
     virtual ~Motor() {}
     Motor(const Motor&) = delete;

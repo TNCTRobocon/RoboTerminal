@@ -5,7 +5,7 @@
 class move_stop;
 
 class manual {
-   public:
+public:
     manual() = default;
     manual(const manual&) = default;
     virtual ~manual() = default;
@@ -14,37 +14,37 @@ class manual {
 };
 
 class move_front : public manual {
-   public:
+public:
     virtual void operator()();
     virtual manual* next();
 };
 
 class move_back : public manual {
-   public:
+public:
     virtual void operator()();
     virtual manual* next();
 };
 
 class move_left : public manual {
-   public:
+public:
     virtual void operator()();
     virtual manual* next();
 };
 
 class move_right : public manual {
-   public:
+public:
     virtual void operator()();
     virtual manual* next();
 };
 
 class move_stop : public manual {
-   public:
+public:
     virtual void operator()();
     virtual manual* next();
 };
 
 class move_delay : public manual {
-   public:
+public:
     virtual void operator()();
     virtual manual* next();
 };

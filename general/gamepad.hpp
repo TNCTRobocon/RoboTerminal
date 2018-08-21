@@ -46,7 +46,7 @@ static inline const char* GetButtonName(ButtonNames name) {
 }
 
 class GamePad {
-   private:
+private:
     int fd;  //ゲームパッドのファイル識別子
     std::unique_ptr<std::thread> task{nullptr};
     int button_num{0}, axis_num{0};
@@ -59,7 +59,7 @@ class GamePad {
     axis_event_t axis_event{nullptr};
 
     void Update();  //ここで非同期で値を取得する。
-   public:
+public:
     GamePad(const char* filename);
     virtual ~GamePad();
     void Status() const;  //標準入出力へ状態を表示
