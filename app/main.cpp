@@ -1,6 +1,7 @@
 #include "main.hpp"
 #include <general/gamepad.hpp>
 #include <general/motor.hpp>
+#include <general/feature.hpp>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,11 +15,15 @@ using namespace std;
 
 static motor_sptr motor_front_right{nullptr}, motor_front_left{nullptr}, motor_back_right{nullptr}, motor_back_left{nullptr};
 static motor_manager_sptr motor_manager{nullptr};
+static Feature* feature;
+//static feature_sptr feature{nullptr};
 
 int main()
 {
     GamePad pad("/dev/input/js0");
-    motor_init();
+
+    feature = new Feature();
+    //motor_init();
 
     //Trigger Handle
     pad.SetButtonChangedEvent(button_handler);
@@ -33,7 +38,7 @@ int main()
 void motor_init()
 {
     //モーターの初期化
-    motor_manager = move(MotorManager::GenerateMotorManeger("/dev/ttyS0", 115200));
+    motor_manager = move(MotorManager::GenerateMotorManager(feature, "/dev/ttyS0", 115200));
     //モーターにアドレスを割り当てるTODO正しい値を代入すること
     auto afr = motor_manager->CreateMotor(1);
     auto afl = motor_manager->CreateMotor(2);

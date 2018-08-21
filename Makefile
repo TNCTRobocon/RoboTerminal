@@ -4,8 +4,8 @@
 CC ?= gcc
 CFLAGS ?= -Wall -g -O2 -pipe
 CXX ?= g++
-CXXFLAGS ?= -std=c++11 -Wall -g -O2 -pipe -c -I.#-I$(HOME)/lib/wiringPi/wiringPi/
-LDFLAGS ?= -lm -lboost_system -L.#-lwiringPi
+CXXFLAGS ?= -std=c++11 -Wall -g -O2 -pipe -c -I.
+LDFLAGS ?= -lm -lboost_system -L.
 
 SRCS :=
 REL := app/
@@ -27,7 +27,7 @@ all:$(TARGET)
 $(TARGET):$(OBJS)
 	$(CXX) -o $@ $^ -pthread $(LDFLAGS)
 
-main.o:app/main.cpp app/main.hpp general/gamepad.hpp general/motor.hpp
+main.o:app/main.cpp app/main.hpp general/gamepad.hpp general/motor.hpp general/feature.hpp
 	$(CXX) $(CXXFLAGS) $<
 app/main.hpp:
 gamepad.o:general/gamepad.cpp general/gamepad.hpp
@@ -36,7 +36,8 @@ general/gamepad.hpp:
 motor.o:general/motor.cpp general/motor.hpp
 	$(CXX) $(CXXFLAGS) $<
 general/motor.hpp:
-
+feature.o:general/feature.cpp general/feature.hpp
+general/feature.hpp:
 
 run:$(TARGET)
 	@./$(TARGET)

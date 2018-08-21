@@ -1,4 +1,5 @@
 #include "motor.hpp"
+#include "feature.hpp"
 #include <stdio.h>
 
 #include <unistd.h>
@@ -28,9 +29,11 @@ const static string cmd_reset = "rst";
 const static string cmd_stop = "stop";
 const static string cmd_feature = "ft";
 
-MotorManager::MotorManager(const char* filename, int rate) : serial(io, filename){
-  serial.set_option(boost::asio::serial_port_base::baud_rate(rate));
+MotorManager::MotorManager(Feature* ptr, const char* filename, int rate) :
+master(ptr), serial(io, filename){
+  //ここでserialportを開けない場合、boostが自動で例外を投げてプログラムを中断
   printf("serialport opened successfully\n");
+  serial.set_option(boost::asio::serial_port_base::baud_rate(rate)); //ボーレート設定
   Command(cmd_reset);
 }
 
@@ -42,7 +45,7 @@ MotorManager::~MotorManager() {
 motor_sptr MotorManager::CreateMotor(address_t addr){
     //自分のコレクションに存在しているか?
     for (auto &it:motors){
-        if (addr==it->GetAddr()){
+        if (addr==it->address){
             return it;
         }
     }
@@ -57,12 +60,26 @@ void MotorManager::Write(const std::string& text) { //渡された文字をそ�
 }
 
 void MotorManager::Command(const std::string& command) { //各種コマンドから呼ばれる。指定したconst文字列+delimiterを送信
-  boost::asio::write(serial, boost::asio::buffer(command));
+    boost::asio::write(serial, boost::asio::buffer(command+cmd_newline));//overload演算子'+'は文字列の結合
+}
+
+string MotorManager::Read() { //必ず'\r'で終わる文字列を一つ読み込む
+    boost::asio::streambuf buf;
+    boost::asio::read_until(serial, buf, '\r');
+    string result = boost::asio::buffer_cast<const char*>(buf.data());//バッファの中身を文字列として取り出す
+    return result;
 }
 
 void MotorManager::Synchronize() {
     Command(cmd_sync);
 }
+
+/*
+void MotorManager::Feature() {
+    //for ()
+
+}
+*/
 
 void Motor::Select() {
     stringstream ss;
@@ -97,10 +114,14 @@ void Motor::Stop() {
     parent->Command(cmd_stop);
 }
 
-void Motor::Feature() {
+/*
+void Motor::Feature() { //TODO MotorManager から実行するよう変更
     Select();
     parent->Command(cmd_feature);
+    string response(parent->Read());
+
 }
+*/
 
 Motor::Motor(MotorManager* p, address_t adr) {
     parent = p;
