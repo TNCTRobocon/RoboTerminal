@@ -2,11 +2,11 @@
 
 # Complier Options
 CC ?= clang
-CFLAGS ?= -Wall -std=c11 -g -O2 -pipe
+CFLAGS ?= -Wall -std=c11 -g -O0 -pipe
 CXX ?= clang++
 INC ?= -I.
 LDFLAGS ?= -lm -L. -pthread -lboost_system
-CXXFLAGS ?= -std=c++17 -Wall -g -O2 -pipe $(INC)
+CXXFLAGS ?= -std=c++17 -Wall -g -O0 -pipe $(INC)
 FORMATER ?= clang-format
 
 RM = rm

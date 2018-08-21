@@ -51,6 +51,6 @@ optional<string> Argument::GetValue(const std::string& key) const {
     if (it != parameters.end()) {
         return it->second;
     } else {
-        return nullopt;
+        return std::nullopt;
     }
 }
