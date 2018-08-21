@@ -1,6 +1,7 @@
 /trash
 *.o
 *.d
+*.log
 /joyterm
 /obj
 nbproject/
