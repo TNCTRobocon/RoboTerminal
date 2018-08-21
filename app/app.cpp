@@ -1,6 +1,7 @@
 #include "app.hpp"
 #include <signal.h>
 #include <iostream>
+#include <general/motor.hpp>
 using namespace std;
 using namespace Util;
 //開放を自動化するためにスマートポインタで実装する。
@@ -22,11 +23,18 @@ int main(int argc, char** argv) {
     report->Info(ReportGroup::System, "Wake Up");
     setting.reset(new Settings("setting.config"));
     //ゲームパッドを初期化する
-    cout << "t" << endl;
     auto gamepad_location = setting->Read("gamepad");
     if (gamepad_location) {
         gamepad.reset(new GamePad(*gamepad_location));
     } else {
+        report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
+    }
+    //シリアルポートを初期化する
+    auto serial_location =setting->Read("serial");
+    auto band=setting->Read("serial-band").value_or("115200");
+    if (serial_location){
+        MotorManager::GenerateMotorManeger(serial_location->c_str(),stoi(band));
+    }else{
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
 
@@ -37,7 +45,7 @@ int main(int argc, char** argv) {
     for (is_continue = true; is_continue;) {
         if (gamepad) {
             gamepad->Update();
-            cout << gamepad->Status();
+            //cout << gamepad->Status();//確認用
         }
     }
 
