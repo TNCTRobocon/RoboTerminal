@@ -1,10 +1,9 @@
 #pragma once
-#include <stddef.h>
-#include <stdint.h>
-#include <functional>
 #include <memory>
 #include <string>
-enum class AxisNames {
+#include <vector>
+
+enum class AxisNames :unsigned int{
     LSX = 0,
     LSY = 1,
     RSX = 2,
@@ -22,7 +21,7 @@ static inline const char* GetAxisName(AxisNames name) {
     return idx < cnt ? names[idx] : "Unknown";
 }
 
-enum class ButtonNames {
+enum class ButtonNames :unsigned int{
     A = 0,
     B = 1,
     X = 2,
@@ -45,73 +44,39 @@ static inline const char* GetButtonName(ButtonNames name) {
 }
 
 class GamePad {
-private:
+    static constexpr size_t button_size=12;
+    static constexpr size_t axis_size=8;
     int fd;  //ゲームパッドのファイル識別子
-    int button_num{0}, axis_num{0};
-    bool* buttons{nullptr};
-    int* axises{nullptr};
-    typedef std::function<void(const GamePad*, ButtonNames, bool)>
-        button_event_t;
-    typedef std::function<void(const GamePad*, AxisNames, float)> axis_event_t;
-    button_event_t button_event{nullptr};
-    axis_event_t axis_event{nullptr};
-
-    
+    std::vector<int> buttons;
+    std::vector<int> axises;
 public:
     GamePad(const std::string& filename);
     virtual ~GamePad();
     void Update();  //ここで値を取得する
-    void Status() const;  //標準入出力へ状態を表示
-    //イベント関数設定
-    inline void SetButtonChangedEvent(const button_event_t& event = nullptr) {
-        button_event = event;
-    }
-
-    inline void SetAxisChangedEvent(const axis_event_t& event = nullptr) {
-        axis_event = event;
-    }
-
+    std::string Status() const;  //標準入出力へ状態を表示
     //状態確認
-    inline bool GetButton(int id) const {
-        // printf("%d%d\n",id,buttons[id]);
-        return id < button_num ? buttons[id] : false;
+    inline bool GetButton(unsigned int id) const {
+        return  (id<buttons.size())?buttons[id]:false;
     }
     inline bool GetButton(ButtonNames name) const {
-        return GetButton((int)name);
+        return GetButton((unsigned int)name);
     }
 
-    inline int GetAxisRaw(int id) const {
-        return id < axis_num ? axises[id] : 0;
+    inline int GetAxisRaw(unsigned int id) const {
+        return (id < axises.size()) ? axises[id] : 0;
     }
     inline int GetAxisRaw(AxisNames name) const {
-        return GetAxisRaw((int)name);
+        return GetAxisRaw((unsigned int)name);
     }
 
-    inline float GetAxis(int id) const {
+    inline float GetAxis(unsigned int id) const {
         return (float)GetAxisRaw(id) / INT16_MAX;
     }
-    inline float GetAxis(AxisNames name) const { return GetAxis((int)name); }
+    inline float GetAxis(AxisNames name) const { return GetAxis((unsigned int)name); }
 
     //ボタンの個数
-    inline int GetButtonNum() const { return button_num; }
+    inline int GetButtonNum() const { return buttons.size(); }
 
-    inline int GetAxisNum() const { return axis_num; }
+    inline int GetAxisNum() const { return axises.size(); }
 
-    //判断
-    inline int ButtonDecision() {
-        if (button_event != nullptr) {
-            // PadButtonHandler(button_number,ButtonNames name,);
-        }
-        return 0;
-    }
-    inline int AxisDecision() {
-        if (axis_event != nullptr) {
-            // PadAxisHandler(axis_number,ButtonNames name);
-        }
-        return 0;
-    }
-
-    inline int PadButtonHandler(int a, ButtonNames name, void (*Btn)(int));
-
-    inline int PadAxisHandler(int b, AxisNames name, void (*Axis)(int));
 };

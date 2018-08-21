@@ -22,6 +22,7 @@ int main(int argc, char** argv) {
     report->Info(ReportGroup::System, "Wake Up");
     setting.reset(new Settings("setting.config"));
     //ゲームパッドを初期化する
+     cout<<"t"<<endl;
     auto gamepad_location = setting->Read("gamepad");
     if (gamepad_location) {
         gamepad.reset(new GamePad(*gamepad_location));
@@ -30,11 +31,13 @@ int main(int argc, char** argv) {
     }
 
     // MessageLoop
+   
     signal(SIGINT, singal_receiver);
+    
     for (is_continue = true; is_continue;) {
         if (gamepad){
             gamepad->Update();
-            gamepad->Status();
+            cout<<gamepad->Status();
         }
     }
 

@@ -9,37 +9,47 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <app/app.hpp>
-
+#include <iostream>
+#include <sstream>
 using namespace std;
 
-GamePad::GamePad(const string& filename) {
+constexpr size_t GamePad::button_size;
+constexpr size_t GamePad::axis_size;
+
+
+GamePad::GamePad(const string& filename) :buttons(button_size),axises(axis_size){
     fd = open(filename.c_str(), O_RDONLY);
     if (fd < 0) {
-        perror("GamePad Cannot open\n");
-        exit(1);
+        string message = "Cannot Open GamePad" + filename;
+        if (report) {
+            report->Error(ReportGroup::GamePad, message);
+        } else {
+            cerr << message << endl;
+        }
     } else {
-        printf("Successed GamePad[%d] Connection\n", fd);
+        // GamePadの設定
+        fcntl(fd, F_SETFL, O_NONBLOCK);  // using non-blocking mode
+        //表示
+        stringstream ss;
+        ss << "Open GamePad:" << filename ;
+        if (report) {
+            report->Info(ReportGroup::GamePad, ss.str());
+        } else {
+            cout << ss.str();
+        }
     }
-    //ボタン数取得
-    char name[80];
-    ioctl(fd, JSIOCGBUTTONS, &button_num);
-    ioctl(fd, JSIOCGAXES, &axis_num);
-    ioctl(fd, JSIOCGNAME(80), &name);
-    // fcntl(fd, F_SETFL, O_NONBLOCK);
-    //ボタン数に応じて配列を作成
-    buttons = new bool[button_num];
-    axises = new int[axis_num];
-    printf("name=%s button=%d,axis=%d\n", name, button_num, axis_num);
-    fcntl(fd, F_SETFL, O_NONBLOCK);   // using non-blocking mode
 }
 
 GamePad::~GamePad() {
     if (fd >= 0) {
-        printf("GamePad Close\n");
         close(fd);
+        string message = "Close GamePad";
+        if (report) {
+            report->Info(ReportGroup::GamePad, message);
+        } else {
+            cerr << message << endl;
+        }
     }
-    delete[] buttons;
-    delete[] axises;
 }
 
 void GamePad::Update() {
@@ -48,17 +58,13 @@ void GamePad::Update() {
     if (read(fd, &event, sizeof(event)) == sizeof(event)) {
         switch (event.type & ~JS_EVENT_INIT) {
             case JS_EVENT_BUTTON:
-                buttons[event.number] = event.value;
-                if (button_event != nullptr) {
-                    button_event(this, (ButtonNames)event.number,
-                                 (bool)event.value);
+                if (event.number < buttons.size()) {
+                    buttons[event.number] = event.value;
                 }
                 break;
             case JS_EVENT_AXIS:
-                axises[event.number] = event.value;
-                if (axis_event != nullptr) {
-                    axis_event(this, (AxisNames)event.number,
-                               (float)event.value / (float)INT16_MAX);
+                if (event.number < axises.size()) {
+                    axises[event.number] = event.value;
                 }
                 break;
             default:
@@ -67,18 +73,25 @@ void GamePad::Update() {
     }
 }
 
-void GamePad::Status() const {
+std::string GamePad::Status() const {
+    stringstream ss;
     //ボタン情報
-    printf("%d", buttons[0]);
-    for (int idx = 1; idx < button_num; idx++) {
-        printf(",%d", buttons[idx]);
+    {
+        auto it = buttons.begin();
+        ss << "button["<<buttons.size()<<"]:" << *it;
+        for (; it != buttons.end(); it++) {
+            ss << "," << *it;
+        }
     }
-    printf("\n");
-    //スティック情報
-    printf("(%d,%d)", axises[0], axises[1]);
-    for (int idx = 2; idx < axis_num; idx += 2) {
-        printf("(%d,%d)", axises[idx], axises[idx + 1]);
+    ss << endl;
+    {
+        //スティック情報
+        auto it = axises.begin();
+        ss << "axis["<<axises.size()<<"]:" << *it;
+        for (; it != axises.end(); it++) {
+            ss << "," << *it;
+        }
     }
-    printf("\n");
-    fflush(stdout);
+    ss << endl;
+    return ss.str();
 }

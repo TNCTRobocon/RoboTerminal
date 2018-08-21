@@ -30,8 +30,6 @@ void Report::Write(ReportType type,
     cout << "\e[" << (int)type<<"m"<<type_text<<"@"<<group<<":"<<message<<"\e[m"<<endl;
 
     //ファイルに記録する
-    auto now = chrono::system_clock::now();
-    
     ofstream log(filename);
     if (log.fail()){
         return ;

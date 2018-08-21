@@ -18,7 +18,7 @@ SRCS := $(foreach it,$(SRC_DIRS),$(wildcard $(it)/*.cpp))
 INCS := $(foreach it,$(SRC_DIRS),$(wildcard $(it)/*.hpp))
 OBJS := $(addprefix $(OBJ_ROOT)/, $(SRCS:.cpp=.o)) 
 OBJ_DIRS:= $(addprefix $(OBJ_ROOT)/, $(SRC_DIRS)) 
-DEPS := $(SRCS:%.cpp=%.d)
+DEPS := $(addprefix $(OBJ_ROOT)/, $(SRCS:.cpp=.d)) 
 TARGET := joyterm
 
 #機能の定義
@@ -34,9 +34,9 @@ $(OBJ_ROOT)/%.o:$(SRC_ROOT)/%.cpp
 	@if [ ! -e `dirname $@` ]; then mkdir -p `dirname $@`; fi
 	$(CXX) $(CXXFLAGS) -c -MMD -MP $< -o$@
 clear:
-	-@$(RM) $(DEPS) 
-	-@$(RM) $(OBJS) 
-	-@$(RM) $(TARGET)
+	-@$(RM) $(DEPS) -f
+	-@$(RM) $(OBJS) -f
+	-@$(RM) $(TARGET) -f
 format:
 	$(FORMATER) -i $(SRCS) $(INCS)
 -include $(DEPS)
