@@ -3,7 +3,7 @@
 # Complier Options
 CC ?= gcc
 CFLAGS ?= -Wall -std=c11 -g -O2 -pipe
-CXX ?= g++
+export CXX = g++-6
 INC ?= -I.
 LDFLAGS ?= -lm -L. -pthread -lboost_system
 CXXFLAGS ?= -std=c++14 -Wall -g -O2 -pipe $(INC)
