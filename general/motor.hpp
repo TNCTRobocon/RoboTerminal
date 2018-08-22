@@ -2,6 +2,7 @@
 #include "feature.hpp"
 #include <memory>
 #include <stdint.h>
+#include <memory>
 #include <string>
 #include <unordered_set>
 
@@ -15,15 +16,16 @@ using motor_wptr= std::weak_ptr<Motor>;
 using motor_uptr= std::unique_ptr<Motor>;
 using motor_sptr= std::shared_ptr<Motor>;
 class MotorManager;
-using motor_manager_sptr= std::shared_ptr<MotorManager>;
+using motor_manager_sptr = std::shared_ptr<MotorManager>;
 
-class MotorManager{
+class MotorManager {
 private:
     Feature* master;
     boost::asio::io_service io;//int fd;//シリアルポートのファイル識別時
     boost::asio::serial_port serial;
     MotorManager(Feature* ptr,const char* filename,int rate);
     std::vector<motor_sptr> motors;
+
 public:
     static inline std::unique_ptr<MotorManager> GenerateMotorManager(Feature* ptr,const char *filename,int rate){
 		return std::unique_ptr<MotorManager>(new MotorManager (ptr,filename,rate));
@@ -31,9 +33,9 @@ public:
 
     virtual ~MotorManager();
 
-    motor_sptr CreateMotor(address_t);//モーターを生成する
-    //void Remove(address_t);//モーターを消去する。
-    //motor_sptr GetMotor(address_t);//生成済みのモーターを取得する
+    motor_sptr CreateMotor(address_t);  //モーターを生成する
+    // void Remove(address_t);//モーターを消去する。
+    // motor_sptr GetMotor(address_t);//生成済みのモーターを取得する
 
     void Write(const std::string&);
 	void Command(const std::string&);
@@ -43,39 +45,37 @@ public:
   //void Feature();
 };
 
-class IMotorCommon{
+class IMotorCommon {
 public:
-	IMotorCommon(){}
-	virtual ~IMotorCommon(){}
-	virtual void Duty(float value)=0;
-	virtual void Stop()=0;
+    IMotorCommon() {}
+    virtual ~IMotorCommon() {}
+    virtual void Duty(float value) = 0;
+    virtual void Stop() = 0;
 };
 
-class IMotorAdvanced{
+class IMotorAdvanced {
 public:
-	IMotorAdvanced(){}
-	virtual ~IMotorAdvanced(){}
-	virtual void RPM(float rpm)=0;
+    IMotorAdvanced() {}
+    virtual ~IMotorAdvanced() {}
+    virtual void RPM(float rpm) = 0;
 };
 
-class Motor:public IMotorAdvanced,public IMotorCommon{
+class Motor : public IMotorAdvanced, public IMotorCommon {
     friend class MotorManager;
+
 private:
     MotorManager* parent;
     address_t address;
-    //std::unordered_set<feature_t> feature;
+
 public:
-    Motor( MotorManager* ptr,address_t);
-    virtual ~Motor(){}
-    Motor(const Motor&)=delete;
+    Motor(MotorManager* ptr, address_t);
+    virtual ~Motor() {}
+    Motor(const Motor&) = delete;
     void Select();
     virtual void Duty(float value);
     void AsyncRPM(float rpm);
     virtual void RPM(float rpm);
-    virtual void  Stop();
-    //virtual void Feature();
-    bool operator <(const Motor& cmp)const{
-        return address<cmp.address;
-    }
-    address_t GetAddr()const{return address;}
+    virtual void Stop();
+    bool operator<(const Motor& cmp) const { return address < cmp.address; }
+    address_t GetAddr() const { return address; }
 };

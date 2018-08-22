@@ -2,17 +2,17 @@
 #include "feature.hpp"
 #include <stdio.h>
 
-#include <unistd.h>
 #include <fcntl.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include <boost/asio.hpp>
 
+#include <algorithm>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <iomanip>
-#include <algorithm>
 
 using namespace std;
 //モーターのコマンド
@@ -38,11 +38,11 @@ master(ptr), serial(io, filename){
 }
 
 MotorManager::~MotorManager() {
-  serial.close();
-  printf("serialport closed");
+    serial.close();
+    printf("serialport closed");
 }
 
-motor_sptr MotorManager::CreateMotor(address_t addr){
+motor_sptr MotorManager::CreateMotor(address_t addr) {
     //自分のコレクションに存在しているか?
     for (auto &it:motors){
         if (addr==it->address){
@@ -50,7 +50,7 @@ motor_sptr MotorManager::CreateMotor(address_t addr){
         }
     }
     //ないので生成する。
-    motor_sptr sptr = std::make_shared<Motor>(this,addr);
+    motor_sptr sptr = std::make_shared<Motor>(this, addr);
     motors.push_back(sptr);
     return sptr;
 }
@@ -106,7 +106,6 @@ void Motor::RPM(float value) {
     stringstream ss;
     ss << cmd_motor_control << ' ' << value;
     parent->Command(ss.str());
-
 }
 
 void Motor::Stop() {
