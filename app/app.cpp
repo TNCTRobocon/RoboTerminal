@@ -32,11 +32,11 @@ int main(int argc, char** argv) {
     //シリアルポートを初期化する
     auto serial_location =setting->Read("serial");
     auto band=setting->Read("serial-band").value_or("115200");
-    if (serial_location){
+    /*if (serial_location){
         MotorManager::GenerateMotorManeger(serial_location->c_str(),stoi(band));
     }else{
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
-    }
+    }*/
 
     // MessageLoop
 
