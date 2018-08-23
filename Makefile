@@ -2,11 +2,11 @@
 
 # Complier Options
 CC ?= clang
-CFLAGS ?= -Wall -std=c11 -g -O0 -pipe
+CFLAGS ?= -Wall -std=c11 -g -O2 -pipe $(shell pkg-config --cflags gtk+-3.0)
 CXX ?= clang++
 INC ?= -I.
-LDFLAGS ?= -lm -L. -pthread -lboost_system
-CXXFLAGS ?= -std=c++17 -Wall -g -O0 -pipe $(INC)
+LDFLAGS ?= -lm -L. -pthread -lboost_system $(shell pkg-config --libs gtk+-3.0)
+CXXFLAGS ?= -std=c++17 -Wall -g -O2 -pipe $(INC) $(shell pkg-config --cflags gtk+-3.0)
 FORMATER ?= clang-format
 
 RM = rm

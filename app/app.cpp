@@ -1,7 +1,10 @@
 #include "app.hpp"
 #include <signal.h>
-#include <iostream>
 #include <general/motor.hpp>
+#include <iostream>
+// TODO あとで消す
+#include <gtk/gtk.h>
+
 using namespace std;
 using namespace Util;
 //開放を自動化するためにスマートポインタで実装する。
@@ -30,25 +33,33 @@ int main(int argc, char** argv) {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
     //シリアルポートを初期化する
-    auto serial_location =setting->Read("serial");
-    auto band=setting->Read("serial-band").value_or("115200");
-    if (serial_location){
-        MotorManager::GenerateMotorManeger(serial_location->c_str(),stoi(band));
-    }else{
+    auto serial_location = setting->Read("serial");
+    auto band = setting->Read("serial-band").value_or("115200");
+    if (serial_location) {
+        MotorManager::GenerateMotorManeger(serial_location->c_str(),
+                                           stoi(band));
+    } else {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
 
+    // Windowsを初期化する
+    gtk_init(&argc, &argv);
+    auto window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_widget_set_size_request(window, 300, 200);
+    gtk_widget_show_all(window);
     // MessageLoop
 
     signal(SIGINT, singal_receiver);
+    /*
+        for (is_continue = true; is_continue;) {
+            if (gamepad) {
+                gamepad->Update();
+                // cout << gamepad->Status();//確認用
+            }
 
-    for (is_continue = true; is_continue;) {
-        if (gamepad) {
-            gamepad->Update();
-            //cout << gamepad->Status();//確認用
         }
-    }
-
+    */
+    gtk_main();
     report->Info(ReportGroup::System, "Shutdown");
     return 0;
 }
