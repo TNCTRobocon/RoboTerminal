@@ -1,17 +1,17 @@
 #include "motor.hpp"
 #include <stdio.h>
 
-#include <unistd.h>
 #include <fcntl.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include <boost/asio.hpp>
 
+#include <algorithm>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <iomanip>
-#include <algorithm>
 
 using namespace std;
 //モーターのコマンド
@@ -27,26 +27,27 @@ const static string cmd_angle = "sc";
 const static string cmd_reset = "rst";
 const static string cmd_stop = "stop";
 
-MotorManager::MotorManager(const char* filename, int rate) : serial(io, filename){
-  serial.set_option(boost::asio::serial_port_base::baud_rate(rate));
-  printf("serialport opened successfully\n");
-  Command(cmd_reset);
+MotorManager::MotorManager(const char* filename, int rate)
+    : serial(io, filename) {
+    serial.set_option(boost::asio::serial_port_base::baud_rate(rate));
+    printf("serialport opened successfully\n");
+    Command(cmd_reset);
 }
 
 MotorManager::~MotorManager() {
-  serial.close();
-  printf("serialport closed");
+    serial.close();
+    printf("serialport closed");
 }
 
-motor_sptr MotorManager::CreateMotor(address_t addr){
+motor_sptr MotorManager::CreateMotor(address_t addr) {
     //自分のコレクションに存在しているか?
-    for (auto &it:motors){
-        if (addr==it->GetAddr()){
+    for (auto& it : motors) {
+        if (addr == it->GetAddr()) {
             return it;
         }
     }
     //ないので生成する。
-    motor_sptr sptr = std::make_shared<Motor>(this,addr);
+    motor_sptr sptr = std::make_shared<Motor>(this, addr);
     motors.push_back(sptr);
     return sptr;
 }
@@ -56,7 +57,7 @@ void MotorManager::Write(const std::string& text) {
 }
 
 void MotorManager::Command(const std::string& command) {
-  boost::asio::write(serial, boost::asio::buffer(command));
+    boost::asio::write(serial, boost::asio::buffer(command));
 }
 
 void MotorManager::Synchronize() {
@@ -88,7 +89,6 @@ void Motor::RPM(float value) {
     stringstream ss;
     ss << cmd_motor_control << ' ' << value;
     parent->Command(ss.str());
-
 }
 
 void Motor::Stop() {
