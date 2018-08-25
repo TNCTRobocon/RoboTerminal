@@ -47,6 +47,13 @@ int main(int argc, char** argv) {
             gamepad->Update();
             //cout << gamepad->Status();//確認用
         }
+        for(manual* it=new MoveStop();it!=nullptr;){
+          manual* next=it->next();
+          if(next!=it){
+            delete it;
+            it = next;
+          }
+        }
     }
 
     report->Info(ReportGroup::System, "Shutdown");
