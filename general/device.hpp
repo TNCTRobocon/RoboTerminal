@@ -20,19 +20,18 @@ using address_t = uint32_t;
 using factor_t = std::string;
 
 namespace Command {
-  const std::string newline = "\r";
-  const std::string space = " ";
-  const std::string select = "sel";
-  const std::string feature = "ft";
-  const std::string duty = "dt";
-  const std::string motor_control = "mc";
-  const std::string async_motor_control = "rady";
-  const std::string sync = "go";
-  const std::string angle = "sc";
-  const std::string reset = "rst";
-  const std::string stop = "stop";
+const std::string newline = "\r";
+const std::string space = " ";
+const std::string select = "sel";
+const std::string feature = "ft";
+const std::string duty = "dt";
+const std::string motor_control = "mc";
+const std::string async_motor_control = "rady";
+const std::string sync = "go";
+const std::string angle = "sc";
+const std::string reset = "rst";
+const std::string stop = "stop";
 }
-
 
 class DeviceManager {
     // friend class DeviceBase;
@@ -44,8 +43,9 @@ private:
     DeviceManager(std::string filename, int rate);
 
 public:
-  static inline
-    std::unique_ptr<DeviceManager> GenerateDeviceManager(std::string filename, int rate) {
+    static inline std::unique_ptr<DeviceManager> GenerateDeviceManager(
+        std::string filename,
+        int rate) {
         return std::unique_ptr<DeviceManager>(
             new DeviceManager(filename, rate));
     }
@@ -58,7 +58,6 @@ public:
     void Select(address_t address);
     void Flush();
 };
-
 
 class DeviceBase {
     friend class DeviceManager;
@@ -78,7 +77,6 @@ protected:
     //??? void Flush();
     // void Select
 };
-
 
 class DeviceMotor : public DeviceBase {
 private:
