@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
     report.reset(new Report("report.log"));
     report->Info(ReportGroup::System, "Wake Up");
     setting.reset(new Settings("setting.config"));
-    //#if 0
+    #if 0
     //ゲームパッドを初期化する
     auto gamepad_location = setting->Read("gamepad");
     if (gamepad_location) {
@@ -33,16 +33,17 @@ int main(int argc, char** argv) {
     } else {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
-    //#endif
+    #endif
     //シリアルポートを初期化する
     auto serial_location =setting->Read("serial");
     auto band=setting->Read("serial-band").value_or("115200");
     if (serial_location){
-      motor_manager = move(MotorManager::GenerateMotorManeger(serial_location->c_str(),stoi(band)));
+      //motor_manager = move(MotorManager::GenerateMotorManeger(serial_location->c_str(),stoi(band)));
     }else{
       report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
     //モーターのアドレス設定
+#if 0
     auto motor_flontleft_address = setting->Read("flontleft").value_or("16");
     auto motor_flontright_address = setting->Read("flontright").value_or("17");
     auto motor_backleft_address = setting->Read("backleft").value_or("18");
@@ -52,11 +53,13 @@ int main(int argc, char** argv) {
     tire_flont_right = motor_manager->CreateMotor(stoi(motor_flontright_address));
     tire_back_left = motor_manager->CreateMotor(stoi(motor_backleft_address));
     tire_back_right = motor_manager->CreateMotor(stoi(motor_backright_address));
+#endif
     // MessageLoop
     signal(SIGINT, singal_receiver);
 
     for (is_continue = true; is_continue;) {
       for(automatic* it=new FirstMove();it!=nullptr;){
+        (*it)();
         automatic* next=it->next();
         if(next!=it){
           delete it;

@@ -5,11 +5,13 @@
 
 /***自動ロボット***/
 void FirstMove::operator()() {
-    printf("front\n");
+    printf("first\n");
+    /*
     tire_flont_left->Duty(0.6);
     tire_flont_right->Duty(0.6);
     tire_back_left->Duty(0.6);
     tire_back_right->Duty(0.6);
+    */
     delay(1000);
 }
 
@@ -18,11 +20,13 @@ automatic* FirstMove::next() {
 };
 
 void SecondMove::operator()() {
-    printf("stop\n");
+    printf("second\n");
+    /*
     tire_flont_left->Duty(0);
     tire_flont_right->Duty(0);
     tire_back_left->Duty(0);
     tire_back_right->Duty(0);
+    */
     delay(1000);
 }
 
@@ -31,11 +35,13 @@ automatic* SecondMove::next() {
 }
 
 void ThirdMove::operator()() {
-    printf("stop\n");
+    printf("third\n");
+    /*
     tire_flont_left->Duty(-0.6);
     tire_flont_right->Duty(-0.6);
     tire_back_left->Duty(-0.6);
     tire_back_right->Duty(-0.6);
+    */
     delay(1000);
 }
 
@@ -44,11 +50,13 @@ automatic* ThirdMove::next() {
 }
 
 void FourthMove::operator()() {
-    printf("stop\n");
+    printf("fourth\n");
+    /*
     tire_flont_left->Duty(0);
     tire_flont_right->Duty(0);
     tire_back_left->Duty(0);
     tire_back_right->Duty(0);
+    */
     delay(1000);
 }
 
@@ -61,42 +69,52 @@ automatic* FourthMove::next() {
 
 void MoveFront::operator()() {
     printf("front\n");
+    /*
     tire_flont_left->Duty(0.6);
     tire_flont_right->Duty(0.6);
     tire_back_left->Duty(0.6);
     tire_back_right->Duty(0.6);
+    */
 }
 
 void MoveBack::operator()() {
     printf("back\n");
+/*
     tire_flont_left->Duty(-0.6);
     tire_flont_right->Duty(-0.6);
     tire_back_left->Duty(-0.6);
     tire_back_right->Duty(-0.6);
+*/
 }
 
 void MoveRight::operator()() {
     printf("right\n");
+/*
     tire_flont_left->Duty(-0.6);
     tire_flont_right->Duty(0.6);
     tire_back_left->Duty(0.6);
     tire_back_right->Duty(-0.6);
+*/
 }
 
 void MoveLeft::operator()() {
     printf("left\n");
+/*
     tire_flont_left->Duty(0.6);
     tire_flont_right->Duty(-0.6);
     tire_back_left->Duty(-0.6);
     tire_back_right->Duty(0.6);
+*/
 }
 
 void MoveStop::operator()() {
     printf("stop\n");
+    /*
     tire_flont_left->Duty(0);
     tire_flont_right->Duty(0);
     tire_back_left->Duty(0);
     tire_back_right->Duty(0);
+*/
 }
 
 void MoveDelay::operator()() {
