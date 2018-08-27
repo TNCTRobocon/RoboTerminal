@@ -5,7 +5,7 @@ CC ?= clang
 CFLAGS ?= -Wall -std=c11 -g -O0 -pipe
 CXX ?= clang++
 INC ?= -I.
-LDFLAGS ?= -lm -L. -pthread -lboost_system
+LDFLAGS ?= -lm -L. -pthread -lboost_system -lwiringPi
 CXXFLAGS ?= -std=c++17 -Wall -g -O0 -pipe $(INC)
 FORMATER ?= clang-format
 
