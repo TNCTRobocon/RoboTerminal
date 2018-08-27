@@ -1,3 +1,5 @@
+#if 0
+
 /*
 #include <tuple>
 #include <map>
@@ -36,17 +38,22 @@ class Feature;
 using address_t = uint32_t;
 using factor_t = std::string;
 using csv_factors_t = std::string;
-//using feature_sptr = std::shared_ptr<Feature>;
+// using feature_sptr = std::shared_ptr<Feature>;
 
-class Feature{
+class Feature {
 private:
-  std::map<address_t,std::unordered_set<factor_t>> ft;
-  std::unordered_set<factor_t> temp;
+    std::map<address_t, std::unordered_set<factor_t>> ft;
+    std::unordered_set<factor_t> temp;
+
 public:
-  //Feature();
-  //static inline std::unique_ptr<Feature> GenerateFeature(){
-  //  return std::unique_ptr<Feature>(new Feature());
-  //}
-  void Read_csv(csv_factors_t);
-  bool WhoAmI(address_t, csv_factors_t); //与えられた文字列が正しく機能を表していればtrueを返す
+    // Feature();
+    // static inline std::unique_ptr<Feature> GenerateFeature(){
+    //  return std::unique_ptr<Feature>(new Feature());
+    //}
+    void Read_csv(csv_factors_t);
+    bool WhoAmI(
+        address_t,
+        csv_factors_t);  //与えられた文字列が正しく機能を表していればtrueを返す
 };
+
+#endif

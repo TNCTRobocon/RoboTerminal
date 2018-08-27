@@ -1,3 +1,5 @@
+#if 1
+
 #include "app.hpp"
 #include <signal.h>
 #include <iostream>
@@ -30,12 +32,12 @@ int main(int argc, char** argv) {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
     //シリアルポートを初期化する
-    auto serial_location =setting->Read("serial");
-    auto band=setting->Read("serial-band").value_or("115200");
-    if (serial_location){
-        MotorManager::GenerateMotorManeger(serial_location->c_str(),stoi(band));
-    }else{
-        report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
+    auto serial_location = setting->Read("serial");
+    auto band = setting->Read("serial-band").value_or("115200");
+    if (serial_location) {
+        // MotorManager::GenerateMotorManager(serial_location->c_str(),stoi(band));
+    } else {
+        report->Warn(ReportGroup::GamePad, "Missing Serial Location");
     }
 
     // MessageLoop
@@ -45,10 +47,11 @@ int main(int argc, char** argv) {
     for (is_continue = true; is_continue;) {
         if (gamepad) {
             gamepad->Update();
-            //cout << gamepad->Status();//確認用
+            cout << gamepad->Status();  //確認用
         }
     }
 
     report->Info(ReportGroup::System, "Shutdown");
     return 0;
 }
+#endif

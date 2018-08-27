@@ -1,8 +1,9 @@
+#if 0
+
 #pragma once
 #include "feature.hpp"
 #include <memory>
 #include <stdint.h>
-#include <memory>
 #include <string>
 #include <unordered_set>
 
@@ -11,25 +12,27 @@
 #include <vector>
 
 class Motor;
-//using address_t = uint32_t;
-using motor_wptr= std::weak_ptr<Motor>;
-using motor_uptr= std::unique_ptr<Motor>;
-using motor_sptr= std::shared_ptr<Motor>;
+// using address_t = uint32_t;
+using motor_wptr = std::weak_ptr<Motor>;
+using motor_uptr = std::unique_ptr<Motor>;
+using motor_sptr = std::shared_ptr<Motor>;
 class MotorManager;
 using motor_manager_sptr = std::shared_ptr<MotorManager>;
 
 class MotorManager {
 private:
     Feature* master;
-    boost::asio::io_service io;//int fd;//シリアルポートのファイル識別時
-    boost::asio::serial_port serial;
-    MotorManager(Feature* ptr,const char* filename,int rate);
+    boost::asio::io_service io;
+    boost::asio::serial_port serial;  //まだserialportは開かれていない
+    MotorManager(Feature* ptr, const char* filename, int rate);
     std::vector<motor_sptr> motors;
 
 public:
-    static inline std::unique_ptr<MotorManager> GenerateMotorManager(Feature* ptr,const char *filename,int rate){
-		return std::unique_ptr<MotorManager>(new MotorManager (ptr,filename,rate));
-}
+    static inline std::unique_ptr<MotorManager>
+    GenerateMotorManager(Feature* ptr, const char* filename, int rate) {
+        return std::unique_ptr<MotorManager>(
+            new MotorManager(ptr, filename, rate));
+    }
 
     virtual ~MotorManager();
 
@@ -38,11 +41,11 @@ public:
     // motor_sptr GetMotor(address_t);//生成済みのモーターを取得する
 
     void Write(const std::string&);
-	void Command(const std::string&);
-  std::string Read();
-	void Synchronize();
-	void Reset();
-  //void Feature();
+    void Command(const std::string&);
+    std::string Read();
+    void Synchronize();
+    void Reset();
+    // void Feature();
 };
 
 class IMotorCommon {
@@ -79,3 +82,5 @@ public:
     bool operator<(const Motor& cmp) const { return address < cmp.address; }
     address_t GetAddr() const { return address; }
 };
+
+#endif
