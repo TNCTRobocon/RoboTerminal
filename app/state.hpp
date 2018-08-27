@@ -13,6 +13,43 @@ public:
     virtual std::string getname() const = 0;
 };
 
+class FirstMove : public automatic {
+public:
+    virtual void operator()();
+    virtual automatic* next();
+    virtual std::string getname() const{
+      return "FirstMove";
+    }
+};
+
+class SecondMove : public automatic {
+public:
+    virtual void operator()();
+    virtual automatic* next();
+    virtual std::string getname() const{
+      return "SecondMove";
+    }
+};
+
+class ThirdMove : public automatic {
+public:
+    virtual void operator()();
+    virtual automatic* next();
+    virtual std::string getname() const{
+      return "ThirdMove";
+    }
+};
+
+class FourthMove : public automatic {
+public:
+    virtual void operator()();
+    virtual automatic* next();
+    virtual std::string getname() const{
+      return "FourthMove";
+    }
+};
+
+
 /**********手動ロボット***********/
 class manual {
 public:
