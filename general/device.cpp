@@ -6,7 +6,6 @@
 
 using namespace std;
 
-
 DeviceManager::DeviceManager(string filename, int rate) : serial(io) {
     try {
         serial.open(filename);
@@ -61,20 +60,20 @@ void DeviceManager::Select(address_t address) {
     WriteSerial(ss.str());
 }
 
-void DeviceManager::Flush(){
-  for(auto& device:devices){
-    if(!(device->cmd.empty())){
-      Select(device->address);
-      //TODO 応答を待つ
-      while(!(device->cmd.empty())){
-        WriteSerial(device->cmd.front());
-        //TODO 応答を待つ
-        device->cmd.pop();
-      }
-    }
-  }
-}
+void DeviceManager::Flush() { // ???
+    for (auto& device : devices) {
+        if (!(device->cmd.empty())) {
+            Select(device->address);
+            // TODO 応答を待つ
+            while (!(device->cmd.empty())) {
+                WriteSerial(device->cmd.front());
+                // TODO 応答を待つ
 
+                device->cmd.pop();
+            }
+        }
+    }
+}
 
 DeviceBase::DeviceBase() {
     cmd.push(Command::feature);
@@ -82,8 +81,8 @@ DeviceBase::DeviceBase() {
 
 DeviceBase::~DeviceBase() {}
 
-void DeviceBase::PushCommand(string str){
-  cmd.push(str+Command::newline);
+void DeviceBase::PushCommand(string str) {
+    cmd.push(str + Command::newline);
 }
 
 void DeviceBase::Read_csv(string str) {
@@ -113,7 +112,6 @@ bool DeviceBase::Feature(string response) {
     return false;
 }
 
-
 DeviceMotor::DeviceMotor(DeviceManager* p, address_t a) {
     parent = p;
     address = a;
@@ -125,10 +123,10 @@ void DeviceMotor::Synchronize() {
     parent->Flush();
     PushCommand(Command::sync);
     parent->Flush();
-    //parent->WriteSerial(ss.str());
+    // parent->WriteSerial(ss.str());
 }
 
-void DeviceMotor::Duty(float value){
+void DeviceMotor::Duty(float value) {
     stringstream ss;
     ss << Command::duty << Command::space << value;
     PushCommand(ss.str());
