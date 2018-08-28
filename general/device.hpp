@@ -6,6 +6,8 @@
 #include <unordered_set>
 #include <vector>
 #include <queue>
+#include <functional>
+#include <future>
 //#include <iostream>
 //#include <sstream>
 //#include <algorithm>
@@ -18,6 +20,8 @@ class DeviceMotor;
 
 using address_t = uint32_t;
 using factor_t = std::string;
+
+std::future<void> progress;
 
 namespace Command {
 const std::string newline = "\r";
@@ -40,6 +44,7 @@ private:
     boost::asio::serial_port serial;  //まだserialportは開かれていない
     // std::queue commands ?? in DeviceBase
     std::vector<std::shared_ptr<DeviceBase>> devices;
+    std::queue<std::function<void()>> cmd;
     DeviceManager(std::string filename, int rate);
 
 public:
@@ -56,6 +61,8 @@ public:
     std::string ReadSerial();
     void WriteSerial(const std::string&);
     void Select(address_t address);
+    void PushCommandDirectly(std::function<void()> no_sel);
+    void Fetch();
     void Flush();
 };
 
@@ -64,14 +71,15 @@ class DeviceBase {
 
 private:
     std::unordered_set<factor_t> ft;
-    std::queue<std::string> cmd;
+    std::queue<std::function<void()>> send;
+    std::queue<std::function<void()>> receive;
 
 protected:
     DeviceManager* parent;
     address_t address;
     DeviceBase();
     ~DeviceBase();
-    void PushCommand(std::string str);
+    void PushCommand(std::function<void()> before, std::function<void()> after);
     void Read_csv(std::string str);
     bool Feature(std::string response);
     //??? void Flush();

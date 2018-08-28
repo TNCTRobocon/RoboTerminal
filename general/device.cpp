@@ -48,6 +48,10 @@ void DeviceManager::WriteSerial(
 string DeviceManager::ReadSerial() {  //必ず'\r'で終わる文字列を一つ読み込む
     boost::asio::streambuf buf;
     boost::asio::read_until(serial, buf, '\r');
+
+    // TODO
+    // 一定時間経っても応答がない(\rで終わる文字列がこない)場合のプログラムを追加
+
     string result = boost::asio::buffer_cast<const char*>(
         buf.data());  //バッファの中身を文字列として取り出す
     return result;
@@ -60,29 +64,69 @@ void DeviceManager::Select(address_t address) {
     WriteSerial(ss.str());
 }
 
-void DeviceManager::Flush() { // ???
-    for (auto& device : devices) {
-        if (!(device->cmd.empty())) {
-            Select(device->address);
-            // TODO 応答を待つ
-            while (!(device->cmd.empty())) {
-                WriteSerial(device->cmd.front());
-                // TODO 応答を待つ
+void DeviceManager::PushCommandDirectly(std::function<void()> no_sel){
+  cmd.push(no_sel);
+}
 
-                device->cmd.pop();
-            }
+void DeviceManager::Fetch() {
+    for (auto& dev : devices) {
+        if (!(dev->send.empty())) {
+            cmd.push([=] { Select(dev->address); });
+            do {
+                cmd.push(dev->send.front());
+                dev->send.pop();
+            } while (!(dev->send.empty()));
+        }
+    }
+    for (auto& dev : devices) {
+        if (!(dev->receive.empty())) {
+            cmd.push([=] {
+                if (ReadSerial() == "GOOD RESPONSE") {
+                    /// Statements
+                } else {
+                    /// Statements
+                }
+            });
+            do {
+                cmd.push(dev->receive.front());
+                dev->receive.pop();
+            } while (!(dev->receive.empty()));
         }
     }
 }
 
-DeviceBase::DeviceBase() {
-    cmd.push(Command::feature);
+void DeviceManager::Flush() { // 未完成
+  progress = async(launch::async,
+    [=]{
+      while(!cmd.empty()){
+
+      }
+    }
+  );
+}
+
+DeviceBase::DeviceBase() { //デバイスのインスタンスを生成時、sel XX と ft を送る
+  PushCommand(
+      [=] {
+          parent->WriteSerial(Command::feature + Command::newline);
+      },
+      [=] {
+          if (Feature(parent->ReadSerial())) {
+              cout << "Feature success" << endl;
+          } else {
+              /// Statements
+          }
+      }
+    );
 }
 
 DeviceBase::~DeviceBase() {}
 
-void DeviceBase::PushCommand(string str) {
-    cmd.push(str + Command::newline);
+void DeviceBase::PushCommand(std::function<void()> before,
+                             std::function<void()> after) {
+    // cmd.push(str + Command::newline);
+    send.push(before);
+    receive.push(after);
 }
 
 void DeviceBase::Read_csv(string str) {
@@ -119,15 +163,37 @@ DeviceMotor::DeviceMotor(DeviceManager* p, address_t a) {
 
 DeviceMotor::~DeviceMotor() {}
 
-void DeviceMotor::Synchronize() {
-    parent->Flush();
-    PushCommand(Command::sync);
-    parent->Flush();
+void DeviceMotor::Synchronize() { //selを伴わない、 同時に実行させたい範囲の開始を示す特殊な命令
+    parent->Fetch();
+    parent->PushCommandDirectly(
+      [=]{
+        parent->WriteSerial(Command::sync + Command::newline);
+      }
+    );
+    parent->PushCommandDirectly(
+      [=]{
+        if (parent->ReadSerial() == "GOOD RESPONSE") {
+            /// Statements
+        } else {
+            /// Statements
+        }
+      }
+    );
     // parent->WriteSerial(ss.str());
 }
 
 void DeviceMotor::Duty(float value) {
-    stringstream ss;
-    ss << Command::duty << Command::space << value;
-    PushCommand(ss.str());
+    PushCommand(
+        [=] {
+            stringstream ss;
+            ss << Command::duty << Command::space << value << Command::newline;
+            parent->WriteSerial(ss.str());
+        },
+        [=] {
+            if (parent->ReadSerial() == "GOOD RESPONSE") {
+                /// Statements
+            } else {
+                /// Statements
+            }
+        });
 }
