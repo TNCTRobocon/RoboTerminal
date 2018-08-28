@@ -9,7 +9,6 @@
 #include <utility>
 //#include <general/motor.hpp>
 
->>>>>>> general
 using namespace std;
 using namespace Util;
 
@@ -25,8 +24,8 @@ shared_ptr<DeviceManager> device_manager{nullptr};
 //shared_ptr<DeviceManager> device_manager2{nullptr};
 vector< future<long_task_result_t> >results;
 
-motor_sptr tire_flont_right{nullptr},tire_flont_left{nullptr},tire_back_right{nullptr},tire_back_left{nullptr};
-motor_manager_sptr motor_manager{nullptr};
+//motor_sptr tire_flont_right{nullptr},tire_flont_left{nullptr},tire_back_right{nullptr},tire_back_left{nullptr};
+//motor_manager_sptr motor_manager{nullptr};
 
 static bool volatile is_continue{false};
 static void singal_receiver(int num) {
@@ -45,7 +44,7 @@ int main(int argc, char** argv) {
     report.reset(new Report("report.log"));
     report->Info(ReportGroup::System, "Wake Up");
     setting.reset(new Settings("setting.config"));
-    #if 0
+
     //ゲームパッドを初期化する
     auto gamepad_location = setting->Read("gamepad");
     if (gamepad_location) {
@@ -53,10 +52,12 @@ int main(int argc, char** argv) {
     } else {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
-    #endif
+    
     //シリアルポートを初期化する
     auto serial_location = setting->Read("serial");
     auto band = setting->Read("serial-band").value_or("115200");
+    cout << serial_location->c_str() << endl;
+    cout << stoi(band) << endl;
     if (serial_location) {
       device_manager =
         move(DeviceManager::GenerateDeviceManager(serial_location->c_str(),stoi(band)));

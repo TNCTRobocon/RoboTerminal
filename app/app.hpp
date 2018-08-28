@@ -12,4 +12,4 @@ extern std::shared_ptr<Util::Settings> setting;
 extern std::shared_ptr<Util::Report> report;
 extern std::shared_ptr<GamePad> gamepad;
 
-extern motor_sptr tire_flont_right,tire_flont_left,tire_back_right,tire_back_left;
+//extern motor_sptr tire_flont_right,tire_flont_left,tire_back_right,tire_back_left;
