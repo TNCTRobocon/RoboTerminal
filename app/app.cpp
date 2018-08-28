@@ -1,3 +1,5 @@
+#if 1
+
 #include "app.hpp"
 #include "state.hpp"
 #include <signal.h>
@@ -35,12 +37,12 @@ int main(int argc, char** argv) {
     }
     #endif
     //シリアルポートを初期化する
-    auto serial_location =setting->Read("serial");
-    auto band=setting->Read("serial-band").value_or("115200");
-    if (serial_location){
-      //motor_manager = move(MotorManager::GenerateMotorManeger(serial_location->c_str(),stoi(band)));
-    }else{
-      report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
+    auto serial_location = setting->Read("serial");
+    auto band = setting->Read("serial-band").value_or("115200");
+    if (serial_location) {
+        // MotorManager::GenerateMotorManager(serial_location->c_str(),stoi(band));
+    } else {
+        report->Warn(ReportGroup::GamePad, "Missing Serial Location");
     }
     //モーターのアドレス設定
 #if 0
@@ -70,7 +72,7 @@ int main(int argc, char** argv) {
       /*
         if (gamepad) {
             gamepad->Update();
-            //cout << gamepad->Status();//確認用
+            cout << gamepad->Status();  //確認用
         }
         for(manual* it=new MoveStop();it!=nullptr;){
           manual* next=it->next();
@@ -89,3 +91,4 @@ int main(int argc, char** argv) {
     report->Info(ReportGroup::System, "Shutdown");
     return 0;
 }
+#endif

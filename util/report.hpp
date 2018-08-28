@@ -4,7 +4,7 @@
 namespace Util {
 
 enum class ReportType : int {
-    Info = 34,  // Blue
+    Info = 36,  // LightBlue
     Warn = 32,  // Yellow
     Error = 31  // Red
 };
@@ -19,7 +19,8 @@ enum class ReportGroup : int {
 };
 static inline const std::string& ToString(ReportGroup group) {
     //随時追加していってください()
-    const static std::string table[] = {"Unknown", "None", "System", "GamePad","SerialPort"};
+    const static std::string table[] = {"Unknown", "None", "System", "GamePad",
+                                        "SerialPort"};
     return table[(int)group];
 }
 
