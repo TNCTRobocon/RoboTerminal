@@ -8,6 +8,8 @@
 #include <queue>
 #include <functional>
 #include <future>
+#include <tuple>
+#include <map>
 //#include <iostream>
 //#include <sstream>
 //#include <algorithm>
@@ -18,50 +20,42 @@ class DeviceManager;
 class DeviceBase;
 class DeviceMotor;
 
+using namespace std;
+
 using address_t = uint32_t;
-using factor_t = std::string;
+using factor_t = string;
 
-std::future<void> progress;
+//future<void> prpr; //TODO right name
 
-namespace Command {
-const std::string newline = "\r";
-const std::string space = " ";
-const std::string select = "sel";
-const std::string feature = "ft";
-const std::string duty = "dt";
-const std::string motor_control = "mc";
-const std::string async_motor_control = "rady";
-const std::string sync = "go";
-const std::string angle = "sc";
-const std::string reset = "rst";
-const std::string stop = "stop";
-}
+
 
 class DeviceManager {
     // friend class DeviceBase;
 private:
     boost::asio::io_service io;
     boost::asio::serial_port serial;  //まだserialportは開かれていない
-    // std::queue commands ?? in DeviceBase
-    std::vector<std::shared_ptr<DeviceBase>> devices;
-    std::queue<std::function<void()>> cmd;
-    DeviceManager(std::string filename, int rate);
+    // queue commands ?? in DeviceBase
+    // vector<shared_ptr<DeviceBase>> devices;
+    map<address_t,weak_ptr<DeviceBase>> devices_adr;
+    multimap<factor_t,weak_ptr<DeviceBase>> devices_ft;
+    queue<function<void()>> cmd;
+    DeviceManager(string filename, int rate);
 
 public:
-    static inline std::unique_ptr<DeviceManager> GenerateDeviceManager(
-        std::string filename,
+    static inline unique_ptr<DeviceManager> GenerateDeviceManager(
+        string filename,
         int rate) {
-        return std::unique_ptr<DeviceManager>(
+        return unique_ptr<DeviceManager>(
             new DeviceManager(filename, rate));
     }
     ~DeviceManager();
 
-    std::shared_ptr<DeviceMotor> CreateMotor(address_t);
+    bool CreateMotor(address_t);
 
-    std::string ReadSerial();
-    void WriteSerial(const std::string&);
+    string ReadSerial();
+    void WriteSerial(const string&);
     void Select(address_t address);
-    void PushCommandDirectly(std::function<void()> no_sel);
+    void PushCommandDirectly(function<void()> no_sel);
     void Fetch();
     void Flush();
 };
@@ -70,18 +64,19 @@ class DeviceBase {
     friend class DeviceManager;
 
 private:
-    std::unordered_set<factor_t> ft;
-    std::queue<std::function<void()>> send;
-    std::queue<std::function<void()>> receive;
+    unordered_set<factor_t> ft;
+    //queue<function<void()>> send;
+    //queue<function<void()>> receive;
+    queue<tuple<string,function<void(string)>>> async_task;
 
 protected:
     DeviceManager* parent;
     address_t address;
     DeviceBase();
     ~DeviceBase();
-    void PushCommand(std::function<void()> before, std::function<void()> after);
-    void Read_csv(std::string str);
-    bool Feature(std::string response);
+    void PushCommand(string to_send, function<void(string)> response_checker);
+    void ReadCSV(string str);
+    bool Feature(string response);
     //??? void Flush();
     // void Select
 };

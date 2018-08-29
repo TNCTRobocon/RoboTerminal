@@ -6,6 +6,20 @@
 
 using namespace std;
 
+namespace Command {
+const string newline = "\r";
+const string space = " ";
+const string select = "sel";
+const string feature = "ft";
+const string duty = "dt";
+const string motor_control = "mc";
+const string async_motor_control = "rady";
+const string sync = "go";
+const string angle = "sc";
+const string reset = "rst";
+const string stop = "stop";
+}
+
 DeviceManager::DeviceManager(string filename, int rate) : serial(io) {
     try {
         serial.open(filename);
@@ -24,18 +38,22 @@ DeviceManager::~DeviceManager() {
 
 /// デバイスのインスタンスを生成
 
-shared_ptr<DeviceMotor> DeviceManager::CreateMotor(address_t new_address) {
-    for (auto& it : devices) {  //アドレスが本当に新しいか確認
-        if (new_address ==
-            it->address) {  //そのアドレスは既に埋まっているならば
-            return nullptr;  // devicesの中のそのアドレスの要素を返す
-        }
+bool DeviceManager::CreateMotor(address_t new_address) {
+    //アドレスが本当に新しいか確認
+    if(devices_adr.count(new_address) == 0){
+      //新しいアドレスでMotorへのweakポインタを生成する
+      shared_ptr<DeviceMotor> new_sptr =
+          make_shared<DeviceMotor>(this, new_address);
+      devices_adr[new_address] = new_sptr;
+      return true;
+      //return ;
     }
-    //新しいアドレスで生成する
-    shared_ptr<DeviceMotor> new_sptr =
-        make_shared<DeviceMotor>(this, new_address);
-    devices.push_back(new_sptr);
-    return new_sptr;
+    else{//そのアドレスは既に埋まっているならば
+      //TODO エラーレポート　address XX is already taken
+      //return devices_adr[new_address];//devices_adrの中のそのアドレスの要素を返す
+      return false;
+    }
+
 }
 
 ///　デバイスのインスタンスを生成（終）
@@ -64,11 +82,13 @@ void DeviceManager::Select(address_t address) {
     WriteSerial(ss.str());
 }
 
-void DeviceManager::PushCommandDirectly(std::function<void()> no_sel){
-  cmd.push(no_sel);
+void DeviceManager::PushCommandDirectly(function<void()> no_sel){
+  //cmd.push(no_sel);
 }
 
 void DeviceManager::Fetch() {
+  //for(:)
+  /*
     for (auto& dev : devices) {
         if (!(dev->send.empty())) {
             cmd.push([=] { Select(dev->address); });
@@ -93,25 +113,25 @@ void DeviceManager::Fetch() {
             } while (!(dev->receive.empty()));
         }
     }
+  */
 }
 
 void DeviceManager::Flush() { // 未完成
-  progress = async(launch::async,
+  /*
+   = async(launch::async,
     [=]{
       while(!cmd.empty()){
 
       }
     }
   );
+  */
 }
 
 DeviceBase::DeviceBase() { //デバイスのインスタンスを生成時、sel XX と ft を送る
-  PushCommand(
-      [=] {
-          parent->WriteSerial(Command::feature + Command::newline);
-      },
-      [=] {
-          if (Feature(parent->ReadSerial())) {
+  PushCommand(Command::feature + Command::newline,
+      [=] (string response){
+          if (Feature(response)) {
               cout << "Feature success" << endl;
           } else {
               /// Statements
@@ -122,14 +142,12 @@ DeviceBase::DeviceBase() { //デバイスのインスタンスを生成時、sel
 
 DeviceBase::~DeviceBase() {}
 
-void DeviceBase::PushCommand(std::function<void()> before,
-                             std::function<void()> after) {
+void DeviceBase::PushCommand(string to_send, function<void(string)> response_checker) {
     // cmd.push(str + Command::newline);
-    send.push(before);
-    receive.push(after);
+    async_task.push(make_tuple(to_send, response_checker));
 }
 
-void DeviceBase::Read_csv(string str) {
+void DeviceBase::ReadCSV(string str) {
     ft.clear();
     auto first = str.begin();
     while (first != str.end()) {
@@ -137,7 +155,8 @@ void DeviceBase::Read_csv(string str) {
         while (last != str.end() && *last != ',') {
             ++last;
         }
-        ft.emplace(std::string(first, last));
+        ft.emplace(string(first, last));
+        // TODO ftによる検索のためのmultimapへ登録
         if (last != str.end()) {
             ++last;
         }
@@ -149,7 +168,7 @@ bool DeviceBase::Feature(string response) {
     if (!response.empty()) {
         if (response.back() == '\r') {
             response.pop_back();
-            Read_csv(response);
+            ReadCSV(response);
             return true;
         }
     }
@@ -164,6 +183,7 @@ DeviceMotor::DeviceMotor(DeviceManager* p, address_t a) {
 DeviceMotor::~DeviceMotor() {}
 
 void DeviceMotor::Synchronize() { //selを伴わない、 同時に実行させたい範囲の開始を示す特殊な命令
+  /*
     parent->Fetch();
     parent->PushCommandDirectly(
       [=]{
@@ -180,20 +200,19 @@ void DeviceMotor::Synchronize() { //selを伴わない、 同時に実行させ�
       }
     );
     // parent->WriteSerial(ss.str());
+  */
 }
 
 void DeviceMotor::Duty(float value) {
-    PushCommand(
-        [=] {
-            stringstream ss;
-            ss << Command::duty << Command::space << value << Command::newline;
-            parent->WriteSerial(ss.str());
-        },
-        [=] {
-            if (parent->ReadSerial() == "GOOD RESPONSE") {
+  stringstream ss;
+  ss << Command::duty << Command::space << value << Command::newline;
+    PushCommand(ss.str(),
+        [](string response){
+            if (response == "GOOD RESPONSE") {
                 /// Statements
             } else {
                 /// Statements
             }
-        });
+        }
+    );
 }
