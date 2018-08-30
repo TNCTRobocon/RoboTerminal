@@ -5,14 +5,13 @@
 #include <mutex>
 
 extern std::mutex mtxt;
-extern std::mutex mtxp;
 
 class Sonic{
 private:
 	int pin_num;
 	bool end_flag{true};
 	double time{0};
-	//std::optional<double> time{std::nullopt}; /////
+	//std::optional<double> time{std::nullopt};
 public:
 	Sonic(int);
 	void sonicend();
