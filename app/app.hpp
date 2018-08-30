@@ -6,6 +6,8 @@
 #include <util/argument.hpp>
 #include <util/report.hpp>
 #include <util/settings.hpp>
+#include <special/ultrasonic.hpp>
+#include <special/servo.hpp>
 
 extern std::shared_ptr<Util::Argument> argument;
 extern std::shared_ptr<Util::Settings> setting;
