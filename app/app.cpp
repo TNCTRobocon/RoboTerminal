@@ -7,6 +7,7 @@
 #include <future>
 #include <vector>
 #include <utility>
+#include <wiringPi.h>
 //#include <general/motor.hpp>
 
 using namespace std;
@@ -44,7 +45,7 @@ int main(int argc, char** argv) {
     report.reset(new Report("report.log"));
     report->Info(ReportGroup::System, "Wake Up");
     setting.reset(new Settings("setting.config"));
-
+#if 0
     //ゲームパッドを初期化する
     auto gamepad_location = setting->Read("gamepad");
     if (gamepad_location) {
@@ -52,12 +53,10 @@ int main(int argc, char** argv) {
     } else {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
-    
+
     //シリアルポートを初期化する
     auto serial_location = setting->Read("serial");
     auto band = setting->Read("serial-band").value_or("115200");
-    cout << serial_location->c_str() << endl;
-    cout << stoi(band) << endl;
     if (serial_location) {
       device_manager =
         move(DeviceManager::GenerateDeviceManager(serial_location->c_str(),stoi(band)));
@@ -67,7 +66,6 @@ int main(int argc, char** argv) {
         report->Warn(ReportGroup::GamePad, "Missing Serial Location");
     }
     //モーターのアドレス設定
-#if 0
     auto motor_flontleft_address = setting->Read("flontleft").value_or("16");
     auto motor_flontright_address = setting->Read("flontright").value_or("17");
     auto motor_backleft_address = setting->Read("backleft").value_or("18");
@@ -78,35 +76,28 @@ int main(int argc, char** argv) {
     tire_back_left = motor_manager->CreateMotor(stoi(motor_backleft_address));
     tire_back_right = motor_manager->CreateMotor(stoi(motor_backright_address));
 #endif
+    if(wiringPiSetup()!=0){
+      report->Warn(ReportGroup::WiringPi, "error wiringPi setup");
+    }else{
+      report->Info(ReportGroup::WiringPi, "success WiringPi setup");
+    }
+    Sonic sonic_one(4);
+    thread t1(sonic_one);
     // MessageLoop
     signal(SIGINT, singal_receiver);
 
     for (is_continue = true; is_continue;) {
-// EXAMPLE
-      LongTaskBefore( []() -> long_task_result_t{
-        device_manager -> Select(39);
-        device_manager -> WriteSerial("echo miku\r");
-        return device_manager -> ReadSerial();
-      });
-      //LongTaskBefore(...
-      //LongTaskBefore(...
-      bool all_task_finished = false;
-      while(!all_task_finished){
-        ShortTask();
-        all_task_finished = true;
-        for(auto& result : results){
-          if(result.wait_for(CHECK_NOW) == future_status::timeout){
-            all_task_finished = false;
-            break;
-          }
+
+      /*
+      for(automatic* it=new FirstMove();it!=nullptr;){
+        (*it)();
+        automatic* next=it->next();
+        if(next!=it){
+          delete it;
         }
-      }
-      cout << LongTaskAfter() << endl; // "miku" expected
-      //cout << LongTaskAfter() << endl;
-      //cout << LongTaskAfter() << endl;
-
+      }*/
     }
-
+    t1.join();
     report->Info(ReportGroup::System, "Shutdown");
     return 0;
 }
