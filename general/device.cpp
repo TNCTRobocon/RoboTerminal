@@ -1,13 +1,16 @@
 #include "device.hpp"
+#include "util/report.hpp"
+#include "app/app.hpp"
 
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <future>
 
 using namespace std;
 
 namespace Command {
-const string newline = "\r";
+const char newline = '\r';
 const string space = " ";
 const string select = "sel";
 const string feature = "ft";
@@ -24,7 +27,8 @@ DeviceManager::DeviceManager(string filename, int rate) : serial(io) {
     try {
         serial.open(filename);
     } catch (...) {
-        cout << "failed to open serialport : FILE NAME ?" << endl;
+        //report -> Error(ReportGroup::SerialPort, "Failed to Open SerialPort");
+        // strange error "ReportGroup has not been declared"
     }
     cout << "serialport opened successfully" << endl;
     serial.set_option(
@@ -63,16 +67,27 @@ void DeviceManager::WriteSerial(
     boost::asio::write(serial, boost::asio::buffer(text));
 }
 
-string DeviceManager::ReadSerial() {  //必ず'\r'で終わる文字列を一つ読み込む
+optional<string> DeviceManager::ReadSerial() {  //必ず'\r'で終わる文字列を一つ読み込む
     boost::asio::streambuf buf;
-    boost::asio::read_until(serial, buf, '\r');
+    future<void> timed_task = async(launch::async,
+      [&] {boost::asio::read_until(serial, buf, Command::newline);}
+    );
+    future_status timer = timed_task.wait_for(SERIAL_TIME_LIMIT);
+    if(timer != future_status::timeout){
+      string result = boost::asio::buffer_cast<const char*>(
+          buf.data());  //バッファの中身を文字列として取り出す
+      return result;
+    }
+    else{
+      // error serial read timeout
+      return nullopt;
+    }
 
-    // TODO
-    // 一定時間経っても応答がない(\rで終わる文字列がこない)場合のプログラムを追加
 
-    string result = boost::asio::buffer_cast<const char*>(
-        buf.data());  //バッファの中身を文字列として取り出す
-    return result;
+}
+
+void DeviceManager::SetFeature(address_t adr, factor_t fac){
+  devices_ft.emplace(fac, devices_adr[adr]);
 }
 
 void DeviceManager::Select(address_t address) {
@@ -87,36 +102,60 @@ void DeviceManager::PushCommandDirectly(function<void()> no_sel){
 }
 
 void DeviceManager::Fetch() {
-  //for(:)
-  /*
-    for (auto& dev : devices) {
-        if (!(dev->send.empty())) {
-            cmd.push([=] { Select(dev->address); });
-            do {
-                cmd.push(dev->send.front());
-                dev->send.pop();
-            } while (!(dev->send.empty()));
-        }
+  queue<function<void()>> send;
+  queue<function<void()>> receive;
+  for(auto& dev : devices_adr){
+    if(shared_ptr<DeviceBase> sptr = dev.second.lock()){
+      if(!(sptr -> async_task.empty())){
+        send.push( [=] { Select(dev.first); } );
+        receive.push(
+          [=] {
+            if (ReadSerial() == "GOOD RESPONSE"){
+              ////
+            }
+            else{
+              ////
+            }
+          }
+        );
+        do{
+          send.push(
+            [=] {
+              WriteSerial(get<string>(sptr -> async_task.front()));
+            }
+          );
+          receive.push(
+            [=] {
+              get<function<void(optional<string>)>>(sptr -> async_task.front())(ReadSerial());
+            }
+          );
+          sptr -> async_task.pop();
+        }while(!(sptr -> async_task.empty()));
+      }
     }
-    for (auto& dev : devices) {
-        if (!(dev->receive.empty())) {
-            cmd.push([=] {
-                if (ReadSerial() == "GOOD RESPONSE") {
-                    /// Statements
-                } else {
-                    /// Statements
-                }
-            });
-            do {
-                cmd.push(dev->receive.front());
-                dev->receive.pop();
-            } while (!(dev->receive.empty()));
-        }
-    }
-  */
+  }
+  while(!send.empty()){
+    cmd.push(send.front());
+    send.pop();
+  }
+  while(!receive.empty()){
+    cmd.push(receive.front());
+    receive.pop();
+  }
 }
 
-void DeviceManager::Flush() { // 未完成
+void DeviceManager::Flush(future<void>& task) {
+  task = async(launch::async,
+    [=]{
+      while(!cmd.empty()){
+        cmd.front()();
+        cmd.pop();
+      }
+    }
+  );
+  while(!cmd.empty()){
+    cmd.pop();
+  }
   /*
    = async(launch::async,
     [=]{
@@ -130,7 +169,7 @@ void DeviceManager::Flush() { // 未完成
 
 DeviceBase::DeviceBase() { //デバイスのインスタンスを生成時、sel XX と ft を送る
   PushCommand(Command::feature + Command::newline,
-      [=] (string response){
+      [=] (optional<string> response){
           if (Feature(response)) {
               cout << "Feature success" << endl;
           } else {
@@ -140,10 +179,11 @@ DeviceBase::DeviceBase() { //デバイスのインスタンスを生成時、sel
     );
 }
 
-DeviceBase::~DeviceBase() {}
+DeviceBase::~DeviceBase() {
+  //DeviceManagerが持つこのDeviceBaseへのweakポインタはここで無効になる
+}
 
-void DeviceBase::PushCommand(string to_send, function<void(string)> response_checker) {
-    // cmd.push(str + Command::newline);
+void DeviceBase::PushCommand(string to_send, function<void(optional<string>)> response_checker) {
     async_task.push(make_tuple(to_send, response_checker));
 }
 
@@ -156,7 +196,7 @@ void DeviceBase::ReadCSV(string str) {
             ++last;
         }
         ft.emplace(string(first, last));
-        // TODO ftによる検索のためのmultimapへ登録
+        parent -> SetFeature(address, string(first, last));
         if (last != str.end()) {
             ++last;
         }
@@ -164,15 +204,23 @@ void DeviceBase::ReadCSV(string str) {
     }
 }
 
-bool DeviceBase::Feature(string response) {
-    if (!response.empty()) {
-        if (response.back() == '\r') {
-            response.pop_back();
-            ReadCSV(response);
+bool DeviceBase::Feature(optional<string> response) {
+  if(response){
+    if (!response->empty()) {
+        if (response->back() == Command::newline) {
+            response->pop_back();
+            ReadCSV(*response);
             return true;
         }
     }
-    return false;
+    cout << "Failed to Get Feature from Device" << address << endl;
+    cout << "(Response NOT Ending With Delimiter"<<endl;
+  }
+  else{
+    cout << "Failed to Get Feature from Device" << address << endl;
+    cout << "(No Response)" << endl;
+  }
+  return false;
 }
 
 DeviceMotor::DeviceMotor(DeviceManager* p, address_t a) {
@@ -207,7 +255,7 @@ void DeviceMotor::Duty(float value) {
   stringstream ss;
   ss << Command::duty << Command::space << value << Command::newline;
     PushCommand(ss.str(),
-        [](string response){
+        [=](optional<string> response){
             if (response == "GOOD RESPONSE") {
                 /// Statements
             } else {

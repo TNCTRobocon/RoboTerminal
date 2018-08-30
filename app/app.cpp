@@ -22,7 +22,8 @@ shared_ptr<Report> report{nullptr};
 shared_ptr<GamePad> gamepad{nullptr};
 shared_ptr<DeviceManager> device_manager{nullptr};
 // shared_ptr<DeviceManager> device_manager2{nullptr};
-//vector<future<long_task_result_t> > results;
+// vector<future<long_task_result_t> > ;
+future<void> long_task;
 
 static bool volatile is_continue{false};
 static void singal_receiver(int num) {
@@ -64,30 +65,30 @@ int main(int argc, char** argv) {
     signal(SIGINT, singal_receiver);
 
     for (is_continue = true; is_continue;) {
-      /*
-        // EXAMPLE
-        LongTaskBefore([]() -> long_task_result_t {
-            device_manager->Select(39);
-            device_manager->WriteSerial("echo miku\r");
-            return device_manager->ReadSerial();
-        });
-        // LongTaskBefore(...
-        // LongTaskBefore(...
-        bool all_task_finished = false;
-        while (!all_task_finished) {
-            ShortTask();
-            all_task_finished = true;
-            for (auto& result : results) {
-                if (result.wait_for(CHECK_NOW) == future_status::timeout) {
-                    all_task_finished = false;
-                    break;
-                }
-            }
-        }
-        cout << LongTaskAfter() << endl;  // "miku" expected
-        // cout << LongTaskAfter() << endl;
-        // cout << LongTaskAfter() << endl;
-        */
+        /*
+          // EXAMPLE
+          LongTaskBefore([]() -> long_task_result_t {
+              device_manager->Select(39);
+              device_manager->WriteSerial("echo miku\r");
+              return device_manager->ReadSerial();
+          });
+          // LongTaskBefore(...
+          // LongTaskBefore(...
+          bool all_task_finished = false;
+          while (!all_task_finished) {
+              ShortTask();
+              all_task_finished = true;
+              for (auto& result : results) {
+                  if (result.wait_for(CHECK_NOW) == future_status::timeout) {
+                      all_task_finished = false;
+                      break;
+                  }
+              }
+          }
+          cout << LongTaskAfter() << endl;  // "miku" expected
+          // cout << LongTaskAfter() << endl;
+          // cout << LongTaskAfter() << endl;
+          */
     }
 
     report->Info(ReportGroup::System, "Shutdown");

@@ -1,5 +1,7 @@
 #pragma once
 
+//#include "app/app.hpp"
+
 #include <memory>
 #include <stdint.h>
 #include <string>
@@ -10,6 +12,8 @@
 #include <future>
 #include <tuple>
 #include <map>
+#include <optional>
+#include <utility>
 //#include <iostream>
 //#include <sstream>
 //#include <algorithm>
@@ -25,9 +29,9 @@ using namespace std;
 using address_t = uint32_t;
 using factor_t = string;
 
-//future<void> prpr; //TODO right name
+#define SERIAL_TIME_LIMIT (chrono::milliseconds(50))
 
-
+// future<void> prpr; //TODO right name
 
 class DeviceManager {
     // friend class DeviceBase;
@@ -36,28 +40,29 @@ private:
     boost::asio::serial_port serial;  //まだserialportは開かれていない
     // queue commands ?? in DeviceBase
     // vector<shared_ptr<DeviceBase>> devices;
-    map<address_t,weak_ptr<DeviceBase>> devices_adr;
-    multimap<factor_t,weak_ptr<DeviceBase>> devices_ft;
+    map<address_t, weak_ptr<DeviceBase>> devices_adr;
+    multimap<factor_t, weak_ptr<DeviceBase>> devices_ft;
     queue<function<void()>> cmd;
     DeviceManager(string filename, int rate);
+    optional<string> ReadSerial();
+    void WriteSerial(const string&);
 
 public:
     static inline unique_ptr<DeviceManager> GenerateDeviceManager(
         string filename,
         int rate) {
-        return unique_ptr<DeviceManager>(
-            new DeviceManager(filename, rate));
+        return unique_ptr<DeviceManager>(new DeviceManager(filename, rate));
     }
     ~DeviceManager();
 
     bool CreateMotor(address_t);
 
-    string ReadSerial();
-    void WriteSerial(const string&);
+
+    void SetFeature(address_t adr, factor_t fac);
     void Select(address_t address);
     void PushCommandDirectly(function<void()> no_sel);
     void Fetch();
-    void Flush();
+    void Flush(future<void>& task);
 };
 
 class DeviceBase {
@@ -65,18 +70,18 @@ class DeviceBase {
 
 private:
     unordered_set<factor_t> ft;
-    //queue<function<void()>> send;
-    //queue<function<void()>> receive;
-    queue<tuple<string,function<void(string)>>> async_task;
+    // queue<function<void()>> send;
+    // queue<function<void()>> receive;
+    queue<tuple<string, function<void(optional<string>)>>> async_task;
 
 protected:
     DeviceManager* parent;
     address_t address;
     DeviceBase();
     ~DeviceBase();
-    void PushCommand(string to_send, function<void(string)> response_checker);
+    void PushCommand(string to_send, function<void(optional<string>)> response_checker);
     void ReadCSV(string str);
-    bool Feature(string response);
+    bool Feature(optional<string> response);
     //??? void Flush();
     // void Select
 };
