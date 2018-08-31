@@ -19,7 +19,8 @@ enum class ReportGroup : int {
 };
 static inline const std::string& ToString(ReportGroup group) {
     //随時追加していってください()
-    const static std::string table[] = {"Unknown", "None", "System", "GamePad","SerialPort"};
+    const static std::string table[] = {"Unknown", "None", "System", "GamePad",
+                                        "SerialPort"};
     return table[(int)group];
 }
 
