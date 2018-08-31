@@ -4,6 +4,8 @@
 */
 #include <mutex>
 
+namespace Spcl{
+
 extern std::mutex mtxt;
 
 class Sonic{
@@ -21,3 +23,5 @@ public:
 		return time;
 	}
 };
+
+}//namespace Spcl
