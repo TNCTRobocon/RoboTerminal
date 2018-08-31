@@ -53,7 +53,6 @@ int main(int argc, char** argv) {
     } else {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
-
     //シリアルポートを初期化する
     auto serial_location = setting->Read("serial");
     auto band = setting->Read("serial-band").value_or("115200");

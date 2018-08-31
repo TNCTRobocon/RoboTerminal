@@ -8,6 +8,7 @@
 #include <util/settings.hpp>
 #include <special/ultrasonic.hpp>
 #include <special/servo.hpp>
+#include <special/limitswitch.hpp>
 
 extern std::shared_ptr<Util::Argument> argument;
 extern std::shared_ptr<Util::Settings> setting;
