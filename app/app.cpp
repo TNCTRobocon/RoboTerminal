@@ -26,6 +26,7 @@ static void shared_init(int* argc, char*** argv) {
     setting.reset(new Settings("setting.config"));
     // Windowsを初期化する
     window.reset(new Window(argc, argv));
+    report->Info("UI Wake Up");
     //ゲームパッドを初期化する
     auto gamepad_location = setting->Read("gamepad");
     if (gamepad_location) {
