@@ -11,6 +11,8 @@ Window::Window(int* argc, char*** argv) {
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_widget_set_size_request(window, 300, 200);
     g_signal_connect(window, "destroy", G_CALLBACK(Window::Exit), this);
+    // controlの初期化
+    
 
     gtk_widget_show(window);
     showing = true;

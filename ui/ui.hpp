@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <gtk/gtk.h>
+#include <mutex>
 
 namespace UI {
 

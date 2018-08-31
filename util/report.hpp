@@ -14,13 +14,14 @@ enum class ReportGroup : int {
     None,
     System,
     GamePad,
-    SerialPort
-    //随時追加していってください()
+    SerialPort,
+    GUI
+    //随時追加していってください
 };
 static inline const std::string& ToString(ReportGroup group) {
-    //随時追加していってください()
+    //随時追加していってください
     const static std::string table[] = {"Unknown", "None", "System", "GamePad",
-                                        "SerialPort"};
+                                        "SerialPort","GUI"};
     return table[(int)group];
 }
 
