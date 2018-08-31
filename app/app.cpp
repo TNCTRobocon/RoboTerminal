@@ -12,7 +12,7 @@
 
 using namespace std;
 using namespace Util;
-
+using namespace Spcl;
 using long_task_result_t = string;
 #define CHECK_NOW chrono::milliseconds(0)
 
@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
     report.reset(new Report("report.log"));
     report->Info(ReportGroup::System, "Wake Up");
     setting.reset(new Settings("setting.config"));
-#if 0
+
     //ゲームパッドを初期化する
     auto gamepad_location = setting->Read("gamepad");
     if (gamepad_location) {
@@ -65,6 +65,7 @@ int main(int argc, char** argv) {
     } else {
         report->Warn(ReportGroup::GamePad, "Missing Serial Location");
     }
+    #if 0
     //モーターのアドレス設定
     auto motor_flontleft_address = setting->Read("flontleft").value_or("16");
     auto motor_flontright_address = setting->Read("flontright").value_or("17");
@@ -81,8 +82,8 @@ int main(int argc, char** argv) {
     }else{
       report->Info(ReportGroup::WiringPi, "success WiringPi setup");
     }
-    Sonic sonic_one(4);
-    thread t1(sonic_one);
+    //Sonic sonic_one(4);
+    //thread t1(sonic_one);
     // MessageLoop
     signal(SIGINT, singal_receiver);
 
@@ -97,7 +98,7 @@ int main(int argc, char** argv) {
         }
       }*/
     }
-    t1.join();
+    //t1.join();
     report->Info(ReportGroup::System, "Shutdown");
     return 0;
 }
