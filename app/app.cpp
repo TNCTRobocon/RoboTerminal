@@ -35,6 +35,7 @@ static void shared_init(int* argc, char*** argv) {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
     //シリアルポートを初期化する
+<<<<<<< HEAD
     auto serial_location = setting->Read("serial");
     auto band = setting->Read("serial-band").value_or("115200");
     if (serial_location) {
@@ -44,6 +45,15 @@ static void shared_init(int* argc, char*** argv) {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
 }
+=======
+    auto serial_location =setting->Read("serial");
+    auto band=setting->Read("serial-band").value_or("115200");
+    /*if (serial_location){
+        MotorManager::GenerateMotorManeger(serial_location->c_str(),stoi(band));
+    }else{
+        report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
+    }*/
+>>>>>>> 35f5910a6f51f6d1d27a738f36e4797bcce5356b
 
 int main(int argc, char** argv) {
     shared_init(&argc, &argv);
