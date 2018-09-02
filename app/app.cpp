@@ -26,7 +26,7 @@ static void shared_init(int* argc, char*** argv) {
     setting.reset(new Settings("setting.config"));
     // Windowsを初期化する
     window.reset(new Window(argc, argv));
-    report->Info(ReportGroup::GUI,"UI Wake Up");
+    report->Info(ReportGroup::GUI, "UI Wake Up");
     //ゲームパッドを初期化する
     auto gamepad_location = setting->Read("gamepad");
     if (gamepad_location) {
@@ -35,14 +35,14 @@ static void shared_init(int* argc, char*** argv) {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
     //シリアルポートを初期化する
-    /*auto serial_location = setting->Read("serial");
+    auto serial_location = setting->Read("serial");
     auto band = setting->Read("serial-band").value_or("115200");
     if (serial_location) {
         MotorManager::GenerateMotorManeger(serial_location->c_str(),
                                            stoi(band));
     } else {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
-    }*/
+    }
 }
 
 int main(int argc, char** argv) {

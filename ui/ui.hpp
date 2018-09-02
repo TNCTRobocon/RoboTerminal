@@ -8,7 +8,6 @@
 #include <memory>
 #include <gtk/gtk.h>
 
-
 namespace UI {
 
 struct Window {
@@ -25,7 +24,5 @@ struct Window {
     //メソッド(内部用)
     static void Exit(void* dummy, Window* win);
 };
-
-
 
 }  // namespace UI
