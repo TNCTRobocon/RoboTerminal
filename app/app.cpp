@@ -43,6 +43,10 @@ static void shared_init(int* argc, char*** argv) {
     } else {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
+#ifdef RASPBERRY_PI
+    //specialを関する記述
+
+#endif
 }
 
 int main(int argc, char** argv) {
