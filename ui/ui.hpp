@@ -7,7 +7,7 @@
 
 #include <memory>
 #include <gtk/gtk.h>
-#include <mutex>
+
 
 namespace UI {
 
@@ -15,6 +15,7 @@ struct Window {
     // field定義
     GtkWidget* window;
     bool showing;
+
     //コンストラクタ
     Window(int* argc, char*** argv);
     Window(const Window&) = delete;
@@ -24,5 +25,7 @@ struct Window {
     //メソッド(内部用)
     static void Exit(void* dummy, Window* win);
 };
+
+
 
 }  // namespace UI
