@@ -19,8 +19,10 @@ constexpr size_t GamePad::axis_size;
 GamePad::GamePad(const string& filename)
     : buttons(button_size), axises(axis_size) {
     fd = open(filename.c_str(), O_RDONLY);
+    auto& report = app->report;
     if (fd < 0) {
         string message = "Cannot Open GamePad" + filename;
+
         if (report) {
             report->Error(ReportGroup::GamePad, message);
         } else {
@@ -41,6 +43,7 @@ GamePad::GamePad(const string& filename)
 }
 
 GamePad::~GamePad() {
+    auto& report = app->report;
     if (fd >= 0) {
         close(fd);
         string message = "Close GamePad";
