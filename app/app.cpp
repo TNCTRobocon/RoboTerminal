@@ -21,8 +21,6 @@ shared_ptr<Settings> setting{nullptr};
 shared_ptr<Report> report{nullptr};
 shared_ptr<GamePad> gamepad{nullptr};
 shared_ptr<DeviceManager> device_manager{nullptr};
-// shared_ptr<DeviceManager> device_manager2{nullptr};
-// vector<future<long_task_result_t> > ;
 future<void> long_task;
 
 static bool volatile is_continue{false};
@@ -52,8 +50,8 @@ int main(int argc, char** argv) {
     auto serial_location = setting->Read("serial");
     auto band = setting->Read("serial-band").value_or("115200");
     if (serial_location) {
-        device_manager = move(DeviceManager::GenerateDeviceManager(
-            serial_location->c_str(), stoi(band)));
+        //device_manager = move(DeviceManager::GenerateDeviceManager(
+            //serial_location->c_str(), stoi(band)));
         // device_manager2 =
         //  move(DeviceManager::GenerateDeviceManager(serial_location->c_str(),stoi(band)));
     } else {
@@ -65,30 +63,7 @@ int main(int argc, char** argv) {
     signal(SIGINT, singal_receiver);
 
     for (is_continue = true; is_continue;) {
-        /*
-          // EXAMPLE
-          LongTaskBefore([]() -> long_task_result_t {
-              device_manager->Select(39);
-              device_manager->WriteSerial("echo miku\r");
-              return device_manager->ReadSerial();
-          });
-          // LongTaskBefore(...
-          // LongTaskBefore(...
-          bool all_task_finished = false;
-          while (!all_task_finished) {
-              ShortTask();
-              all_task_finished = true;
-              for (auto& result : results) {
-                  if (result.wait_for(CHECK_NOW) == future_status::timeout) {
-                      all_task_finished = false;
-                      break;
-                  }
-              }
-          }
-          cout << LongTaskAfter() << endl;  // "miku" expected
-          // cout << LongTaskAfter() << endl;
-          // cout << LongTaskAfter() << endl;
-          */
+      ShortTask();
     }
 
     report->Info(ReportGroup::System, "Shutdown");
@@ -96,22 +71,14 @@ int main(int argc, char** argv) {
 }
 
 void ShortTask() {
+  this_thread::sleep_for(chrono::milliseconds(100));
     if (gamepad) {
         gamepad->Update();
         cout << gamepad->Status();  //確認用
     }
+  
 }
 
-/*
-void LongTaskBefore(auto func) {
-    results.push_back(async(launch::async, func));
-}
 
-long_task_result_t LongTaskAfter() {
-    long_task_result_t temp = results.front().get();
-    results.erase(results.begin());
-    return temp;
-}
-*/
 
 #endif

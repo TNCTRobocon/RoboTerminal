@@ -21,6 +21,8 @@ const string sync = "go";
 const string angle = "sc";
 const string reset = "rst";
 const string stop = "stop";
+const string open = "opn";
+const string close = "cls";
 }
 
 DeviceManager::DeviceManager(string filename, int rate) : serial(io) {
@@ -30,14 +32,14 @@ DeviceManager::DeviceManager(string filename, int rate) : serial(io) {
         //report -> Error(ReportGroup::SerialPort, "Failed to Open SerialPort");
         // strange error "ReportGroup has not been declared"
     }
-    cout << "serialport opened successfully" << endl;
+    cout << "Serialport opened successfully" << endl;
     serial.set_option(
         boost::asio::serial_port_base::baud_rate(rate));  //ボーレート設
 }
 
 DeviceManager::~DeviceManager() {
     serial.close();
-    cout << "serialport closed" << endl;
+    cout << "Serialport closed" << endl;
 }
 
 /// デバイスのインスタンスを生成
@@ -63,8 +65,8 @@ bool DeviceManager::CreateMotor(address_t new_address) {
 ///　デバイスのインスタンスを生成（終）
 
 void DeviceManager::WriteSerial(
-    const string& text) {  //渡された文字をそのまま送信
-    boost::asio::write(serial, boost::asio::buffer(text));
+    const string& text) {  //渡された文字に'\r'をつけて送信
+    boost::asio::write(serial, boost::asio::buffer(text+Command::newline));
 }
 
 optional<string> DeviceManager::ReadSerial() {  //必ず'\r'で終わる文字列を一つ読み込む
@@ -76,6 +78,8 @@ optional<string> DeviceManager::ReadSerial() {  //必ず'\r'で終わる文字�
     if(timer != future_status::timeout){
       string result = boost::asio::buffer_cast<const char*>(
           buf.data());  //バッファの中身を文字列として取り出す
+      if(!result.empty()) //空ではありえないはずだが、念の為
+        result.pop_back(); //末尾'\r'を削除
       return result;
     }
     else{
@@ -92,8 +96,7 @@ void DeviceManager::SetFeature(address_t adr, factor_t fac){
 
 void DeviceManager::Select(address_t address) {
     stringstream ss;
-    ss << Command::select << Command::space << address
-       << Command::newline;  //例:ss="sel 39\r"
+    ss << Command::select << Command::space << address;  //例:ss="sel 39"
     WriteSerial(ss.str());
 }
 
@@ -168,7 +171,7 @@ void DeviceManager::Flush(future<void>& task) {
 }
 
 DeviceBase::DeviceBase() { //デバイスのインスタンスを生成時、sel XX と ft を送る
-  PushCommand(Command::feature + Command::newline,
+  PushCommand(Command::feature,
       [=] (optional<string> response){
           if (Feature(response)) {
               cout << "Feature success" << endl;
@@ -204,23 +207,38 @@ void DeviceBase::ReadCSV(string str) {
     }
 }
 
-bool DeviceBase::Feature(optional<string> response) {
+bool DeviceBase::Feature(optional<string> response) {//
   if(response){
-    if (!response->empty()) {
-        if (response->back() == Command::newline) {
-            response->pop_back();
-            ReadCSV(*response);
-            return true;
-        }
-    }
-    cout << "Failed to Get Feature from Device" << address << endl;
-    cout << "(Response NOT Ending With Delimiter"<<endl;
+    ReadCSV(*response);
+    cout << "Feature receive successfully from Device" << address << endl;
+    return true;
   }
   else{
-    cout << "Failed to Get Feature from Device" << address << endl;
+    cout << "Failed to get Feature from Device" << address << endl;
     cout << "(No Response)" << endl;
+    return false;
   }
-  return false;
+}
+
+void DeviceBase::Echo(string str){
+  PushCommand(str,
+    [=](optional<string> response){
+      cout << "[ ECHO TEST ]" << endl;
+      cout << "<--  Input: " << str << endl;
+      if(response){
+        //cout << "--> Output: " << response << endl;
+        if(response == str){
+          //cout << "Device " << address << "is responding properly." << endl;
+        }
+        else{
+          //cout << "Device " << address << "is NOT responding properly." << endl;
+        }
+      }
+      else{
+        //cout << "Device " << address << "is NOT responding!" << endl;
+      }
+    }
+  );
 }
 
 DeviceMotor::DeviceMotor(DeviceManager* p, address_t a) {
@@ -253,7 +271,7 @@ void DeviceMotor::Synchronize() { //selを伴わない、 同時に実行させ�
 
 void DeviceMotor::Duty(float value) {
   stringstream ss;
-  ss << Command::duty << Command::space << value << Command::newline;
+  ss << Command::duty << Command::space << value;
     PushCommand(ss.str(),
         [=](optional<string> response){
             if (response == "GOOD RESPONSE") {
@@ -263,4 +281,45 @@ void DeviceMotor::Duty(float value) {
             }
         }
     );
+}
+
+DeviceSolenoid::DeviceSolenoid(DeviceManager* p, address_t a){
+    parent = p;
+    address = a;
+}
+
+void DeviceSolenoid::Open(int id){
+  stringstream ss;
+  ss << Command::open << Command::space << id;
+  PushCommand(ss.str(),
+    [=](optional<string> response){
+      if (response == "GOOD RESPONSE") {
+          /// Statements
+      } else {
+          /// Statements
+      }
+    }
+  );
+}
+
+void DeviceSolenoid::Close(int id){
+  stringstream ss;
+  ss << Command::close << Command::space << id;
+  PushCommand(ss.str(),
+    [=](optional<string> response){
+      if (response == "GOOD RESPONSE") {
+          /// Statements
+      } else {
+          /// Statements
+      }
+    }
+  );
+}
+
+void DeviceSolenoid::Open(){
+  Open(0);
+}
+
+void DeviceSolenoid::Close(){
+  Close(0);
 }

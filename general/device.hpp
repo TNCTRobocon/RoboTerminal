@@ -82,6 +82,7 @@ protected:
     void PushCommand(string to_send, function<void(optional<string>)> response_checker);
     void ReadCSV(string str);
     bool Feature(optional<string> response);
+    void Echo(string str);
     //??? void Flush();
     // void Select
 };
@@ -96,4 +97,17 @@ public:
     void AsyncRPM(float rpm);
     void RPM(float rpm);
     void Stop();
+};
+
+class DeviceSolenoid : public DeviceBase {
+private:
+public:
+    DeviceSolenoid(DeviceManager* p, address_t a);
+    ~DeviceSolenoid();
+    void Open(int id);
+    void Open();
+    void Close(int id);
+    void Close();
+    void Reset();
+
 };
