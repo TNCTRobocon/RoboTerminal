@@ -11,6 +11,7 @@ class StateNode {
 
 public:
     //コンストラクタ&デストラクタ
+    //制約　nameはgraphの中で固有のものにしてください
     StateNode(const std::string& _name, const action_t& _action)
         : name(_name), action(_action) {}
     StateNode(const StateNode& origin) = default;
@@ -26,8 +27,8 @@ public:
 };
 
 class StateArrow {
-    const std::shared_ptr<StateNode> before, after;
-    const std::function<bool(void)> condition;
+    std::shared_ptr<StateNode> before, after;
+    std::function<bool(void)> condition;
     int rank;  //優先順位
 public:
     //コンストラクタ&デストラクタ
@@ -39,7 +40,7 @@ public:
     StateArrow(const StateArrow&) = default;
     virtual ~StateArrow();
     // operator
-
+    bool operator <(const StateArrow& cmp)const;
     //メソッド
     int GetRank() const { return rank; }
     bool Check() const { return condition != nullptr ? condition() : false; }
@@ -48,15 +49,16 @@ public:
 
 class StateGraph {
     std::vector<StateArrow>
-        sorted_arrows;  // Node、Rankの順でソートされている
-    std::shared_ptr<StateNode> running;
+        sorted_arrows;  
+    std::shared_ptr<StateNode> running{nullptr};
 public:
     //コンストラクタ&デストラクタ
     StateGraph()=default;
+    StateGraph(const std::vector<StateArrow>& list);
     StateGraph(const StateGraph&)=default;
     virtual ~StateGraph()=default;
     //メソッド(メソッドチェイン)
-    StateGraph& Add(const StateArrow& item);
+    StateGraph& Add(const StateArrow& arrow);
     
     std::string ToString();
     
