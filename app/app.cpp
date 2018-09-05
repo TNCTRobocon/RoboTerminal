@@ -83,10 +83,11 @@ int main(int argc, char** argv) {
       report->Info(ReportGroup::WiringPi, "success WiringPi setup");
     }
     Sonic sonic_one(4);
-    thread t1(sonic_one);
+    cout << "invokes async(launch::deferred,sonic_one)" << endl;
+    future<double> f = async(launch::deferred,sonic_one);
+    double result = 0;
     // MessageLoop
     signal(SIGINT, singal_receiver);
-
     for (is_continue = true; is_continue;) {
 
       /*
@@ -98,7 +99,9 @@ int main(int argc, char** argv) {
         }
       }*/
       while(getchar() != '\n');
-      cout << sonic_one.gettime() << endl;
+      result = f.get();
+      cout << result << endl;
+      //cout << sonic_one.gettime() << endl;
       delay(1000);
     }
     //t1.join();
