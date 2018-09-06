@@ -100,9 +100,9 @@ void DeviceManager::Select(address_t address) {
     WriteSerial(ss.str());
 }
 
-void DeviceManager::PushCommandDirectly(function<void()> no_sel){
+//void DeviceManager::PushCommandDirectly(function<void()> no_sel){
   //cmd.push(no_sel);
-}
+//}
 
 void DeviceManager::Fetch() {
   queue<function<void()>> send;
@@ -169,6 +169,12 @@ void DeviceManager::Flush(future<void>& task) {
   );
   */
 }
+/*
+template<>
+void ForEachAND(string... arg){
+
+}
+*/
 
 DeviceBase::DeviceBase() { //デバイスのインスタンスを生成時、sel XX と ft を送る
   PushCommand(Command::feature,
@@ -236,6 +242,18 @@ void DeviceBase::Echo(string str){
       }
       else{
         //cout << "Device " << address << "is NOT responding!" << endl;
+      }
+    }
+  );
+}
+
+void DeviceBase::Reset(){
+  PushCommand(Command::reset,
+    [=](optional<string> response){
+      if (response == "GOOD RESPONSE") {
+          /// Statements
+      } else {
+          /// Statements
       }
     }
   );

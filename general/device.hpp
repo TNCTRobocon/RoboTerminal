@@ -19,10 +19,12 @@
 //#include <algorithm>
 
 #include <boost/asio.hpp>
+#include <boost/type.hpp>
 
 class DeviceManager;
 class DeviceBase;
 class DeviceMotor;
+class DeviceSolenoid;
 
 using namespace std;
 
@@ -56,13 +58,14 @@ public:
     ~DeviceManager();
 
     bool CreateMotor(address_t);
-
+    bool CreateSolenoid(address_t);
 
     void SetFeature(address_t adr, factor_t fac);
     void Select(address_t address);
-    void PushCommandDirectly(function<void()> no_sel);
+    //void PushCommandDirectly(function<void()> no_sel);
     void Fetch();
     void Flush(future<void>& task);
+
 };
 
 class DeviceBase {
@@ -83,6 +86,7 @@ protected:
     void ReadCSV(string str);
     bool Feature(optional<string> response);
     void Echo(string str);
+    void Reset();
     //??? void Flush();
     // void Select
 };
@@ -108,6 +112,5 @@ public:
     void Open();
     void Close(int id);
     void Close();
-    void Reset();
 
 };
