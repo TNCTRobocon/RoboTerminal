@@ -1,4 +1,7 @@
+#if 1
+
 #include "app.hpp"
+#include "general/device.hpp"
 #include <signal.h>
 #include <general/motor.hpp>
 #include <iostream>
@@ -61,3 +64,16 @@ int main(int argc, char** argv) {
     report->Info(ReportGroup::System, "Shutdown");
     return 0;
 }
+
+void ShortTask() {
+  this_thread::sleep_for(chrono::milliseconds(100));
+    if (gamepad) {
+        gamepad->Update();
+        cout << gamepad->Status();  //確認用
+    }
+
+}
+
+
+
+#endif

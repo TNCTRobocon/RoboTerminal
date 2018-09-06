@@ -4,7 +4,7 @@
 namespace Util {
 
 enum class ReportType : int {
-    Info = 34,  // Blue
+    Info = 36,  // LightBlue
     Warn = 32,  // Yellow
     Error = 31  // Red
 };
