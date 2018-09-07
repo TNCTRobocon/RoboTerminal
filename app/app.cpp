@@ -1,11 +1,9 @@
-#if 1
-
 #include "app.hpp"
-#include "general/device.hpp"
 #include <signal.h>
 #include <general/motor.hpp>
 #include <iostream>
 #include <ui/ui.hpp>
+#include "general/device.hpp"
 // TODO あとで消す
 #include <gtk/gtk.h>
 
@@ -33,10 +31,10 @@ Application::Application(int* argc, char*** argv) {
     }
     //シリアルポートを初期化する
     auto serial_location = setting->Read("serial");
-    auto band = setting->Read("serial-band").value_or("115200");
     if (serial_location) {
-        MotorManager::GenerateMotorManeger(serial_location->c_str(),
-                                           stoi(band));
+        string band_text = setting->Read("serial-band").value_or("115200");
+        int band = stoi(band_text);
+        device_manager.reset(new DeviceManager(*serial_location, band));
     } else {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
@@ -61,20 +59,8 @@ bool Application::Process() {
 }
 
 int main(int argc, char** argv) {
-    app.emplace(&argc,&argv);
-    while (app->Process());
+    app.emplace(&argc, &argv);
+    while (app->Process())
+        ;
     return 0;
 }
-
-void ShortTask() {
-  this_thread::sleep_for(chrono::milliseconds(100));
-    if (gamepad) {
-        gamepad->Update();
-        cout << gamepad->Status();  //確認用
-    }
-
-}
-
-
-
-#endif
