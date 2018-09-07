@@ -66,6 +66,7 @@ public:
     void Fetch();
     void Flush(future<void>& task);
 
+    vector<shared_ptr<DeviceBase>> SearchFeature(factor_t target);
 };
 
 class DeviceBase {
@@ -81,14 +82,16 @@ protected:
     DeviceManager* parent;
     address_t address;
     DeviceBase();
-    ~DeviceBase();
+    virtual ~DeviceBase();
     void PushCommand(string to_send, function<void(optional<string>)> response_checker);
     void ReadCSV(string str);
     bool Feature(optional<string> response);
+
+public:
     void Echo(string str);
     void Reset();
-    //??? void Flush();
-    // void Select
+
+    virtual void Duty(float value) = 0;
 };
 
 class DeviceMotor : public DeviceBase {
@@ -112,5 +115,5 @@ public:
     void Open();
     void Close(int id);
     void Close();
-
+    void Duty(float value);
 };

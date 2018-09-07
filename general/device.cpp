@@ -169,12 +169,16 @@ void DeviceManager::Flush(future<void>& task) {
   );
   */
 }
-/*
-template<>
-void ForEachAND(string... arg){
 
+vector<shared_ptr<DeviceBase>> DeviceManager::SearchFeature(factor_t target){
+    vector<shared_ptr<DeviceBase>> result;
+    auto search = devices_ft.equal_range(target);
+    for(auto it = search.first; it != search.second; ++it){
+        shared_ptr<DeviceBase> sptr = (it->second).lock();
+        result.push_back(sptr);
+    }
+    return result;
 }
-*/
 
 DeviceBase::DeviceBase() { //デバイスのインスタンスを生成時、sel XX と ft を送る
   PushCommand(Command::feature,
@@ -340,4 +344,7 @@ void DeviceSolenoid::Open(){
 
 void DeviceSolenoid::Close(){
   Close(0);
+}
+
+void DeviceSolenoid::Duty(float value) {
 }

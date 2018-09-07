@@ -62,6 +62,17 @@ int main(int argc, char** argv) {
 
     signal(SIGINT, singal_receiver);
 
+    //for(auto& it : device_manager->SearchFeature("motor")){
+    //  it -> Echo("yahho-");
+    //}
+
+    auto vec = device_manager->SearchFeature("example");
+    while(!vec.empty()){
+      vec.back() -> Echo("yahho-");
+      vec.back() -> Duty(0.4);
+      vec.pop_back();
+    }
+
     for (is_continue = true; is_continue;) {
       ShortTask();
     }
@@ -76,7 +87,7 @@ void ShortTask() {
         gamepad->Update();
         cout << gamepad->Status();  //確認用
     }
-  
+
 }
 
 
