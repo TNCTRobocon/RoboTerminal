@@ -29,7 +29,7 @@ DeviceManager::DeviceManager(string filename, int rate) : serial(io) {
     try {
         serial.open(filename);
     } catch (...) {
-        //report -> Error(ReportGroup::SerialPort, "Failed to Open SerialPort");
+        app->report -> Error(Util::ReportGroup::SerialPort, "Failed to Open SerialPort");
         // strange error "ReportGroup has not been declared"
     }
     cout << "Serialport opened successfully" << endl;

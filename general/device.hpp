@@ -28,7 +28,6 @@ class DeviceMotor;
 class DeviceSolenoid;
 
 class DeviceManager {
-    // friend class DeviceBase;
 private:
     boost::asio::io_service io;
     boost::asio::serial_port serial;  //まだserialportは開かれていない
@@ -58,8 +57,6 @@ class DeviceBase {
 
 private:
     std::unordered_set<factor_t> ft;
-    // queue<function<void()>> send;
-    // queue<function<void()>> receive;
     std::queue<std::tuple<std::string,
                           std::function<void(std::optional<std::string>)>>>
         async_task;
