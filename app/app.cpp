@@ -1,9 +1,8 @@
 #include "app.hpp"
 #include <signal.h>
-#include <general/motor.hpp>
 #include <iostream>
 #include <ui/ui.hpp>
-#include "general/device.hpp"
+#include <general/device.hpp>
 // TODO あとで消す
 #include <gtk/gtk.h>
 
