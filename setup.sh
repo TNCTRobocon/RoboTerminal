@@ -7,8 +7,8 @@
 apt update
 apt upgrade -y
 # コンパイラの導入
-apt install -y gcc g++ gdb
+apt install -y gcc g++ gdb 
 # 開発ツールの導入
-apt install -y clang-format make git
+apt install -y clang-format make git 
 # ライブラリの導入
-apt install -y libboost-dev libboost-system-dev 
+apt install -y libboost-dev libboost-system-dev libgtk-3-dev
