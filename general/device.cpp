@@ -44,23 +44,25 @@ DeviceManager::~DeviceManager() {
 
 /// デバイスのインスタンスを生成
 
+/*
 bool DeviceManager::CreateMotor(address_t new_address) {
     //アドレスが本当に新しいか確認
-    if(devices_adr.count(new_address) == 0){
+    if(devices_address.count(new_address) == 0){
       //新しいアドレスでMotorへのweakポインタを生成する
       shared_ptr<DeviceMotor> new_sptr =
           make_shared<DeviceMotor>(this, new_address);
-      devices_adr[new_address] = new_sptr;
+      devices_address[new_address] = new_sptr;
       return true;
       //return ;
     }
     else{//そのアドレスは既に埋まっているならば
       //TODO エラーレポート　address XX is already taken
-      //return devices_adr[new_address];//devices_adrの中のそのアドレスの要素を返す
+      //return devices_address[new_address];//devices_addressの中のそのアドレスの要素を返す
       return false;
     }
 
 }
+*/
 
 ///　デバイスのインスタンスを生成（終）
 
@@ -90,8 +92,16 @@ optional<string> DeviceManager::ReadSerial() {  //必ず'\r'で終わる文字�
 
 }
 
-void DeviceManager::SetFeature(address_t adr, factor_t fac){
-  devices_ft.emplace(fac, devices_adr[adr]);
+void DeviceManager::CacheAddress(address_t adr, std::weak_ptr<DeviceBase> wptr){
+  devices_address.emplace(adr, wptr);
+}
+
+void DeviceManager::CacheFeature(address_t adr, factor_t fac){
+  devices_feature.emplace(fac, devices_address[adr]);
+}
+
+void DeviceManager::CacheFeature(factor_t fac, std::weak_ptr<DeviceBase> wptr){
+  devices_feature.emplace(fac, wptr);
 }
 
 void DeviceManager::Select(address_t address) {
@@ -101,13 +111,13 @@ void DeviceManager::Select(address_t address) {
 }
 
 //void DeviceManager::PushCommandDirectly(function<void()> no_sel){
-  //cmd.push(no_sel);
+  //command.push(no_sel);
 //}
 
 void DeviceManager::Fetch() {
   queue<function<void()>> send;
   queue<function<void()>> receive;
-  for(auto& dev : devices_adr){
+  for(auto& dev : devices_address){
     if(shared_ptr<DeviceBase> sptr = dev.second.lock()){
       if(!(sptr -> async_task.empty())){
         send.push( [=] { Select(dev.first); } );
@@ -138,11 +148,11 @@ void DeviceManager::Fetch() {
     }
   }
   while(!send.empty()){
-    cmd.push(send.front());
+    command.push(send.front());
     send.pop();
   }
   while(!receive.empty()){
-    cmd.push(receive.front());
+    command.push(receive.front());
     receive.pop();
   }
 }
@@ -150,19 +160,19 @@ void DeviceManager::Fetch() {
 void DeviceManager::Flush(future<void>& task) {
   task = async(launch::async,
     [=]{
-      while(!cmd.empty()){
-        cmd.front()();
-        cmd.pop();
+      while(!command.empty()){
+        command.front()();
+        command.pop();
       }
     }
   );
-  while(!cmd.empty()){
-    cmd.pop();
+  while(!command.empty()){
+    command.pop();
   }
   /*
    = async(launch::async,
     [=]{
-      while(!cmd.empty()){
+      while(!command.empty()){
 
       }
     }
@@ -172,7 +182,7 @@ void DeviceManager::Flush(future<void>& task) {
 
 vector<shared_ptr<DeviceBase>> DeviceManager::SearchFeature(factor_t target){
     vector<shared_ptr<DeviceBase>> result;
-    auto search = devices_ft.equal_range(target);
+    auto search = devices_feature.equal_range(target);
     for(auto it = search.first; it != search.second; ++it){
         shared_ptr<DeviceBase> sptr = (it->second).lock();
         result.push_back(sptr);
@@ -209,7 +219,7 @@ void DeviceBase::ReadCSV(string str) {
             ++last;
         }
         ft.emplace(string(first, last));
-        parent -> SetFeature(address, string(first, last));
+        parent -> CacheFeature(address, string(first, last));
         if (last != str.end()) {
             ++last;
         }
@@ -263,12 +273,27 @@ void DeviceBase::Reset(){
   );
 }
 
-DeviceMotor::DeviceMotor(DeviceManager* p, address_t a) {
+DeviceMotor::DeviceMotor(std::shared_ptr<DeviceManager> p, address_t a) {
     parent = p;
     address = a;
 }
 
 DeviceMotor::~DeviceMotor() {}
+
+std::shared_ptr<DeviceMotor> DeviceMotor::CreateMotor(std::shared_ptr<DeviceManager> p, address_t a){
+  //アドレスが本当に新しいか確認
+  if(p->GetAddressMap().count(a) == 0){
+    //新しいアドレスでSolenoidへのポインタを生成する
+    std::shared_ptr<DeviceMotor> sptr(new DeviceMotor(p,a));
+    //p->devices_address[a] = new_sptr;
+    p->CacheAddress(a, sptr);//キャッシュを残す
+    return std::move(sptr);
+  }
+  else{//そのアドレスは既に埋まっているならば
+      //TODO? エラーレポート　address XX is already taken
+    return nullptr;
+  }
+}
 
 void DeviceMotor::Synchronize() { //selを伴わない、 同時に実行させたい範囲の開始を示す特殊な命令
   /*
@@ -305,9 +330,27 @@ void DeviceMotor::Duty(float value) {
     );
 }
 
-DeviceSolenoid::DeviceSolenoid(DeviceManager* p, address_t a){
+DeviceSolenoid::DeviceSolenoid(std::shared_ptr<DeviceManager> p, address_t a){
     parent = p;
     address = a;
+}
+
+DeviceSolenoid::~DeviceSolenoid() {}
+
+std::shared_ptr<DeviceSolenoid> DeviceSolenoid::CreateSolenoid(std::shared_ptr<DeviceManager> p, address_t a){
+  //アドレスが本当に新しいか確認
+  if(p->GetAddressMap().count(a) == 0){
+    //新しいアドレスでSolenoidへのポインタを生成する
+    //auto sptr = std::make_shared<CreateHelper>(p,a);
+    std::shared_ptr<DeviceSolenoid> sptr(new DeviceSolenoid(p,a));
+    //p->devices_address[a] = new_sptr;
+    p->CacheAddress(a, sptr);//キャッシュを残す
+    return std::move(sptr);
+  }
+  else{//そのアドレスは既に埋まっているならば
+      //TODO? エラーレポート　address XX is already taken
+    return nullptr;
+  }
 }
 
 void DeviceSolenoid::Open(int id){
@@ -346,5 +389,4 @@ void DeviceSolenoid::Close(){
   Close(0);
 }
 
-void DeviceSolenoid::Duty(float value) {
-}
+//void DeviceSolenoid::Duty(float value)

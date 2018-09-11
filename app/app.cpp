@@ -68,8 +68,8 @@ int main(int argc, char** argv) {
 
     auto vec = device_manager->SearchFeature("example");
     while(!vec.empty()){
-      vec.back() -> Echo("yahho-");
-      vec.back() -> Duty(0.4);
+      //vec.back() -> Echo("yahho-");
+      //vec.back() -> Duty(0.4);
       vec.pop_back();
     }
 
