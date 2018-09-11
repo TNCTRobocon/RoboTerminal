@@ -284,10 +284,10 @@ std::shared_ptr<DeviceMotor> DeviceMotor::CreateMotor(std::shared_ptr<DeviceMana
   //アドレスが本当に新しいか確認
   if(p->GetAddressMap().count(a) == 0){
     //新しいアドレスでSolenoidへのポインタを生成する
-    std::shared_ptr<DeviceMotor> sptr(new DeviceMotor(p,a));
+    auto sptr = std::make_shared<CreateHelper>(p,a);
     //p->devices_address[a] = new_sptr;
-    p->CacheAddress(a, sptr);//キャッシュを残す
-    return std::move(sptr);
+    //p->CacheAddress(a, &sptr->x);//キャッシュを残す
+    return std::shared_ptr<DeviceMotor>(std::move(sptr), &sptr->x);
   }
   else{//そのアドレスは既に埋まっているならば
       //TODO? エラーレポート　address XX is already taken
@@ -341,11 +341,10 @@ std::shared_ptr<DeviceSolenoid> DeviceSolenoid::CreateSolenoid(std::shared_ptr<D
   //アドレスが本当に新しいか確認
   if(p->GetAddressMap().count(a) == 0){
     //新しいアドレスでSolenoidへのポインタを生成する
-    //auto sptr = std::make_shared<CreateHelper>(p,a);
-    std::shared_ptr<DeviceSolenoid> sptr(new DeviceSolenoid(p,a));
+    auto sptr = std::make_shared<CreateHelper>(p,a);
     //p->devices_address[a] = new_sptr;
-    p->CacheAddress(a, sptr);//キャッシュを残す
-    return std::move(sptr);
+    //p->CacheAddress(a, &sptr->x);//キャッシュを残す
+    return std::shared_ptr<DeviceSolenoid>(std::move(sptr), &sptr->x);
   }
   else{//そのアドレスは既に埋まっているならば
       //TODO? エラーレポート　address XX is already taken

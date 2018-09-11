@@ -104,7 +104,7 @@ public:
 class DeviceMotor : public DeviceBase {
 private:
     DeviceMotor(std::shared_ptr<DeviceManager> p, address_t a);
-    //struct CreateHelper;
+    struct CreateHelper;
 public:
     static inline std::shared_ptr<DeviceMotor>
     CreateMotor(std::shared_ptr<DeviceManager> p, address_t a);
@@ -119,7 +119,7 @@ public:
 class DeviceSolenoid : public DeviceBase {
 private:
     DeviceSolenoid(std::shared_ptr<DeviceManager> p, address_t a);
-    //struct CreateHelper;
+    struct CreateHelper;
 public:
     static inline std::shared_ptr<DeviceSolenoid>
     CreateSolenoid(std::shared_ptr<DeviceManager> p, address_t a);
@@ -130,7 +130,7 @@ public:
     void Close();
     //void Duty(float value);
 };
-/*
+
 struct DeviceMotor::CreateHelper{
   DeviceMotor x;
   template<class... Args>
@@ -142,4 +142,3 @@ struct DeviceSolenoid::CreateHelper{
   template<class... Args>
   explicit CreateHelper(Args&&... args) : x(std::forward<Args>(args)...) {}
 };
-*/
