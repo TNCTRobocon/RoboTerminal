@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
     report.reset(new Report("report.log"));
     report->Info(ReportGroup::System, "Wake Up");
     setting.reset(new Settings("setting.config"));
-#if 0
+
     //ゲームパッドを初期化する
     auto gamepad_location = setting->Read("gamepad");
     if (gamepad_location) {
@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
     } else {
         report->Warn(ReportGroup::GamePad, "Missing Serial Location");
     }
-#endif
+
     #if 0
     //モーターのアドレス設定
     auto motor_flontleft_address = setting->Read("flontleft").value_or("16");
@@ -82,10 +82,10 @@ int main(int argc, char** argv) {
     }else{
       report->Info(ReportGroup::WiringPi, "success WiringPi setup");
     }
-    Sonic sonic_one(4);
-    cout << "invokes async(launch::deferred,sonic_one)" << endl;
-    future<double> f = async(launch::deferred,sonic_one);
-    double result = 0;
+    //Sonic sonic_one(4);
+    //cout << "invokes async(launch::deferred,sonic_one)" << endl;
+    //future<double> f = async(launch::deferred,sonic_one);
+    //double result = 0;
     // MessageLoop
     signal(SIGINT, singal_receiver);
     for (is_continue = true; is_continue;) {
@@ -98,11 +98,11 @@ int main(int argc, char** argv) {
           delete it;
         }
       }*/
-      while(getchar() != '\n');
+      /*while(getchar() != '\n');
       result = f.get();
       cout << result << endl;
       //cout << sonic_one.gettime() << endl;
-      delay(1000);
+      delay(1000);*/
     }
     //t1.join();
     report->Info(ReportGroup::System, "Shutdown");
