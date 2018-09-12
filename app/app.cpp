@@ -12,8 +12,9 @@
 using namespace std;
 using namespace Util;
 
-using long_task_result_t = string;
 #define CHECK_NOW chrono::milliseconds(0)
+
+void ShortTask();
 
 //開放を自動化するためにスマートポインタで実装する。
 shared_ptr<Argument> argument{nullptr};
@@ -23,15 +24,14 @@ shared_ptr<GamePad> gamepad{nullptr};
 shared_ptr<DeviceManager> device_manager{nullptr};
 future<void> long_task;
 
+/*
 static bool volatile is_continue{false};
 static void singal_receiver(int num) {
     cout << endl;
     is_continue = false;
 }
 
-void ShortTask();
-void LongTaskBefore(auto func);
-long_task_result_t LongTaskAfter();
+
 
 int main(int argc, char** argv) {
     // System全体で使う変数を初期化する
@@ -79,6 +79,21 @@ int main(int argc, char** argv) {
 
     report->Info(ReportGroup::System, "Shutdown");
     return 0;
+}
+*/
+
+int main(){
+  vector<factor_t> v1{"A","B","D"};
+  vector<factor_t> v2{"D","A","C"};
+  vector<factor_t> v3{"A","D","C"};
+  auto v_and = FactorAND(v1,v2,v3);
+  for(const auto& i : v_and){
+      cout<<i<<" ";
+  }
+  cout<<endl;
+  /* Output
+  A D
+  */
 }
 
 void ShortTask() {

@@ -33,6 +33,36 @@ using factor_t = std::string;
 
 // future<void> prpr; //TODO right name
 
+template <typename... T>
+std::vector<factor_t> FactorAND(T... vectors){
+  int count = 0;
+  std::unordered_set<factor_t> survivers;
+  for(const auto& factors : std::initializer_list<std::vector<factor_t>>{vectors...}){
+    if(count == 0){
+      for(const auto& factor : factors){ //一個目のベクタの要素を全て生存者とする
+        survivers.emplace(factor);
+      }
+    }
+    else{//２個目以降は
+      std::unordered_set<factor_t> temporary;
+      for(const auto& factor : factors){
+        temporary.emplace(factor);
+      }
+      for(auto& factor : survivers){
+        if(temporary.find(factor) == temporary.end()){//生存者のうちｎ個目のベクタの要素に含まれないものは
+          survivers.erase(factor);//削除される
+        }
+      }
+    }
+    count++;
+  }
+  std::vector<factor_t> AND_result;
+  for(const auto& surviver : survivers){//最後まで生き残った要素をすべてベクタに格納し、返す
+    AND_result.push_back(surviver);
+  }
+  return AND_result;
+}
+
 class DeviceManager {
 private:
     boost::asio::io_service io;
@@ -74,13 +104,15 @@ public:
     void Flush(std::future<void>& task);
 
     std::vector<std::shared_ptr<DeviceBase>> SearchFeature(factor_t target);
+    //template <typename... T>
+    //std::vector<factor_t> FactorAND(T... vectors);
 };
 
 class DeviceBase {
     friend class DeviceManager;
 
 private:
-    std::unordered_set<factor_t> ft;
+    std::unordered_set<factor_t> feature;
     // queue<function<void()>> send;
     // queue<function<void()>> receive;
     std::queue<std::tuple<std::string, std::function<void(std::optional<std::string>)>>> async_task;

@@ -190,6 +190,13 @@ vector<shared_ptr<DeviceBase>> DeviceManager::SearchFeature(factor_t target){
     return result;
 }
 
+
+
+//template <typename T>
+//std::vector<T> VectorAnd(std::vector<T> vec1, std::vector<T> vec2){
+//  return vec1;
+//}
+
 DeviceBase::DeviceBase() { //デバイスのインスタンスを生成時、sel XX と ft を送る
   PushCommand(Command::feature,
       [=] (optional<string> response){
@@ -211,14 +218,14 @@ void DeviceBase::PushCommand(string to_send, function<void(optional<string>)> re
 }
 
 void DeviceBase::ReadCSV(string str) {
-    ft.clear();
+    feature.clear();
     auto first = str.begin();
     while (first != str.end()) {
         auto last = first;
         while (last != str.end() && *last != ',') {
             ++last;
         }
-        ft.emplace(string(first, last));
+        feature.emplace(string(first, last));
         parent -> CacheFeature(address, string(first, last));
         if (last != str.end()) {
             ++last;
