@@ -14,9 +14,9 @@ using namespace Util;
 
 #define CHECK_NOW chrono::milliseconds(0)
 
-void DeviceInit();//example
-void ShortTask();//example
-void LongTask();//example
+void DeviceInit();  // example
+void ShortTask();   // example
+void LongTask();    // example
 
 //開放を自動化するためにスマートポインタで実装する。
 shared_ptr<Argument> argument{nullptr};
@@ -24,7 +24,7 @@ shared_ptr<Settings> setting{nullptr};
 shared_ptr<Report> report{nullptr};
 shared_ptr<GamePad> gamepad{nullptr};
 shared_ptr<DeviceManager> device_manager{nullptr};
-future<void> long_task;
+future<void> device_control;
 
 shared_ptr<DeviceMotor> device_motor0{nullptr};
 shared_ptr<DeviceMotor> device_motor1{nullptr};
@@ -34,7 +34,6 @@ static void singal_receiver(int num) {
     cout << endl;
     is_continue = false;
 }
-
 
 int main(int argc, char** argv) {
     // System全体で使う変数を初期化する
@@ -53,71 +52,61 @@ int main(int argc, char** argv) {
     auto serial_location = setting->Read("serial");
     auto band = setting->Read("serial-band").value_or("115200");
     if (serial_location) {
-        //device_manager = move(DeviceManager::GenerateDeviceManager(
-            //serial_location->c_str(), stoi(band)));
+        // device_manager = move(DeviceManager::GenerateDeviceManager(
+        // serial_location->c_str(), stoi(band)));
         // device_manager2 =
         //  move(DeviceManager::GenerateDeviceManager(serial_location->c_str(),stoi(band)));
     } else {
         report->Warn(ReportGroup::GamePad, "Missing Serial Location");
     }
 
+    auto vec = device_manager->SearchFeature("example");
+
+    for (auto& dev : vec) {
+        dev->Echo("HI");
+    }
+
     // MessageLoop
 
     signal(SIGINT, singal_receiver);
 
-    //for(auto& it : device_manager->SearchFeature("motor")){
+    // for(auto& it : device_manager->SearchFeature("motor")){
     //  it -> Echo("yahho-");
     //}
 
-    auto vec = device_manager->SearchFeature("example");
-    
-    for(auto& dev : vec){
-      dev->Echo("HI");
-    }
-
-    for (is_continue = true; is_continue;) {
-      ShortTask();
-    }
+    for (is_continue = true; is_continue;) {  //例
+        LongTask();   //２つのモーターそれぞれに草をシリアルで送信　それが終わるまでの間
+        ShortTask();  //ゲームパッドと通信をし続ける
+    }//またやり直す
 
     report->Info(ReportGroup::System, "Shutdown");
     return 0;
 }
 
-
-
-void DeviceInit(){
-  device_motor0 = DeviceMotor::CreateMotor(device_manager, 16);
-  device_motor1 = DeviceMotor::CreateMotor(device_manager, 17);
+void DeviceInit() {
+    device_motor0 = DeviceMotor::CreateMotor(device_manager, 16);
+    device_motor1 = DeviceMotor::CreateMotor(device_manager, 17);
+    for (auto& dev : device_manager->AllDevices()) {
+        dev->Reset();
+    }
 }
 
 void ShortTask() {
-  this_thread::sleep_for(chrono::milliseconds(100));
-    if (gamepad) {
-        gamepad->Update();
-        cout << gamepad->Status();  //確認用
-    }
-
+    do {
+        // this_thread::sleep_for(chrono::milliseconds(50));
+        if (gamepad) {
+            gamepad->Update();
+            cout << gamepad->Status();  //確認用
+        }
+    } while (device_control.wait_for(chrono::milliseconds(CHECK_NOW)) ==
+             future_status::timeout);
 }
 
-void LongTask(){
-
+void LongTask() {
+    device_motor0->Echo("www");
+    device_motor1->Echo("wwwwww");
+    device_manager->Fetch();
+    device_manager->Flush(device_control);
 }
-
-
-/*
-int main(){
-  vector<factor_t> v1{"A","B","D"};
-  vector<factor_t> v2{"D","A","C"};
-  vector<factor_t> v3{"A","D","C"};
-  auto v_and = FactorAND(v1,v2,v3);
-  for(const auto& i : v_and){
-      cout<<i<<" ";
-  }
-  cout<<endl;
-  //Output
-  //A D
-
-}
-*/
 
 #endif
