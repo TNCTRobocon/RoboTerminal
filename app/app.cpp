@@ -14,7 +14,9 @@ using namespace Util;
 
 #define CHECK_NOW chrono::milliseconds(0)
 
-void ShortTask();
+void DeviceInit();//example
+void ShortTask();//example
+void LongTask();//example
 
 //開放を自動化するためにスマートポインタで実装する。
 shared_ptr<Argument> argument{nullptr};
@@ -24,13 +26,14 @@ shared_ptr<GamePad> gamepad{nullptr};
 shared_ptr<DeviceManager> device_manager{nullptr};
 future<void> long_task;
 
-/*
+shared_ptr<DeviceMotor> device_motor0{nullptr};
+shared_ptr<DeviceMotor> device_motor1{nullptr};
+
 static bool volatile is_continue{false};
 static void singal_receiver(int num) {
     cout << endl;
     is_continue = false;
 }
-
 
 
 int main(int argc, char** argv) {
@@ -67,10 +70,9 @@ int main(int argc, char** argv) {
     //}
 
     auto vec = device_manager->SearchFeature("example");
-    while(!vec.empty()){
-      //vec.back() -> Echo("yahho-");
-      //vec.back() -> Duty(0.4);
-      vec.pop_back();
+    
+    for(auto& dev : vec){
+      dev->Echo("HI");
     }
 
     for (is_continue = true; is_continue;) {
@@ -80,20 +82,12 @@ int main(int argc, char** argv) {
     report->Info(ReportGroup::System, "Shutdown");
     return 0;
 }
-*/
 
-int main(){
-  vector<factor_t> v1{"A","B","D"};
-  vector<factor_t> v2{"D","A","C"};
-  vector<factor_t> v3{"A","D","C"};
-  auto v_and = FactorAND(v1,v2,v3);
-  for(const auto& i : v_and){
-      cout<<i<<" ";
-  }
-  cout<<endl;
-  /* Output
-  A D
-  */
+
+
+void DeviceInit(){
+  device_motor0 = DeviceMotor::CreateMotor(device_manager, 16);
+  device_motor1 = DeviceMotor::CreateMotor(device_manager, 17);
 }
 
 void ShortTask() {
@@ -105,6 +99,25 @@ void ShortTask() {
 
 }
 
+void LongTask(){
 
+}
+
+
+/*
+int main(){
+  vector<factor_t> v1{"A","B","D"};
+  vector<factor_t> v2{"D","A","C"};
+  vector<factor_t> v3{"A","D","C"};
+  auto v_and = FactorAND(v1,v2,v3);
+  for(const auto& i : v_and){
+      cout<<i<<" ";
+  }
+  cout<<endl;
+  //Output
+  //A D
+
+}
+*/
 
 #endif

@@ -31,7 +31,6 @@ using factor_t = std::string;
 
 #define SERIAL_TIME_LIMIT (chrono::milliseconds(50))
 
-// future<void> prpr; //TODO right name
 
 template <typename... T>
 std::vector<factor_t> FactorAND(T... vectors){
@@ -67,8 +66,6 @@ class DeviceManager {
 private:
     boost::asio::io_service io;
     boost::asio::serial_port serial;  //まだserialportは開かれていない
-    // queue commands ?? in DeviceBase
-    // vector<shared_ptr<DeviceBase>> devices;
     std::map<address_t, std::weak_ptr<DeviceBase>> devices_address;
     std::multimap<factor_t, std::weak_ptr<DeviceBase>> devices_feature;
     std::queue<std::function<void()>> command;
@@ -77,18 +74,9 @@ private:
     void WriteSerial(const std::string&);
 
 public:
-  /* Singleton version
-    static inline unique_ptr<DeviceManager> GenerateDeviceManager(
-        string filename,
-        int rate) {
-        return unique_ptr<DeviceManager>(new DeviceManager(filename, rate));
-    }
-  */
     DeviceManager(std::string filename, int rate);
     ~DeviceManager();
 
-    //bool CreateMotor(address_t);
-    //bool CreateSolenoid(address_t);
 
     std::map<address_t, std::weak_ptr<DeviceBase>> GetAddressMap()
     {return devices_address;}
@@ -104,8 +92,6 @@ public:
     void Flush(std::future<void>& task);
 
     std::vector<std::shared_ptr<DeviceBase>> SearchFeature(factor_t target);
-    //template <typename... T>
-    //std::vector<factor_t> FactorAND(T... vectors);
 };
 
 class DeviceBase {
@@ -113,8 +99,6 @@ class DeviceBase {
 
 private:
     std::unordered_set<factor_t> feature;
-    // queue<function<void()>> send;
-    // queue<function<void()>> receive;
     std::queue<std::tuple<std::string, std::function<void(std::optional<std::string>)>>> async_task;
 
 protected:
@@ -160,7 +144,6 @@ public:
     void Open();
     void Close(int id);
     void Close();
-    //void Duty(float value);
 };
 
 struct DeviceMotor::CreateHelper{
@@ -169,8 +152,38 @@ struct DeviceMotor::CreateHelper{
   explicit CreateHelper(Args&&... args) : x(std::forward<Args>(args)...) {}
 };
 
+std::shared_ptr<DeviceMotor> DeviceMotor::CreateMotor(std::shared_ptr<DeviceManager> p, address_t a){
+  //アドレスが本当に新しいか確認
+  if(p->GetAddressMap().count(a) == 0){
+    //新しいアドレスでMotorへのポインタを生成する
+    auto dummy_sptr = std::make_shared<CreateHelper>(p,a);
+    auto new_sptr = std::shared_ptr<DeviceMotor>(std::move(dummy_sptr), &dummy_sptr->x);
+    p->CacheAddress(a, new_sptr);//キャッシュを残す
+    return new_sptr;
+  }
+  else{//そのアドレスは既に埋まっているならば
+      //TODO? エラーレポート　address XX is already taken
+    return nullptr;
+  }
+}
+
 struct DeviceSolenoid::CreateHelper{
   DeviceSolenoid x;
   template<class... Args>
   explicit CreateHelper(Args&&... args) : x(std::forward<Args>(args)...) {}
 };
+
+std::shared_ptr<DeviceSolenoid> DeviceSolenoid::CreateSolenoid(std::shared_ptr<DeviceManager> p, address_t a){
+  //アドレスが本当に新しいか確認
+  if(p->GetAddressMap().count(a) == 0){
+    //新しいアドレスでSolenoidへのポインタを生成する
+    auto dummy_sptr = std::make_shared<CreateHelper>(p,a);
+    auto new_sptr = std::shared_ptr<DeviceSolenoid>(std::move(dummy_sptr), &dummy_sptr->x);
+    p->CacheAddress(a, new_sptr);//キャッシュを残す
+    return new_sptr;
+  }
+  else{//そのアドレスは既に埋まっているならば
+      //TODO? エラーレポート　address XX is already taken
+    return nullptr;
+  }
+}
