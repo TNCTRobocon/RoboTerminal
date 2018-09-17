@@ -7,11 +7,9 @@ using namespace std;
 namespace Util {
 
 string StateEdge::ToString() const {
-    const string start = from?from->GetName():"*";
-    const string end = to?to->GetName():"*";
-    return (boost::format("[%1%]->[%2%]:%3%") % start %
-            end % name)
-        .str();
+    const string start = from ? from->GetName() : "*";
+    const string end = to ? to->GetName() : "*";
+    return (boost::format("[%1%]->[%2%]:%3%") % start % end % name).str();
 }
 
 void StateGraph::Insert(shared_ptr<StateEdge> edge) {
@@ -28,20 +26,21 @@ string StateGraph::ToString() const {
 }
 
 void StateGraph::Step() {
-    if (next!=nullptr)(*next)();
+    if (next != nullptr)
+        (*next)();
     auto range = graph.equal_range(next);
-    for (auto it=range.first;it!=range.second;it++){
+    for (auto it = range.first; it != range.second; it++) {
         auto edge = it->second;
-        if ((*edge)()){
-            next=edge->To();
+        if ((*edge)()) {
+            next = edge->To();
         }
     }
 }
 
-void StateGraph::StepAll(){
-    do{
-    Step();
-    }while (next!=nullptr);
+void StateGraph::StepAll() {
+    do {
+        Step();
+    } while (next != nullptr);
 }
 
 }  // namespace Util
