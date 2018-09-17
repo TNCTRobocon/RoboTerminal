@@ -13,6 +13,9 @@ apt install -y clang-format make git
 # ライブラリの導入
 apt install -y libboost-dev libboost-system-dev libgtk-3-dev
 # gcc8.1.0の導入
+echo "do you install gcc8?[yes/No]"
+read input
+if [ $input = 'yes' ] || [ $input = 'YES' ] || [ $input = 'y' ] ; then
 cd
 git clone https://bitbucket.org/sol_prog/raspberry-pi-gcc-binary.git
 cd raspberry-pi-gcc-binary
@@ -26,3 +29,4 @@ mv /usr/bin/gcc /usr/bin/gcc-backup
 mv /usr/bin/g++ /usr/bin/g++-backup
 ln -s /usr/local/gcc-8.1.0/bin/gcc-8.1.0 /usr/bin/gcc
 ln -s /usr/local/gcc-8.1.0/bin/g++-8.1.0 /usr/bin/g++
+fi
