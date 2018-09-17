@@ -23,6 +23,16 @@ public:
     AlwaysFalse() : Always(false) {}
 };
 
+template<>
+class Always<void>{
+public:
+    Always()=default;
+    Always(const Always&)=default;
+    virtual ~Always()=default;
+};
+
+using AlwaysNone=Always<void>;
+using AlwaysInt=Always<int>;
 
 
 }  // namespace Util
