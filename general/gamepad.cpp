@@ -8,6 +8,7 @@
 
 using namespace std;
 using namespace Util;
+namespace General{
 constexpr size_t GamePad::button_size;
 constexpr size_t GamePad::axis_size;
 
@@ -92,4 +93,5 @@ std::string GamePad::Status() const {
     }
     ss << endl;
     return ss.str();
+}
 }

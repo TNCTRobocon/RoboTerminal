@@ -12,9 +12,9 @@ struct Application final {
     std::shared_ptr<Util::Argument> argument{nullptr};
     std::shared_ptr<Util::Settings> setting{nullptr};
     std::shared_ptr<Util::Report> report{nullptr};
-    std::shared_ptr<GamePad> gamepad{nullptr};
+    std::shared_ptr<General::GamePad> gamepad{nullptr};
     std::shared_ptr<UI::Window> window{nullptr};
-    std::shared_ptr<DeviceManager> device_manager{nullptr};
+    std::shared_ptr<General::DeviceManager> device_manager{nullptr};
     Application(int* argc, char*** argv);
     ~Application();
     bool Process();

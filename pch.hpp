@@ -23,7 +23,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//GUI
+//System
 #include <gtk/gtk.h>
+
 
 #endif

@@ -1,9 +1,8 @@
 #include "device.hpp"
 #include "app/app.hpp"
-#include "util/report.hpp"
 
 using namespace std;
-
+namespace General{
 namespace Command {
 const char newline = '\r';
 const string space = " ";
@@ -317,4 +316,5 @@ void DeviceSolenoid::Open() {
 
 void DeviceSolenoid::Close() {
     Close(0);
+}
 }

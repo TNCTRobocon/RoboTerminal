@@ -6,6 +6,7 @@
 #include <boost/asio.hpp>
 #include <boost/type.hpp>
 
+namespace General{
 using address_t = uint32_t;
 using factor_t = std::string;
 
@@ -89,3 +90,4 @@ public:
     void Close(int id);
     void Close();
 };
+}

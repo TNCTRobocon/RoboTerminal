@@ -2,7 +2,7 @@
 using namespace std;
 using namespace Util;
 using namespace UI;
-
+using namespace General;
 std::optional<Application> app{std::nullopt};
 
 Application::Application(int* argc, char*** argv) {
