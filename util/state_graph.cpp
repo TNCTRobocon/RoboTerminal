@@ -38,4 +38,10 @@ void StateGraph::Step() {
     }
 }
 
+void StateGraph::StepAll(){
+    do{
+    Step();
+    }while (running!=nullptr);
+}
+
 }  // namespace Util

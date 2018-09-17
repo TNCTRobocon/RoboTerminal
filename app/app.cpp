@@ -70,9 +70,6 @@ int main(int argc, char** argv) {
     g->Insert(ab);
     g->Insert(end);
     cout << g->ToString() << endl;
-    for (int i=0;i<4;i++){
-        g->Step();
-        cout << ">"<<g->GetRunningName() << endl;
-    }
+    g->StepAll();
     return 0;
 }

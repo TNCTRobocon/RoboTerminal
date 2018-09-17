@@ -59,7 +59,7 @@ class StateGraph {
     std::unordered_multimap<std::shared_ptr<StateNode>,
                             std::shared_ptr<StateEdge>>
         graph;
-    std::shared_ptr<StateNode> running{nullptr};
+    std::shared_ptr<StateNode> next{nullptr};
 
 public:
     StateGraph() = default;
@@ -67,14 +67,16 @@ public:
     virtual ~StateGraph() = default;
 
     void Insert(std::shared_ptr<StateEdge> edge);
-
-    std::string ToString() const;
-    std::shared_ptr<StateNode> GetRunning(){return running;}
-    std::string GetRunningName(){return running?running->GetName():"*";}
+    void Move(std::shared_ptr<StateNode> node=nullptr){next=node;}
+//プロパティ
+    std::string ToString() const;//dot言語と互換性があります
+    std::shared_ptr<StateNode> GetRunning(){return next;}
+    std::string GetNextName(){return next?next->GetName():"*";}
     static std::shared_ptr<StateGraph> Create() {
         return std::make_shared<StateGraph>();
     }
     void Step();
+    void StepAll();
     
 };
 
