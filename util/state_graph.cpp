@@ -12,6 +12,21 @@ string StateEdge::ToString() const {
     return (boost::format("[%1%]->[%2%]:%3%") % start % end % name).str();
 }
 
+void StateNode::operator()(){
+    if (action){
+        action();
+    }
+}
+
+bool StateEdge::operator()(){
+    if (check){
+        return check();
+    }else{
+        return true;
+    }
+}
+
+
 void StateGraph::Insert(shared_ptr<StateEdge> edge) {
     graph.emplace(edge->From(), edge);
 }

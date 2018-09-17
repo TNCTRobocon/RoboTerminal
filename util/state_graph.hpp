@@ -17,8 +17,9 @@ class StateNode {
 public:
     StateNode(const std::function<void()> _action, const std::string& _name)
         : action(_action), name(_name) {}
-    ~StateNode() {}
-    void operator()() const { action(); }
+    StateNode(const StateNode&)=default;
+    virtual ~StateNode() {}
+    void operator()();
     const std::string& GetName() const { return name; }
     static std::shared_ptr<StateNode> Create(
         const std::function<void()> _action,
@@ -39,13 +40,8 @@ public:
               std::function<bool()> _check,
               const std::string& _name)
         : from(_from), to(_to), check(_check), name(_name) {}
-    bool operator()() const { return check(); }
-    const std::string& GetName() const { return name; }
-    std::shared_ptr<const StateNode> From() const { return from; }
-    std::shared_ptr<const StateNode> To() const { return to; }
-    std::shared_ptr<StateNode> From() { return from; }
-    std::shared_ptr<StateNode> To() { return to; }
-    std::string ToString() const;
+        StateEdge(const StateEdge&)=default;
+        virtual ~StateEdge()=default;
     static std::shared_ptr<StateEdge> Create(
         std::shared_ptr<StateNode> _from,
         std::shared_ptr<StateNode> _to,
@@ -53,6 +49,13 @@ public:
         const std::string& _name = "") {
         return std::make_shared<StateEdge>(_from, _to, _check, _name);
     }
+    bool operator()();
+    const std::string& GetName() const { return name; }
+    std::shared_ptr<const StateNode> From() const { return from; }
+    std::shared_ptr<const StateNode> To() const { return to; }
+    std::shared_ptr<StateNode> From() { return from; }
+    std::shared_ptr<StateNode> To() { return to; }
+    std::string ToString() const;
 };
 
 class StateGraph {
