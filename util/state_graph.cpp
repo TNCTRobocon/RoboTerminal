@@ -7,8 +7,10 @@ using namespace std;
 namespace Util {
 
 string StateEdge::ToString() const {
-    return (boost::format("[%1%]->[%2%]:%3%") % from->GetName() %
-            to->GetName() % name)
+    const string start = from?from->GetName():"*";
+    const string end = to?to->GetName():"*";
+    return (boost::format("[%1%]->[%2%]:%3%") % start %
+            end % name)
         .str();
 }
 
@@ -25,6 +27,15 @@ string StateGraph::ToString() const {
     return ss.str();
 }
 
-void StateGraph::Step() {}
+void StateGraph::Step() {
+    if (running!=nullptr)(*running)();
+    auto range = graph.equal_range(running);
+    for (auto it=range.first;it!=range.second;it++){
+        auto edge = it->second;
+        if ((*edge)()){
+            running=edge->To();
+        }
+    }
+}
 
 }  // namespace Util

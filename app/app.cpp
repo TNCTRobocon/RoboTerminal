@@ -62,9 +62,17 @@ int main(int argc, char** argv) {
     while (app->Process());*/
     auto a = StateNode::Create([]() { cout << "a" << endl; }, "a");
     auto b = StateNode::Create([]() { cout << "b" << endl; }, "b");
+    auto begin = StateEdge::Create(nullptr, a, []() { return true; }, "begin");
     auto ab = StateEdge::Create(a, b, []() { return true; }, "a-b");
+    auto end = StateEdge::Create(b, nullptr, []() { return true; }, "end");
     auto g = StateGraph::Create();
+    g->Insert(begin);
     g->Insert(ab);
+    g->Insert(end);
     cout << g->ToString() << endl;
+    for (int i=0;i<4;i++){
+        g->Step();
+        cout << ">"<<g->GetRunningName() << endl;
+    }
     return 0;
 }

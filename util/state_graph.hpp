@@ -69,10 +69,13 @@ public:
     void Insert(std::shared_ptr<StateEdge> edge);
 
     std::string ToString() const;
+    std::shared_ptr<StateNode> GetRunning(){return running;}
+    std::string GetRunningName(){return running?running->GetName():"*";}
     static std::shared_ptr<StateGraph> Create() {
         return std::make_shared<StateGraph>();
     }
     void Step();
+    
 };
 
 }  // namespace Util
