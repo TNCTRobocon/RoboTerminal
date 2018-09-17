@@ -2,11 +2,6 @@
 #include "app/app.hpp"
 #include "util/report.hpp"
 
-#include <algorithm>
-#include <future>
-#include <iostream>
-#include <sstream>
-
 using namespace std;
 
 namespace Command {

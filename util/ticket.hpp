@@ -1,11 +1,8 @@
 #pragma once
 #include <stddef.h>
-#include <cstdint>
-#include <functional>
-#include <memory>
-#include <optional>
+#include <pch.hpp>
 #include <random>
-#include <unordered_set>
+
 //作者　terurin
 //用途　一意な値を持つクラスとそれを管理するクラス
 namespace Util {

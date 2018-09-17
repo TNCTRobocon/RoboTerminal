@@ -1,18 +1,8 @@
 #pragma once
-
-#include <stdint.h>
-#include <functional>
+#include <pch.hpp>
 #include <future>
-#include <map>
-#include <memory>
-#include <optional>
 #include <queue>
-#include <string>
-#include <tuple>
-#include <unordered_set>
 #include <utility>
-#include <vector>
-
 #include <boost/asio.hpp>
 #include <boost/type.hpp>
 
@@ -31,8 +21,8 @@ class DeviceManager {
 private:
     boost::asio::io_service io;
     boost::asio::serial_port serial;  //まだserialportは開かれていない
-    std::map<address_t, std::weak_ptr<DeviceBase>> devices_adr;
-    std::multimap<factor_t, std::weak_ptr<DeviceBase>> devices_ft;
+    std::unordered_map<address_t, std::weak_ptr<DeviceBase>> devices_adr;
+    std::unordered_multimap<factor_t, std::weak_ptr<DeviceBase>> devices_ft;
     std::queue<std::function<void()>> cmd;
 
     std::optional<std::string> ReadSerial();

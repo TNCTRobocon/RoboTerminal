@@ -1,9 +1,9 @@
 #!/usr/bin/make
 
 # Complier Options
-CC ?= clang
+CC ?= gcc
 CFLAGS ?= -Wall -std=c11 -g -O2 -pipe $(shell pkg-config --cflags gtk+-3.0)
-CXX ?= clang++
+CXX ?= g++
 INC ?= -I.
 LDFLAGS := -lm -L. -pthread -lboost_system $(shell pkg-config --libs gtk+-3.0)
 CPPFLAGS := $(INC) $(shell pkg-config --cflags gtk+-3.0)
@@ -39,14 +39,17 @@ $(TARGET):$(OBJS)
 	$(CXX) $(OBJS) -o $(TARGET) $(LDFLAGS) $(CPPFLAGS)
 %.o: %.c
 	$(CC) $(CFLAGS) -c -MMD -MP $< -o$@
-$(OBJ_ROOT)/%.o:$(SRC_ROOT)/%.cpp
+$(OBJ_ROOT)/%.o:$(SRC_ROOT)/%.cpp pch.hpp.gch
 	@if [ ! -e `dirname $@` ]; then mkdir -p `dirname $@`; fi
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -MMD -MP $< -o$@
 clean:
 	-@$(RM) $(DEPS) -f
 	-@$(RM) $(OBJS) -f
 	-@$(RM) $(TARGET) -f
+	-@$(RM) pch.hpp.gch -f
 format:
 	$(FORMATER) -i $(SRCS) $(INCS)
+pch.hpp.gch:pch.hpp
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS)   pch.hpp 
 
 -include $(DEPS)

@@ -1,16 +1,11 @@
 #include "gamepad.hpp"
 #include <fcntl.h>
 #include <linux/joystick.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <app/app.hpp>
-#include <iostream>
-#include <sstream>
+
 using namespace std;
 using namespace Util;
 constexpr size_t GamePad::button_size;

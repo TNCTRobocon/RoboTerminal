@@ -1,15 +1,11 @@
 #pragma once
 
-#include <functional>
-#include <memory>
-#include <unordered_map>
-#include <vector>
+#include <pch.hpp>
 #include "predicate.hpp"
+
 //作者 terurin
 //用途　グラフ理論をもとにしたステートマシンの記述
-
 namespace Util {
-
 class StateNode {
     const std::function<void()> action;
     const std::string name;
@@ -73,6 +69,7 @@ public:
     }
     void Insert(std::shared_ptr<StateEdge> edge);
     void Move(std::shared_ptr<StateNode> node = nullptr) { next = node; }
+    void Save(const std::string& filename)const;
     //プロパティ
     std::string ToString() const;  // plantuml言語と互換性があります
     std::shared_ptr<StateNode> GetRunning() { return next; }

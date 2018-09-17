@@ -1,8 +1,4 @@
 #include "settings.hpp"
-#include <fstream>
-#include <iostream>
-#include <sstream>
-
 using namespace std;
 
 namespace Util {

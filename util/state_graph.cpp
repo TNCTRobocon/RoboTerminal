@@ -1,7 +1,5 @@
 #include "state_graph.hpp"
 #include <boost/format.hpp>
-#include <sstream>
-#include <tuple>
 using namespace std;
 
 namespace Util {
@@ -26,9 +24,12 @@ bool StateEdge::operator()(){
     }
 }
 
-
 void StateGraph::Insert(shared_ptr<StateEdge> edge) {
     graph.emplace(edge->From(), edge);
+}
+
+void StateGraph::Save(const string& filename)const{
+//TODO
 }
 
 string StateGraph::ToString() const {

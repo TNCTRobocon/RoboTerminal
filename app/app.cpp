@@ -1,9 +1,4 @@
 #include "app.hpp"
-#include <signal.h>
-#include <general/device.hpp>
-#include <iostream>
-#include <ui/ui.hpp>
-
 using namespace std;
 using namespace Util;
 using namespace UI;
@@ -56,8 +51,8 @@ bool Application::Process() {
 }
 
 int main(int argc, char** argv) {
-    app.emplace(&argc, &argv);
-    while (app->Process())
+    //app.emplace(&argc, &argv);
+    //while (app->Process())
         ;
 
     return 0;

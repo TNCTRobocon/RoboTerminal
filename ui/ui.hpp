@@ -5,9 +5,7 @@
 //補足 シグネチャーの関係でbetter Cとして記述する。
 //(gtkmmはc++17に非対応のため利用できないため、gtk+を直に叩く)
 
-#include <gtk/gtk.h>
-#include <memory>
-
+#include <pch.hpp>
 namespace UI {
 
 struct Window {

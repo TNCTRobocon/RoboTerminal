@@ -1,9 +1,7 @@
 #pragma once
+#include <pch.hpp>
 #include <general/device.hpp>
 #include <general/gamepad.hpp>
-#include <memory>
-#include <optional>
-
 #include <ui/ui.hpp>
 #include <util/argument.hpp>
 #include <util/report.hpp>

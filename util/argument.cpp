@@ -1,8 +1,4 @@
 #include "argument.hpp"
-#include <string.h>
-#include <algorithm>
-#include <iostream>
-#include <sstream>
 using namespace std;
 namespace Util {
 Argument::Argument(int argc, char** argv) {

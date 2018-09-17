@@ -6,3 +6,4 @@
 /obj
 nbproject/
 /.vscode/
+/pch.hpp.gch
