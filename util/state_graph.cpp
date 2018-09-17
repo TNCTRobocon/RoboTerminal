@@ -28,12 +28,12 @@ string StateGraph::ToString() const {
 }
 
 void StateGraph::Step() {
-    if (running!=nullptr)(*running)();
-    auto range = graph.equal_range(running);
+    if (next!=nullptr)(*next)();
+    auto range = graph.equal_range(next);
     for (auto it=range.first;it!=range.second;it++){
         auto edge = it->second;
         if ((*edge)()){
-            running=edge->To();
+            next=edge->To();
         }
     }
 }
@@ -41,7 +41,7 @@ void StateGraph::Step() {
 void StateGraph::StepAll(){
     do{
     Step();
-    }while (running!=nullptr);
+    }while (next!=nullptr);
 }
 
 }  // namespace Util
