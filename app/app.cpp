@@ -1,27 +1,18 @@
-#if 1
-
 #include "app.hpp"
-#include "general/device.hpp"
 #include <signal.h>
-#include <general/motor.hpp>
+#include <general/device.hpp>
 #include <iostream>
 #include <ui/ui.hpp>
-// TODO あとで消す
-#include <gtk/gtk.h>
+#include <util/state_graph.hpp>
+#include <util/ticket.hpp>
 
 using namespace std;
 using namespace Util;
 using namespace UI;
 
-//開放を自動化するためにスマートポインタで実装する。
-shared_ptr<Argument> argument{nullptr};
-shared_ptr<Settings> setting{nullptr};
-shared_ptr<Report> report{nullptr};
-shared_ptr<GamePad> gamepad{nullptr};
-shared_ptr<Window> window{nullptr};
+std::optional<Application> app{std::nullopt};
 
-//グローバル変数の初期化
-static void shared_init(int* argc, char*** argv) {
+Application::Application(int* argc, char*** argv) {
     // System全体で使う変数を初期化する
     argument.reset(new Argument(*argc, *argv));
     report.reset(new Report("report.log"));
@@ -39,41 +30,46 @@ static void shared_init(int* argc, char*** argv) {
     }
     //シリアルポートを初期化する
     auto serial_location = setting->Read("serial");
-    auto band = setting->Read("serial-band").value_or("115200");
     if (serial_location) {
-        MotorManager::GenerateMotorManeger(serial_location->c_str(),
-                                           stoi(band));
+        string band_text = setting->Read("serial-band").value_or("115200");
+        int band = stoi(band_text);
+        device_manager.reset(new DeviceManager(*serial_location, band));
     } else {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
 #ifdef RASPBERRY_PI
-    //specialを関する記述
+    // specialを関する記述
 
 #endif
 }
 
-int main(int argc, char** argv) {
-    shared_init(&argc, &argv);
+Application::~Application() {
+    report->Info(ReportGroup::System, "Shutdown");
+}
 
-    while (window->Process()) {
+bool Application::Process() {
+    if (window->Process()) {
         if (gamepad) {
             gamepad->Update();
         }
+        return true;
     }
+    return false;
+}
 
-    report->Info(ReportGroup::System, "Shutdown");
+int main(int argc, char** argv) {
+    /*app.emplace(&argc, &argv);
+    while (app->Process());*/
+    auto a = StateNode::Create([]() { cout << "a" << endl; }, "a");
+    auto b = StateNode::Create([]() { cout << "b" << endl; }, "b");
+    auto begin = StateEdge::Create(nullptr, a, []() { return true; }, "begin");
+    auto ab = StateEdge::Create(a, b, []() { return true; }, "a-b");
+    auto end = StateEdge::Create(b, nullptr, []() { return true; }, "end");
+    auto g = StateGraph::Create();
+    g->Insert(begin);
+    g->Insert(ab);
+    g->Insert(end);
+    cout << g->ToString() << endl;
+    g->StepAll();
     return 0;
 }
-
-void ShortTask() {
-  this_thread::sleep_for(chrono::milliseconds(100));
-    if (gamepad) {
-        gamepad->Update();
-        cout << gamepad->Status();  //確認用
-    }
-
-}
-
-
-
-#endif
