@@ -1,36 +1,32 @@
 #include "state_graph.hpp"
+#include <boost/format.hpp>
+#include <tuple>
 #include <sstream>
-
 using namespace std;
 
-bool StateArrow::operator<(const StateArrow& cmp) const {
-    //実態で分岐
-    if (!before&!cmp.before){
-        return rank<cmp.rank;
-    }else if (!before) {
-        return false;
-    }else if (!cmp.before){
-        return true;
-    }else{
-        const auto& mine= before->GetName();
-        const auto& yours = cmp.before->GetName();
-        if (mine!=yours){
-            return mine<yours;
-        }else{
-            return rank<cmp.rank;
-        }
-    }
+namespace Util {
+
+string StateEdge::ToString() const {
+    return (boost::format("[%1%]->[%2%]:%3%")%from->GetName()%to->GetName()%name).str();
 }
 
-string StateArrow::ToString() const {
-    const string from = before != nullptr ? before->GetName() : "[Start]";
-    const string to = after != nullptr ? after->GetName() : "[End]";
+void StateGraph::Insert(shared_ptr<StateEdge> edge){
+    graph.emplace(edge->From(),edge);
+}
+
+
+
+string StateGraph::ToString() const {
     stringstream ss;
-    ss << from << "->" << to << ":rank=" << rank;
+    for(const auto& it:graph){
+        const auto& edge = it.second;
+        ss<<edge->ToString()<<endl;
+    }
     return ss.str();
 }
 
-StateGraph& StateGraph::Add(const StateArrow& arrow) {
-    //TODO
-    return *this;
+void StateGraph::Step(){
+    
 }
+
+}  // namespace Util

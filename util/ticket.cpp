@@ -25,14 +25,14 @@ uint32_t TicketMachine::Next(uint32_t number) const {
     return x < limit ? x : 0;
 }
 
-Ticket::Ticket(Ticket&& move):manager(move.manager),id(move.id){
+Ticket::Ticket(Ticket&& move)noexcept:manager(move.manager),id(move.id){
         //破棄
         move.manager.reset();
         id.reset();
     }
 
 Ticket::~Ticket(){
-    if (id){
+    if (manager&&id){
         manager->ReleaseTicket(id.value());
     }
 }

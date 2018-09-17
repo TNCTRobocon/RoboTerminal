@@ -4,64 +4,75 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include "predicate.hpp"
+//作者 terurin
+//用途　グラフ理論をもとにしたステートマシンの記述
+
+namespace Util {
+
 class StateNode {
+    const std::function<void()> action;
     const std::string name;
-    using action_t = std::function<void(void)>;
-    const action_t action;
 
 public:
-    //コンストラクタ&デストラクタ
-    //制約　nameはgraphの中で固有のものにしてください
-    StateNode(const std::string& _name, const action_t& _action)
-        : name(_name), action(_action) {}
-    StateNode(const StateNode& origin) = default;
-    virtual ~StateNode() = default;
-
-    //メソッド
+    StateNode(const std::function<void()> _action, const std::string& _name)
+        : action(_action), name(_name) {}
+    ~StateNode() {}
+    void operator()() const { action(); }
     const std::string& GetName() const { return name; }
+    static std::shared_ptr<StateNode> Create(
+        const std::function<void()> _action,
+        const std::string& _name = "") {
+        return std::make_shared<StateNode>(_action, _name);
+    }
+};  // namespace Util
 
-    void Process() const {
-        if (action)
-            action();
+class StateEdge {
+    const std::shared_ptr<StateNode> from;
+    const std::shared_ptr<StateNode> to;
+    const std::function<bool()> check;
+    const std::string name;
+    
+public:
+    StateEdge(std::shared_ptr<StateNode> _from,
+              std::shared_ptr<StateNode> _to,
+              std::function<bool()> _check,
+              const std::string& _name)
+        : from(_from), to(_to), check(_check), name(_name) {}
+    bool operator()() const { return check(); }
+    const std::string& GetName() const { return name; }
+    std::shared_ptr<const StateNode> From() const { return from; }
+    std::shared_ptr<const StateNode> To() const { return to; }
+    std::shared_ptr<StateNode> From() { return from; }
+    std::shared_ptr<StateNode> To() { return to; }
+    std::string ToString() const;
+    static std::shared_ptr<StateEdge> Create(std::shared_ptr<StateNode> _from,
+                                             std::shared_ptr<StateNode> _to,
+                                             std::function<bool()> _check =
+                                                 AlwaysTrue(),
+                                             const std::string& _name = "") {
+        return std::make_shared<StateEdge>(_from, _to, _check, _name);
     }
 };
 
-class StateArrow {
-    std::shared_ptr<StateNode> before, after;
-    std::function<bool(void)> condition;
-    int rank;  //優先順位
-public:
-    //コンストラクタ&デストラクタ
-    StateArrow(std::shared_ptr<StateNode> _before,
-               std::shared_ptr<StateNode> _after,
-               const std::function<bool(void)>& _condition,
-               int _rank = 0)
-        : before(_before), after(_after), condition(_condition), rank(_rank) {}
-    StateArrow(const StateArrow&) = default;
-    virtual ~StateArrow();
-    // operator
-    bool operator <(const StateArrow& cmp)const;
-    //メソッド
-    int GetRank() const { return rank; }
-    bool Check() const { return condition != nullptr ? condition() : false; }
-    std::string ToString() const;
-};
-
 class StateGraph {
-    std::vector<StateArrow>
-        sorted_arrows;  
+    std::unordered_multimap<std::shared_ptr<StateNode>,
+                            std::shared_ptr<StateEdge>>
+        graph;
     std::shared_ptr<StateNode> running{nullptr};
-public:
-    //コンストラクタ&デストラクタ
-    StateGraph()=default;
-    StateGraph(const std::vector<StateArrow>& list);
-    StateGraph(const StateGraph&)=default;
-    virtual ~StateGraph()=default;
-    //メソッド(メソッドチェイン)
-    StateGraph& Add(const StateArrow& arrow);
-    
-    std::string ToString();
-    
-    
 
+public:
+    StateGraph() = default;
+    StateGraph(const StateGraph&) = default;
+    virtual ~StateGraph() = default;
+
+    void Insert(std::shared_ptr<StateEdge> edge);
+
+    std::string ToString() const;
+    static std::shared_ptr<StateGraph> Create() {
+        return std::make_shared<StateGraph>();
+    }
+    void Step();
 };
+
+}  // namespace Util

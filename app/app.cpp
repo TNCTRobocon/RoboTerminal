@@ -1,10 +1,10 @@
 #include "app.hpp"
 #include <signal.h>
+#include <general/device.hpp>
 #include <iostream>
 #include <ui/ui.hpp>
-#include <general/device.hpp>
-// TODO あとで消す
-#include <gtk/gtk.h>
+#include <util/state_graph.hpp>
+#include <util/ticket.hpp>
 
 using namespace std;
 using namespace Util;
@@ -58,8 +58,13 @@ bool Application::Process() {
 }
 
 int main(int argc, char** argv) {
-    app.emplace(&argc, &argv);
-    while (app->Process())
-        ;
+    /*app.emplace(&argc, &argv);
+    while (app->Process());*/
+    auto a = StateNode::Create([]() { cout<<"a"<<endl; },"a");
+    auto b = StateNode::Create([]() { cout<<"b"<<endl;  },"b");
+    auto ab = StateEdge::Create(a, b,[](){return true;},"a-b");
+    auto g=StateGraph::Create();
+    g->Insert(ab);
+    cout<<g->ToString()<<endl;
     return 0;
 }
