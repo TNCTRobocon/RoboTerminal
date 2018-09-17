@@ -2,9 +2,9 @@
 
 #include "feature.hpp"
 
+#include <iostream>
 #include <map>
 #include <string>
-#include <iostream>
 #include <unordered_set>
 
 // const static string XX[]...

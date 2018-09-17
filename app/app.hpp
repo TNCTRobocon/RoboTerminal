@@ -1,13 +1,13 @@
 #pragma once
-#include <general/gamepad.hpp>
 #include <general/device.hpp>
+#include <general/gamepad.hpp>
 #include <memory>
 #include <optional>
 
+#include <ui/ui.hpp>
 #include <util/argument.hpp>
 #include <util/report.hpp>
 #include <util/settings.hpp>
-#include <ui/ui.hpp>
 
 struct Application final {
     // field

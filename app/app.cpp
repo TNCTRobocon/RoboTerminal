@@ -60,11 +60,11 @@ bool Application::Process() {
 int main(int argc, char** argv) {
     /*app.emplace(&argc, &argv);
     while (app->Process());*/
-    auto a = StateNode::Create([]() { cout<<"a"<<endl; },"a");
-    auto b = StateNode::Create([]() { cout<<"b"<<endl;  },"b");
-    auto ab = StateEdge::Create(a, b,[](){return true;},"a-b");
-    auto g=StateGraph::Create();
+    auto a = StateNode::Create([]() { cout << "a" << endl; }, "a");
+    auto b = StateNode::Create([]() { cout << "b" << endl; }, "b");
+    auto ab = StateEdge::Create(a, b, []() { return true; }, "a-b");
+    auto g = StateGraph::Create();
     g->Insert(ab);
-    cout<<g->ToString()<<endl;
+    cout << g->ToString() << endl;
     return 0;
 }

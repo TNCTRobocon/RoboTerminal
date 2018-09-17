@@ -32,7 +32,7 @@ class StateEdge {
     const std::shared_ptr<StateNode> to;
     const std::function<bool()> check;
     const std::string name;
-    
+
 public:
     StateEdge(std::shared_ptr<StateNode> _from,
               std::shared_ptr<StateNode> _to,
@@ -46,11 +46,11 @@ public:
     std::shared_ptr<StateNode> From() { return from; }
     std::shared_ptr<StateNode> To() { return to; }
     std::string ToString() const;
-    static std::shared_ptr<StateEdge> Create(std::shared_ptr<StateNode> _from,
-                                             std::shared_ptr<StateNode> _to,
-                                             std::function<bool()> _check =
-                                                 AlwaysTrue(),
-                                             const std::string& _name = "") {
+    static std::shared_ptr<StateEdge> Create(
+        std::shared_ptr<StateNode> _from,
+        std::shared_ptr<StateNode> _to,
+        std::function<bool()> _check = AlwaysTrue(),
+        const std::string& _name = "") {
         return std::make_shared<StateEdge>(_from, _to, _check, _name);
     }
 };

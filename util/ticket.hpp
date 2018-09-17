@@ -34,17 +34,17 @@ class Ticket {
 public:
     Ticket(std::shared_ptr<TicketMachine> tm)
         : manager(tm), id(tm ? tm->CreateTicket() : 0) {}
-    Ticket(Ticket&& move)noexcept;
-    Ticket():manager(nullptr),id(std::nullopt){}
+    Ticket(Ticket&& move) noexcept;
+    Ticket() : manager(nullptr), id(std::nullopt) {}
     virtual ~Ticket();
     bool IsActive() const { return id.has_value(); }
-    uint32_t GetValue()const{return id.value_or(0);}
+    uint32_t GetValue() const { return id.value_or(0); }
     const std::optional<uint32_t>& GetId() const { return id; }
 
-    size_t Hash()const{
-        const size_t h_man=(size_t)manager.get();
-        const size_t h_id=id.value_or(0)^(id.has_value()<<1);
-        return h_id^(h_man<<1);
+    size_t Hash() const {
+        const size_t h_man = (size_t)manager.get();
+        const size_t h_id = id.value_or(0) ^ (id.has_value() << 1);
+        return h_id ^ (h_man << 1);
     }
 
     bool operator==(const Ticket& cmp) const { return id == cmp.id; }
