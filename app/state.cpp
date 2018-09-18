@@ -1,5 +1,4 @@
 #include "state.hpp"
-#include <stdio.h>
 
 // DutyからAsyncRPMに変える。
 

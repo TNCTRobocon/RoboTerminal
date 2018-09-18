@@ -1,6 +1,4 @@
 #include "ui.hpp"
-
-#include <stdio.h>
 using namespace std;
 namespace UI {
 

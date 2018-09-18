@@ -1,8 +1,6 @@
 #pragma once
-#include <memory>
-#include <string>
-#include <vector>
-
+#include <pch.hpp>
+namespace General{
 enum class AxisNames : unsigned int {
     LSX = 0,
     LSY = 1,
@@ -82,3 +80,4 @@ public:
 
     inline int GetAxisNum() const { return axises.size(); }
 };
+}

@@ -1,26 +1,24 @@
 #include "gamepad.hpp"
 #include <fcntl.h>
 #include <linux/joystick.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <app/app.hpp>
-#include <iostream>
-#include <sstream>
+
 using namespace std;
 using namespace Util;
+namespace General{
 constexpr size_t GamePad::button_size;
 constexpr size_t GamePad::axis_size;
 
 GamePad::GamePad(const string& filename)
     : buttons(button_size), axises(axis_size) {
     fd = open(filename.c_str(), O_RDONLY);
+    auto& report = app->report;
     if (fd < 0) {
         string message = "Cannot Open GamePad" + filename;
+
         if (report) {
             report->Error(ReportGroup::GamePad, message);
         } else {
@@ -41,6 +39,7 @@ GamePad::GamePad(const string& filename)
 }
 
 GamePad::~GamePad() {
+    auto& report = app->report;
     if (fd >= 0) {
         close(fd);
         string message = "Close GamePad";
@@ -94,4 +93,5 @@ std::string GamePad::Status() const {
     }
     ss << endl;
     return ss.str();
+}
 }
