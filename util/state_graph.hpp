@@ -51,7 +51,8 @@ public:
     std::shared_ptr<const StateNode> To() const { return to; }
     std::shared_ptr<StateNode> From() { return from; }
     std::shared_ptr<StateNode> To() { return to; }
-    std::string ToString() const;
+    std::string ToString(bool active=false) const;
+    std::string ToPlant(bool active=false)const;
 };
 
 class StateGraph {
@@ -71,11 +72,12 @@ public:
     void Move(std::shared_ptr<StateNode> node = nullptr) { next = node; }
     void Save(const std::string& filename)const;
     //プロパティ
-    std::string ToString() const;  // plantuml言語と互換性があります
+    std::string ToString() const;  
+    std::string ToPlant() const; 
     std::shared_ptr<StateNode> GetRunning() { return next; }
     std::string GetNextName() { return next ? next->GetName() : "*"; }
 
-    void Step();
+    bool Step();//末尾に到着したらfalse
     void StepAll();
 };
 
