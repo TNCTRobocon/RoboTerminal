@@ -6,17 +6,19 @@
 #include <boost/asio.hpp>
 #include <boost/type.hpp>
 
-<<<<<<< HEAD
-class DeviceManager;
-class DeviceBase;
-class DeviceMotor;
-class DeviceSolenoid;
 
+namespace General{
 using address_t = uint32_t;
 using factor_t = std::string;
 using devicename_t = std::string;
 
 #define SERIAL_TIME_LIMIT (chrono::milliseconds(50))
+
+// future<void> prpr; //TODO right name
+class DeviceManager;
+class DeviceBase;
+class DeviceMotor;
+class DeviceSolenoid;
 
 template <typename... T>
 std::vector<factor_t> FactorAND(T... vectors) {
@@ -52,34 +54,13 @@ std::vector<factor_t> FactorAND(T... vectors) {
     return AND_result;
 }
 
-
-=======
-namespace General{
-using address_t = uint32_t;
-using factor_t = std::string;
-
-#define SERIAL_TIME_LIMIT (chrono::milliseconds(50))
-
-// future<void> prpr; //TODO right name
-class DeviceManager;
-class DeviceBase;
-class DeviceMotor;
-class DeviceSolenoid;
->>>>>>> development
-
 class DeviceManager {
 private:
     boost::asio::io_service io;
     boost::asio::serial_port serial;  //まだserialportは開かれていない
-<<<<<<< HEAD
-    std::map<address_t, std::weak_ptr<DeviceBase>> devices_address;
-    std::multimap<factor_t, std::weak_ptr<DeviceBase>> devices_feature;
+    std::unordered_map<address_t, std::weak_ptr<DeviceBase>> devices_address;
+    std::unordered_multimap<factor_t, std::weak_ptr<DeviceBase>> devices_feature;
     std::queue<std::function<void()>> command;
-=======
-    std::unordered_map<address_t, std::weak_ptr<DeviceBase>> devices_adr;
-    std::unordered_multimap<factor_t, std::weak_ptr<DeviceBase>> devices_ft;
-    std::queue<std::function<void()>> cmd;
->>>>>>> development
 
     std::optional<std::string> ReadSerial();
     void WriteSerial(const std::string&);
@@ -102,7 +83,6 @@ public:
     // void PushCommandDirectly(function<void()> no_sel);
     void Fetch();
     void Flush(std::future<void>& task);
-<<<<<<< HEAD
 
     std::vector<std::shared_ptr<DeviceBase>> SearchFeature(
         factor_t target);  // TODO デバイス種類別にも用意
@@ -111,8 +91,6 @@ public:
     template <typename AnyDevice>
     friend std::vector<std::shared_ptr<AnyDevice>>
     SearchDevice(std::shared_ptr<DeviceManager>& dm, devicename_t dn);
-=======
->>>>>>> development
 };
 
 template <typename AnyDevice>
@@ -131,11 +109,7 @@ class DeviceBase {
     friend class DeviceManager;
 
 private:
-<<<<<<< HEAD
     std::unordered_set<factor_t> feature;
-=======
-    std::unordered_set<factor_t> ft;
->>>>>>> development
     std::queue<std::tuple<std::string,
                           std::function<void(std::optional<std::string>)>>>
         async_task;
@@ -150,11 +124,8 @@ protected:
         std::function<void(std::optional<std::string>)> response_checker);
     void ReadCSV(std::string str);
     bool Feature(std::optional<std::string> response);
-<<<<<<< HEAD
 
 public:
-=======
->>>>>>> development
     void Echo(std::string str);
     void Reset();
 
@@ -192,7 +163,6 @@ public:
     void Open();
     void Close(int id);
     void Close();
-<<<<<<< HEAD
 };
 
 struct DeviceMotor::CreateHelper {
@@ -240,7 +210,4 @@ std::shared_ptr<DeviceSolenoid> DeviceSolenoid::CreateSolenoid(
         return nullptr;
     }
 }
-=======
-};
-}
->>>>>>> development
+} //namespace General

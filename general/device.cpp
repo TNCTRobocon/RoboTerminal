@@ -28,14 +28,8 @@ DeviceManager::DeviceManager(string filename, int rate) : serial(io) {
     try {
         serial.open(filename);
     } catch (...) {
-<<<<<<< HEAD
-        // report -> Error(ReportGroup::SerialPort, "Failed to Open
-        // SerialPort");
-=======
         app->report->Error(Util::ReportGroup::SerialPort,
                            "Failed to Open SerialPort");
->>>>>>> development
-        // strange error "ReportGroup has not been declared"
     }
     cout << "Serialport opened successfully" << endl;
     serial.set_option(
@@ -110,7 +104,6 @@ DeviceManager::ReadSerial() {  //必ず'\r'で終わる文字列を一つ読み�
         // error serial read timeout
         return nullopt;
     }
-<<<<<<< HEAD
 }
 
 void DeviceManager::CacheAddress(address_t adr,
@@ -124,12 +117,6 @@ void DeviceManager::CacheFeature(address_t adr, factor_t fac) {
 
 void DeviceManager::CacheFeature(factor_t fac, std::weak_ptr<DeviceBase> wptr) {
     devices_feature.emplace(fac, wptr);
-=======
-}
-
-void DeviceManager::SetFeature(address_t adr, factor_t fac) {
-    devices_ft.emplace(fac, devices_adr[adr]);
->>>>>>> development
 }
 
 void DeviceManager::Select(address_t address) {
@@ -139,21 +126,13 @@ void DeviceManager::Select(address_t address) {
 }
 
 // void DeviceManager::PushCommandDirectly(function<void()> no_sel){
-<<<<<<< HEAD
 // command.push(no_sel);
-=======
-// cmd.push(no_sel);
->>>>>>> development
 //}
 
 void DeviceManager::Fetch() {
     queue<function<void()>> send;
     queue<function<void()>> receive;
-<<<<<<< HEAD
     for (auto& dev : devices_address) {
-=======
-    for (auto& dev : devices_adr) {
->>>>>>> development
         if (shared_ptr<DeviceBase> sptr = dev.second.lock()) {
             if (!(sptr->async_task.empty())) {
                 send.push([=] { Select(dev.first); });
@@ -178,26 +157,17 @@ void DeviceManager::Fetch() {
         }
     }
     while (!send.empty()) {
-<<<<<<< HEAD
         command.push(send.front());
         send.pop();
     }
     while (!receive.empty()) {
         command.push(receive.front());
-=======
-        cmd.push(send.front());
-        send.pop();
-    }
-    while (!receive.empty()) {
-        cmd.push(receive.front());
->>>>>>> development
         receive.pop();
     }
 }
 
 void DeviceManager::Flush(future<void>& task) {
     task = async(launch::async, [=] {
-<<<<<<< HEAD
         while (!command.empty()) {
             command.front()();
             command.pop();
@@ -205,30 +175,16 @@ void DeviceManager::Flush(future<void>& task) {
     });
     while (!command.empty()) {
         command.pop();
-=======
-        while (!cmd.empty()) {
-            cmd.front()();
-            cmd.pop();
-        }
-    });
-    while (!cmd.empty()) {
-        cmd.pop();
->>>>>>> development
     }
     /*
      = async(launch::async,
       [=]{
-<<<<<<< HEAD
         while(!command.empty()){
-=======
-        while(!cmd.empty()){
->>>>>>> development
 
         }
       }
     );
     */
-<<<<<<< HEAD
 }
 
 vector<shared_ptr<DeviceBase>> DeviceManager::SearchFeature(factor_t target) {
@@ -239,8 +195,6 @@ vector<shared_ptr<DeviceBase>> DeviceManager::SearchFeature(factor_t target) {
         result.push_back(sptr);
     }
     return result;
-=======
->>>>>>> development
 }
 /*
 vector<shared_ptr<DeviceBase>> DeviceManager::SearchFeature(factor_t target){
@@ -248,7 +202,6 @@ vector<shared_ptr<DeviceBase>> DeviceManager::SearchFeature(factor_t target){
 }
 */
 
-<<<<<<< HEAD
 std::vector<std::shared_ptr<DeviceBase>> DeviceManager::AllDevices() {
     vector<shared_ptr<DeviceBase>> all;
     for (auto it = devices_feature.cbegin(); it != devices_feature.cend();
@@ -264,8 +217,6 @@ std::vector<std::shared_ptr<DeviceBase>> DeviceManager::AllDevices() {
 //  return vec1;
 //}
 
-=======
->>>>>>> development
 DeviceBase::DeviceBase() {  //デバイスのインスタンスを生成時、sel XX と ft
                             //を送る
     PushCommand(Command::feature, [=](optional<string> response) {
@@ -295,13 +246,8 @@ void DeviceBase::ReadCSV(string str) {
         while (last != str.end() && *last != ',') {
             ++last;
         }
-<<<<<<< HEAD
         feature.emplace(string(first, last));
         parent->CacheFeature(address, string(first, last));
-=======
-        ft.emplace(string(first, last));
-        parent->SetFeature(address, string(first, last));
->>>>>>> development
         if (last != str.end()) {
             ++last;
         }
@@ -392,20 +338,13 @@ void DeviceMotor::Duty(float value) {
     });
 }
 
-<<<<<<< HEAD
 DeviceSolenoid::DeviceSolenoid(std::shared_ptr<DeviceManager> p, address_t a) {
-=======
-DeviceSolenoid::DeviceSolenoid(DeviceManager* p, address_t a) {
->>>>>>> development
     parent = p;
     address = a;
 }
 
-<<<<<<< HEAD
 DeviceSolenoid::~DeviceSolenoid() {}
 
-=======
->>>>>>> development
 void DeviceSolenoid::Open(int id) {
     stringstream ss;
     ss << Command::open << Command::space << id;
