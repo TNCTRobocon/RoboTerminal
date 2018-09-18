@@ -1,4 +1,5 @@
 #include "app.hpp"
+#include <util/argument.hpp>
 #include <util/state_graph.hpp>
 using namespace std;
 using namespace Util;
@@ -9,7 +10,8 @@ std::optional<Application> app{std::nullopt};
 
 Application::Application(int* argc, char*** argv) {
     // System全体で使う変数を初期化する
-    argument.reset(new Argument(*argc, *argv));
+    //argument.reset(new Argument(*argc, *argv));
+    Argument::Initialize(*argc,*argv);
     report.reset(new Report("report.log"));
     report->Info(ReportGroup::System, "Wake Up");
     setting.reset(new Settings("setting.config"));

@@ -1,6 +1,7 @@
 #include "argument.hpp"
 using namespace std;
 namespace Util {
+optional<Argument> Argument::instance;
 Argument::Argument(int argc, char** argv) {
     //デコード開始
     location = argv[0];

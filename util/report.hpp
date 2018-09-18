@@ -64,4 +64,8 @@ public:
         Write(ReportType::Error, group, message);
     }
 };
+
+
+
+
 }  // namespace Util

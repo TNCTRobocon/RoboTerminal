@@ -3,13 +3,13 @@
 #include <general/device.hpp>
 #include <general/gamepad.hpp>
 #include <ui/ui.hpp>
-#include <util/argument.hpp>
+
 #include <util/report.hpp>
 #include <util/settings.hpp>
 
 struct Application final {
     // field
-    std::shared_ptr<Util::Argument> argument{nullptr};
+    //std::shared_ptr<Util::Argument> argument{nullptr};
     std::shared_ptr<Util::Settings> setting{nullptr};
     std::shared_ptr<Util::Report> report{nullptr};
     std::shared_ptr<General::GamePad> gamepad{nullptr};
