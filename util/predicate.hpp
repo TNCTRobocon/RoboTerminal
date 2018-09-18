@@ -29,6 +29,7 @@ public:
     Always()=default;
     Always(const Always&)=default;
     virtual ~Always()=default;
+    void operator()(){}
 };
 
 using AlwaysNone=Always<void>;
