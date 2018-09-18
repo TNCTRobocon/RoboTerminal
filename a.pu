@@ -1,5 +1,0 @@
-@startuml
-b->[*]:b-
-a#FF0000->b:ab
-[*]->a:-a
-@enduml
