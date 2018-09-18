@@ -25,6 +25,11 @@ const string open = "opn";
 const string close = "cls";
 }
 
+namespace FeatureKeyword {
+  const devicename_t motor = "moto";
+  const devicename_t solenoid = "sole";
+}
+
 DeviceManager::DeviceManager(string filename, int rate) : serial(io) {
     try {
         serial.open(filename);
@@ -182,6 +187,11 @@ vector<shared_ptr<DeviceBase>> DeviceManager::SearchFeature(factor_t target) {
     }
     return result;
 }
+/*
+vector<shared_ptr<DeviceBase>> DeviceManager::SearchFeature(factor_t target){
+
+}
+*/
 
 std::vector<std::shared_ptr<DeviceBase>> DeviceManager::AllDevices() {
     vector<shared_ptr<DeviceBase>> all;

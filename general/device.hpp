@@ -28,6 +28,7 @@ class DeviceSolenoid;
 
 using address_t = uint32_t;
 using factor_t = std::string;
+using devicename_t = std::string;
 
 #define SERIAL_TIME_LIMIT (chrono::milliseconds(50))
 
@@ -65,6 +66,8 @@ std::vector<factor_t> FactorAND(T... vectors) {
     return AND_result;
 }
 
+
+
 class DeviceManager {
 private:
     boost::asio::io_service io;
@@ -98,7 +101,23 @@ public:
     std::vector<std::shared_ptr<DeviceBase>> SearchFeature(
         factor_t target);  // TODO デバイス種類別にも用意
     std::vector<std::shared_ptr<DeviceBase>> AllDevices();
+
+    template <typename AnyDevice>
+    friend std::vector<std::shared_ptr<AnyDevice>>
+    SearchDevice(std::shared_ptr<DeviceManager>& dm, devicename_t dn);
 };
+
+template <typename AnyDevice>
+std::vector<std::shared_ptr<AnyDevice>>
+SearchDevice(std::shared_ptr<DeviceManager>& dm, devicename_t dn){
+    std::vector<std::shared_ptr<AnyDevice>> result;
+    auto search = dm->devices_feature.equal_range(dn);
+    for (auto it = search.first; it != search.second; ++it) {
+        std::shared_ptr<AnyDevice> sptr = (it->second).lock();
+        result.push_back(sptr);
+    }
+    return result;
+}
 
 class DeviceBase {
     friend class DeviceManager;
