@@ -3,14 +3,15 @@
 #include "app.hpp"
 #include "general/device.hpp"
 #include <signal.h>
+#include <general/motor.hpp>
 #include <iostream>
-#include <future>
-#include <vector>
-#include <utility>
-//#include <general/motor.hpp>
+#include <ui/ui.hpp>
+// TODO あとで消す
+#include <gtk/gtk.h>
 
 using namespace std;
 using namespace Util;
+using namespace UI;
 
 #define CHECK_NOW chrono::milliseconds(0)
 
@@ -23,24 +24,18 @@ shared_ptr<Argument> argument{nullptr};
 shared_ptr<Settings> setting{nullptr};
 shared_ptr<Report> report{nullptr};
 shared_ptr<GamePad> gamepad{nullptr};
-shared_ptr<DeviceManager> device_manager{nullptr};
-future<void> device_control;
+shared_ptr<Window> window{nullptr};
 
-shared_ptr<DeviceMotor> device_motor0{nullptr};
-shared_ptr<DeviceMotor> device_motor1{nullptr};
-
-static bool volatile is_continue{false};
-static void singal_receiver(int num) {
-    cout << endl;
-    is_continue = false;
-}
-
-int main(int argc, char** argv) {
+//グローバル変数の初期化
+static void shared_init(int* argc, char*** argv) {
     // System全体で使う変数を初期化する
-    argument.reset(new Argument(argc, argv));
+    argument.reset(new Argument(*argc, *argv));
     report.reset(new Report("report.log"));
     report->Info(ReportGroup::System, "Wake Up");
     setting.reset(new Settings("setting.config"));
+    // Windowsを初期化する
+    window.reset(new Window(argc, argv));
+    report->Info(ReportGroup::GUI, "UI Wake Up");
     //ゲームパッドを初期化する
     auto gamepad_location = setting->Read("gamepad");
     if (gamepad_location) {
@@ -57,27 +52,22 @@ int main(int argc, char** argv) {
         // device_manager2 =
         //  move(DeviceManager::GenerateDeviceManager(serial_location->c_str(),stoi(band)));
     } else {
-        report->Warn(ReportGroup::GamePad, "Missing Serial Location");
+        report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
+#ifdef RASPBERRY_PI
+    //specialを関する記述
 
-    auto vec = device_manager->SearchFeature("example");
+#endif
+}
 
-    for (auto& dev : vec) {
-        dev->Echo("HI");
+int main(int argc, char** argv) {
+    shared_init(&argc, &argv);
+
+    while (window->Process()) {
+        if (gamepad) {
+            gamepad->Update();
+        }
     }
-
-    // MessageLoop
-
-    signal(SIGINT, singal_receiver);
-
-    // for(auto& it : device_manager->SearchFeature("motor")){
-    //  it -> Echo("yahho-");
-    //}
-
-    for (is_continue = true; is_continue;) {  //例
-        LongTask();   //２つのモーターそれぞれに草をシリアルで送信　それが終わるまでの間
-        ShortTask();  //ゲームパッドと通信をし続ける
-    }//またやり直す
 
     report->Info(ReportGroup::System, "Shutdown");
     return 0;
