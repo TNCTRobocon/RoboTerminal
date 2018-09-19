@@ -8,6 +8,7 @@ const char newline = '\r';
 const string space = " ";
 const string select = "sel";
 const string feature = "ft";
+const string echo = "echo";
 const string duty = "dt";
 const string motor_control = "mc";
 const string async_motor_control = "rady";
@@ -34,6 +35,8 @@ DeviceManager::DeviceManager(string filename, int rate) : serial(io) {
     cout << "Serialport opened successfully" << endl;
     serial.set_option(
         boost::asio::serial_port_base::baud_rate(rate));  //ボーレート設
+    cout << "Baud rate set to " << rate << endl;
+    //WriteSerial("foo");
 }
 
 DeviceManager::~DeviceManager() {
@@ -84,11 +87,14 @@ devices_address[new_address];//devices_addressの中のそのアドレスの要�
 
 void DeviceManager::WriteSerial(
     const string& text) {  //渡された文字に'\r'をつけて送信
+    this_thread::sleep_for(chrono::milliseconds(10));
+    cout << "WriteSerial: " <<text << endl;
     boost::asio::write(serial, boost::asio::buffer(text + Command::newline));
 }
 
 optional<string>
 DeviceManager::ReadSerial() {  //必ず'\r'で終わる文字列を一つ読み込む
+    debug("ReadSerial called");
     boost::asio::streambuf buf;
     future<void> timed_task = async(launch::async, [&] {
         boost::asio::read_until(serial, buf, Command::newline);
@@ -99,9 +105,12 @@ DeviceManager::ReadSerial() {  //必ず'\r'で終わる文字列を一つ読み�
             buf.data());  //バッファの中身を文字列として取り出す
         if (!result.empty())  //空ではありえないはずだが、念の為
             result.pop_back();  //末尾'\r'を削除
+        cout << "ReadSerial: " <<result << endl;
+        debug("ReadSerial returning");
         return result;
     } else {
         // error serial read timeout
+        cout << "ReadSerial: TIMEOUT" << endl;
         return nullopt;
     }
 }
@@ -129,53 +138,75 @@ void DeviceManager::Select(address_t address) {
 // command.push(no_sel);
 //}
 
-void DeviceManager::Fetch() {
+int DeviceManager::Fetch() {
     queue<function<void()>> send;
     queue<function<void()>> receive;
+    int count = 0;
     for (auto& dev : devices_address) {
+        cout << "a device" << endl;
         if (shared_ptr<DeviceBase> sptr = dev.second.lock()) {
             if (!(sptr->async_task.empty())) {
                 send.push([=] { Select(dev.first); });
                 receive.push([=] {
+                  //NO RESPONSE
+                  /*
                     if (ReadSerial() == "GOOD RESPONSE") {
                         ////
                     } else {
                         ////
                     }
+                  */
                 });
                 do {
+                    string to_send = get<string>(sptr->async_task.front());
                     send.push([=] {
-                        WriteSerial(get<string>(sptr->async_task.front()));
+                        WriteSerial(to_send);
                     });
+                    auto response_checker = get<function<void(optional<string>)>>(
+                        sptr->async_task.front());
                     receive.push([=] {
-                        get<function<void(optional<string>)>>(
-                            sptr->async_task.front())(ReadSerial());
+                        response_checker(ReadSerial());
                     });
                     sptr->async_task.pop();
+                    count++;
                 } while (!(sptr->async_task.empty()));
             }
         }
     }
     while (!send.empty()) {
+      cout << "send command push" << endl;
         command.push(send.front());
         send.pop();
     }
     while (!receive.empty()) {
+      cout << "receive command push" << endl;
         command.push(receive.front());
         receive.pop();
     }
+    return count;
 }
 
-void DeviceManager::Flush(future<void>& task) {
-    task = async(launch::async, [=] {
+void DeviceManager::Flush(future<int>& task) {
+    cout << "Flush!" << endl;
+    cout << command.size() << endl;
+    task = async(launch::async, [&] {
+        int count = 0;
         while (!command.empty()) {
-            command.front()();
+            debug("flush1");
+            auto next = command.front();
             command.pop();
+            next();
+
+            debug("flush2");
+            count++;
         }
+        return count;
     });
+    /*
     while (!command.empty()) {
         command.pop();
     }
+    */
     /*
      = async(launch::async,
       [=]{
@@ -217,8 +248,8 @@ std::vector<std::shared_ptr<DeviceBase>> DeviceManager::AllDevices() {
 //  return vec1;
 //}
 
-DeviceBase::DeviceBase() {  //デバイスのインスタンスを生成時、sel XX と ft
-                            //を送る
+DeviceBase::DeviceBase() {  //デバイスのインスタンスを生成時、sel XX と ftを送る
+  /*
     PushCommand(Command::feature, [=](optional<string> response) {
         if (Feature(response)) {
             cout << "Feature success" << endl;
@@ -226,6 +257,7 @@ DeviceBase::DeviceBase() {  //デバイスのインスタンスを生成時、se
             /// Statements
         }
     });
+  */
 }
 
 DeviceBase::~DeviceBase() {
@@ -268,12 +300,10 @@ bool DeviceBase::Feature(optional<string> response) {  //
 }
 
 void DeviceBase::Echo(string str) {
-    PushCommand(str, [=](optional<string> response) {
-        cout << "[ ECHO TEST ]" << endl;
-        cout << "<--  Input: " << str << endl;
+    PushCommand(Command::echo+Command::space+str, [=](optional<string> response) {
+      /*
         if (response) {
-            // cout << "--> Output: " << response << endl;
-            if (response == str) {
+            if (*response == str) {
                 // cout << "Device " << address << "is responding properly." <<
                 // endl;
             } else {
@@ -281,8 +311,9 @@ void DeviceBase::Echo(string str) {
                 // << endl;
             }
         } else {
-            // cout << "Device " << address << "is NOT responding!" << endl;
+            //cout << "Device " << address << " is NOT responding!" << endl;
         }
+      */
     });
 }
 

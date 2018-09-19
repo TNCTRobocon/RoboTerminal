@@ -2,6 +2,7 @@
 #include <pch.hpp>
 #include <future>
 #include <queue>
+#include <thread> // sleep test
 #include <utility>
 #include <boost/asio.hpp>
 #include <boost/type.hpp>
@@ -12,9 +13,10 @@ using address_t = uint32_t;
 using factor_t = std::string;
 using devicename_t = std::string;
 
-#define SERIAL_TIME_LIMIT (chrono::milliseconds(50))
+#define SERIAL_TIME_LIMIT (chrono::milliseconds(1000))
+//#define debug(x) (cout<<"debug: "<<x<<endl) //For debug messages
+#define debug(x) //Ignore debug messages
 
-// future<void> prpr; //TODO right name
 class DeviceManager;
 class DeviceBase;
 class DeviceMotor;
@@ -58,8 +60,8 @@ class DeviceManager {
 private:
     boost::asio::io_service io;
     boost::asio::serial_port serial;  //まだserialportは開かれていない
-    std::unordered_map<address_t, std::weak_ptr<DeviceBase>> devices_address;
-    std::unordered_multimap<factor_t, std::weak_ptr<DeviceBase>> devices_feature;
+    std::map<address_t, std::weak_ptr<DeviceBase>> devices_address;
+    std::multimap<factor_t, std::weak_ptr<DeviceBase>> devices_feature;
     std::queue<std::function<void()>> command;
 
     std::optional<std::string> ReadSerial();
@@ -81,8 +83,8 @@ public:
     void CacheFeature(factor_t fac, std::weak_ptr<DeviceBase> wptr);
     void Select(address_t address);
     // void PushCommandDirectly(function<void()> no_sel);
-    void Fetch();
-    void Flush(std::future<void>& task);
+    int Fetch(); //キューに積んだ命令の数を返す
+    void Flush(std::future<int>& task);
 
     std::vector<std::shared_ptr<DeviceBase>> SearchFeature(
         factor_t target);  // TODO デバイス種類別にも用意

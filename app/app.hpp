@@ -15,6 +15,7 @@ struct Application final {
     std::shared_ptr<General::GamePad> gamepad{nullptr};
     std::shared_ptr<UI::Window> window{nullptr};
     std::shared_ptr<General::DeviceManager> device_manager{nullptr};
+    std::future<int> another_task;
     Application(int* argc, char*** argv);
     ~Application();
     bool Process();
