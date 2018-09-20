@@ -1,5 +1,5 @@
 #include "device.hpp"
-#include "app/app.hpp"
+#include<util/report.hpp>
 
 using namespace std;
 namespace General{
@@ -23,7 +23,7 @@ DeviceManager::DeviceManager(string filename, int rate) : serial(io) {
     try {
         serial.open(filename);
     } catch (...) {
-        app->report->Error(Util::ReportGroup::SerialPort,
+        Util::GetReport()->Error(Util::ReportGroup::SerialPort,
                            "Failed to Open SerialPort");
         // strange error "ReportGroup has not been declared"
     }

@@ -3,6 +3,11 @@
 
 namespace Util {
 
+class Report;
+std::shared_ptr<Report> GetReport();
+
+
+
 enum class ReportType : int {
     Info = 36,  // LightBlue
     Warn = 32,  // Yellow

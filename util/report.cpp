@@ -1,8 +1,16 @@
 #include "report.hpp"
+#include <util/settings.hpp>
 #include <chrono>
 
 using namespace std;
 namespace Util {
+
+shared_ptr<Report> reporter{nullptr};
+shared_ptr<Report> GetReport(){
+    if (!reporter)reporter.reset(new Report("report.log"));
+    return reporter;
+}
+
 string ToString(ReportType type) {
     switch (type) {
         case ReportType::Error:

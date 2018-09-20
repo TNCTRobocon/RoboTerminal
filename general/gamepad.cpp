@@ -4,8 +4,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <app/app.hpp>
-
+#include <util/report.hpp>
 using namespace std;
 using namespace Util;
 namespace General{
@@ -15,7 +14,7 @@ constexpr size_t GamePad::axis_size;
 GamePad::GamePad(const string& filename)
     : buttons(button_size), axises(axis_size) {
     fd = open(filename.c_str(), O_RDONLY);
-    auto& report = app->report;
+    auto report = GetReport();
     if (fd < 0) {
         string message = "Cannot Open GamePad" + filename;
 
@@ -39,7 +38,7 @@ GamePad::GamePad(const string& filename)
 }
 
 GamePad::~GamePad() {
-    auto& report = app->report;
+    auto report = GetReport();
     if (fd >= 0) {
         close(fd);
         string message = "Close GamePad";
