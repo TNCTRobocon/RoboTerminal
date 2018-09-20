@@ -13,7 +13,7 @@ class StateNode {
 public:
     StateNode(const std::function<void()> _action, const std::string& _name)
         : action(_action), name(_name) {}
-    StateNode(const StateNode&)=default;
+    StateNode(const StateNode&) = default;
     virtual ~StateNode() {}
     void operator()();
     const std::string& GetName() const { return name; }
@@ -36,8 +36,8 @@ public:
               std::function<bool()> _check,
               const std::string& _name)
         : from(_from), to(_to), check(_check), name(_name) {}
-        StateEdge(const StateEdge&)=default;
-        virtual ~StateEdge()=default;
+    StateEdge(const StateEdge&) = default;
+    virtual ~StateEdge() = default;
     static std::shared_ptr<StateEdge> Create(
         std::shared_ptr<StateNode> _from,
         std::shared_ptr<StateNode> _to,
@@ -51,8 +51,8 @@ public:
     std::shared_ptr<const StateNode> To() const { return to; }
     std::shared_ptr<StateNode> From() { return from; }
     std::shared_ptr<StateNode> To() { return to; }
-    std::string ToString(bool active=false) const;
-    std::string ToPlant(bool active=false)const;
+    std::string ToString(bool active = false) const;
+    std::string ToPlant(bool active = false) const;
 };
 
 class StateGraph {
@@ -70,14 +70,14 @@ public:
     }
     void Insert(std::shared_ptr<StateEdge> edge);
     void Move(std::shared_ptr<StateNode> node = nullptr) { next = node; }
-    void Save(const std::string& filename)const;
+    void Save(const std::string& filename) const;
     //プロパティ
-    std::string ToString() const;  
-    std::string ToPlant() const; 
+    std::string ToString() const;
+    std::string ToPlant() const;
     std::shared_ptr<StateNode> GetRunning() { return next; }
     std::string GetNextName() { return next ? next->GetName() : "*"; }
 
-    bool Step();//末尾に到着したらfalse
+    bool Step();  //末尾に到着したらfalse
     void StepAll();
 };
 

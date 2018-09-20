@@ -6,8 +6,9 @@ using namespace std;
 namespace Util {
 
 shared_ptr<Report> reporter{nullptr};
-shared_ptr<Report> GetReport(){
-    if (!reporter)reporter.reset(new Report("report.log"));
+shared_ptr<Report> GetReport() {
+    if (!reporter)
+        reporter.reset(new Report("report.log"));
     return reporter;
 }
 

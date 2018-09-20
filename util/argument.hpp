@@ -8,8 +8,8 @@ class Argument final {
     std::unordered_map<std::string, std::string> parameters;
     std::string location;
     Argument(int argc, char** argv);
+
 public:
-    
     Argument(const Argument&) = default;
     ~Argument() = default;
     static void Initialize(int argc, char** argv) {

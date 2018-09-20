@@ -3,12 +3,13 @@ using namespace std;
 
 namespace Util {
 
-namespace Setting{
-    std::shared_ptr<Settings> common{nullptr};
-    std::shared_ptr<Settings> GetCommon(){
-        if (!common)common.reset(new Settings("setting.config"));
-        return common;
-    }
+namespace Setting {
+std::shared_ptr<Settings> common{nullptr};
+std::shared_ptr<Settings> GetCommon() {
+    if (!common)
+        common.reset(new Settings("setting.config"));
+    return common;
+}
 }
 
 constexpr char Settings::split;

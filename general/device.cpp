@@ -1,8 +1,8 @@
 #include "device.hpp"
-#include<util/report.hpp>
+#include <util/report.hpp>
 
 using namespace std;
-namespace General{
+namespace General {
 namespace Command {
 const char newline = '\r';
 const string space = " ";
@@ -24,7 +24,7 @@ DeviceManager::DeviceManager(string filename, int rate) : serial(io) {
         serial.open(filename);
     } catch (...) {
         Util::GetReport()->Error(Util::ReportGroup::SerialPort,
-                           "Failed to Open SerialPort");
+                                 "Failed to Open SerialPort");
         // strange error "ReportGroup has not been declared"
     }
     cout << "Serialport opened successfully" << endl;
@@ -246,9 +246,8 @@ DeviceMotor::DeviceMotor(DeviceManager* p, address_t a) {
 
 DeviceMotor::~DeviceMotor() {}
 
-void DeviceMotor::
-    Synchronize() {  // selを伴わない、
-                     // 同時に実行させたい範囲の開始を示す特殊な命令
+void DeviceMotor::Synchronize() {  // selを伴わない、
+    // 同時に実行させたい範囲の開始を示す特殊な命令
     /*
       parent->Fetch();
       parent->PushCommandDirectly(

@@ -4,11 +4,9 @@ namespace Util {
 
 class Settings;
 
-namespace Setting{
-    std::shared_ptr<Settings> GetCommon();//基本的な設定の取得
+namespace Setting {
+std::shared_ptr<Settings> GetCommon();  //基本的な設定の取得
 }
-
-
 
 class Settings {
 public:

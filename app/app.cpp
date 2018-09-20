@@ -13,7 +13,7 @@ std::optional<Application> app{std::nullopt};
 
 Application::Application(int* argc, char*** argv) {
     // System全体で使う変数を初期化する
-    Argument::Initialize(*argc,*argv);
+    Argument::Initialize(*argc, *argv);
     auto report = GetReport();
     report->Info(ReportGroup::System, "Wake Up");
     auto setting = Setting::GetCommon();
@@ -32,7 +32,7 @@ Application::Application(int* argc, char*** argv) {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
     }
 #ifdef RASPBERRY_PI
-    // specialを関する記述
+// specialを関する記述
 
 #endif
 }
@@ -43,7 +43,7 @@ Application::~Application() {
 
 bool Application::Process() {
     if (window->Process()) {
-        if (auto gamepad=GetDefaultPad();gamepad) {
+        if (auto gamepad = GetDefaultPad(); gamepad) {
             gamepad->Update();
         }
         return true;
@@ -52,16 +52,16 @@ bool Application::Process() {
 }
 
 int main(int argc, char** argv) {
-    //app.emplace(&argc, &argv);
-    //while (app->Process())
-        ;
-    auto a=StateNode::Create(AlwaysNone(),"a");
-    auto b=StateNode::Create(AlwaysNone(),"b");
-    auto g=StateGraph::Create();
-    g->Insert(StateEdge::Create(nullptr,a,AlwaysTrue(),"-a"));
-    g->Insert(StateEdge::Create(a,b,AlwaysTrue(),"ab"));
-    g->Insert(StateEdge::Create(b,nullptr,AlwaysTrue(),"b-"));
+    // app.emplace(&argc, &argv);
+    // while (app->Process())
+    ;
+    auto a = StateNode::Create(AlwaysNone(), "a");
+    auto b = StateNode::Create(AlwaysNone(), "b");
+    auto g = StateGraph::Create();
+    g->Insert(StateEdge::Create(nullptr, a, AlwaysTrue(), "-a"));
+    g->Insert(StateEdge::Create(a, b, AlwaysTrue(), "ab"));
+    g->Insert(StateEdge::Create(b, nullptr, AlwaysTrue(), "b-"));
     g->Move(a);
-    cout<<g->ToPlant();
+    cout << g->ToPlant();
     return 0;
 }
