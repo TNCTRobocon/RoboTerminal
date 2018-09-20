@@ -7,11 +7,11 @@ class Argument final {
     std::unordered_set<char> options;
     std::unordered_map<std::string, std::string> parameters;
     std::string location;
-
-public:
     Argument(int argc, char** argv);
-    ~Argument() = default;
+public:
+    
     Argument(const Argument&) = default;
+    ~Argument() = default;
     static void Initialize(int argc, char** argv) {
         instance.emplace(Argument(argc, argv));
     }

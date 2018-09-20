@@ -1,6 +1,7 @@
 #include "app.hpp"
 #include <util/argument.hpp>
 #include <util/state_graph.hpp>
+#include <util/settings.hpp>
 using namespace std;
 using namespace Util;
 using namespace UI;
@@ -10,11 +11,10 @@ std::optional<Application> app{std::nullopt};
 
 Application::Application(int* argc, char*** argv) {
     // System全体で使う変数を初期化する
-    //argument.reset(new Argument(*argc, *argv));
     Argument::Initialize(*argc,*argv);
     report.reset(new Report("report.log"));
     report->Info(ReportGroup::System, "Wake Up");
-    setting.reset(new Settings("setting.config"));
+    auto setting = Setting::GetCommon();
     // Windowsを初期化する
     window.reset(new Window(argc, argv));
     report->Info(ReportGroup::GUI, "UI Wake Up");
