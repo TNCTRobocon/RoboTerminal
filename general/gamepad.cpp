@@ -5,9 +5,29 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <util/report.hpp>
+#include <util/settings.hpp>
 using namespace std;
 using namespace Util;
-namespace General{
+namespace General {
+
+shared_ptr<GamePad> default_pad{nullptr};
+void InitilizeDefaultPad() {
+    if (!default_pad) {
+        auto setting = Setting::GetCommon();
+        auto location = setting->Read("gamepad");
+        auto report = GetReport();
+        if (location) {
+            default_pad.reset(new GamePad(*location));
+        } else {
+            report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
+        }
+    }
+}
+
+std::shared_ptr<GamePad> GetDefaultPad() {
+    return default_pad;
+}
+
 constexpr size_t GamePad::button_size;
 constexpr size_t GamePad::axis_size;
 
@@ -93,4 +113,4 @@ std::string GamePad::Status() const {
     ss << endl;
     return ss.str();
 }
-}
+}  // namespace General

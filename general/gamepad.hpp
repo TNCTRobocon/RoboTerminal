@@ -1,6 +1,13 @@
 #pragma once
 #include <pch.hpp>
 namespace General{
+
+class GamePad;
+
+//DefaultPadについて
+void InitilizeDefaultPad();
+std::shared_ptr<GamePad> GetDefaultPad();//制約 InitilizeDefaultPad()を実行すること
+
 enum class AxisNames : unsigned int {
     LSX = 0,
     LSY = 1,

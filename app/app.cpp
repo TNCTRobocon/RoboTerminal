@@ -3,6 +3,7 @@
 #include <util/state_graph.hpp>
 #include <util/settings.hpp>
 #include <util/report.hpp>
+#include <general/gamepad.hpp>
 using namespace std;
 using namespace Util;
 using namespace UI;
@@ -20,12 +21,7 @@ Application::Application(int* argc, char*** argv) {
     window.reset(new Window(argc, argv));
     report->Info(ReportGroup::GUI, "UI Wake Up");
     //ゲームパッドを初期化する
-    auto gamepad_location = setting->Read("gamepad");
-    if (gamepad_location) {
-        gamepad.reset(new GamePad(*gamepad_location));
-    } else {
-        report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
-    }
+    InitilizeDefaultPad();
     //シリアルポートを初期化する
     auto serial_location = setting->Read("serial");
     if (serial_location) {
@@ -47,7 +43,7 @@ Application::~Application() {
 
 bool Application::Process() {
     if (window->Process()) {
-        if (gamepad) {
+        if (auto gamepad=GetDefaultPad();gamepad) {
             gamepad->Update();
         }
         return true;
