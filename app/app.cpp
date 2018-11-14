@@ -23,14 +23,14 @@ Application::Application(int* argc, char*** argv) {
     //ゲームパッドを初期化する
     InitilizeDefaultPad();
     //シリアルポートを初期化する
-    auto serial_location = setting->Read("serial");
+/*    auto serial_location = setting->Read("serial");
     if (serial_location) {
         string band_text = setting->Read("serial-band").value_or("115200");
         int band = stoi(band_text);
         device_manager.reset(new DeviceManager(*serial_location, band));
     } else {
         report->Warn(ReportGroup::GamePad, "Missing GamePad Location");
-    }
+    }*/
 #ifdef RASPBERRY_PI
 // specialを関する記述
 
