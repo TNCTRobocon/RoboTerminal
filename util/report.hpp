@@ -3,9 +3,6 @@
 
 namespace Util {
 
-class Report;
-std::shared_ptr<Report> GetReport();
-
 enum class ReportType : int {
     Info = 36,  // LightBlue
     Warn = 32,  // Yellow
@@ -30,10 +27,10 @@ static inline const std::string& ToString(ReportGroup group) {
 
 class Report {
     const std::string filename;
-
 public:
     Report(const std::string& filename);
     Report(const Report&) = default;
+    
     virtual ~Report() = default;
     void Write(ReportType type,
                const std::string& group,
@@ -67,5 +64,8 @@ public:
         Write(ReportType::Error, group, message);
     }
 };
+
+
+std::shared_ptr<Report> GetReport();
 
 }  // namespace Util
