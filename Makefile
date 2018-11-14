@@ -28,8 +28,7 @@ INCS := $(foreach it,$(SRC_DIRS),$(wildcard $(it)/*.hpp))
 OBJS := $(addprefix $(OBJ_ROOT)/, $(SRCS:.cpp=.o))
 OBJ_DIRS:= $(addprefix $(OBJ_ROOT)/, $(SRC_DIRS))
 DEPS := $(addprefix $(OBJ_ROOT)/, $(SRCS:.cpp=.d))
-TARGET := joyterm
-
+TARGET := roboterm
 #機能の定義
 .PHONY:all clear run format
 all:$(TARGET)

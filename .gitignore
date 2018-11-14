@@ -2,7 +2,7 @@
 *.o
 *.d
 *.log
-/joyterm
+/roboterm
 /obj
 nbproject/
 /.vscode/
