@@ -33,7 +33,7 @@ public:
     virtual void Clear(){
         Write(false);
     }
-    virtual void Read(bool)=0;
+    virtual bool Read()=0;
     virtual void Toggle(){
         Write(!Read());
     }

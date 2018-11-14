@@ -1,5 +1,6 @@
 #!/usr/bin/make
-
+#bahavior
+MODE = 
 # Complier Options
 CC ?= gcc
 CFLAGS ?= -Wall -std=c11 -g -O2 -pipe $(shell pkg-config --cflags gtk+-3.0)
@@ -17,7 +18,6 @@ else
 	SRC_DIRS+=special
 	LDFLAGS+=-lwiringPi
 endif
-
 CXXFLAGS ?= -std=c++17 -Wall -g -O2 -pipe
 FORMATER ?= clang-format
 RM ?= rm
@@ -29,6 +29,14 @@ OBJS := $(addprefix $(OBJ_ROOT)/, $(SRCS:.cpp=.o))
 OBJ_DIRS:= $(addprefix $(OBJ_ROOT)/, $(SRC_DIRS))
 DEPS := $(addprefix $(OBJ_ROOT)/, $(SRCS:.cpp=.d))
 TARGET := roboterm
+# 条件によりコンパイル方法を変える
+ifeq ($(MODE),TEST)
+	CPPFLAGS+=-DUNIT_TEST
+	OBJ_ROOT := obj-test
+	TARGET := $(TARGET)-test
+endif
+
+
 #機能の定義
 .PHONY:all clear run format
 all:$(TARGET)

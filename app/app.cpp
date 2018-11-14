@@ -52,16 +52,10 @@ bool Application::Process() {
 }
 
 int main(int argc, char** argv) {
-    // app.emplace(&argc, &argv);
-    // while (app->Process())
-    ;
-    auto a = StateNode::Create(AlwaysNone(), "a");
-    auto b = StateNode::Create(AlwaysNone(), "b");
-    auto g = StateGraph::Create();
-    g->Insert(StateEdge::Create(nullptr, a, AlwaysTrue(), "-a"));
-    g->Insert(StateEdge::Create(a, b, AlwaysTrue(), "ab"));
-    g->Insert(StateEdge::Create(b, nullptr, AlwaysTrue(), "b-"));
-    g->Move(a);
-    cout << g->ToPlant();
+
+    printf("a");
+    #ifdef UNIT_TEST
+    printf("u");
+    #endif
     return 0;
 }

@@ -3,7 +3,9 @@
 *.d
 *.log
 /roboterm
+/roboterm-test
 /obj
+/obj-test
 nbproject/
 /.vscode/
 /pch.hpp.gch

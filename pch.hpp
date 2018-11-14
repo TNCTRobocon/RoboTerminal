@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <functional>
 //コレクション
+#include <deque>
 #include <vector>
 #include <string>
 #include <unordered_map>
